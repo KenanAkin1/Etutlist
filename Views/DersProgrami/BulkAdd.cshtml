@@ -1,0 +1,356 @@
+@model Etutlist.Controllers.BulkAddViewModel
+
+@{
+    ViewData["Title"] = "Toplu Ders Ekleme";
+}
+
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card shadow-sm">
+   <div class="card-header bg-primary text-white">
+     <h4><i class="bi bi-table"></i> Toplu Ders Programý Ekleme</h4>
+  </div>
+      <div class="card-body">
+          @if (TempData["Success"] != null)
+      {
+     <div class="alert alert-success alert-dismissible fade show">
+        <i class="bi bi-check-circle"></i> @TempData["Success"]
+   <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+ }
+        @if (TempData["Error"] != null)
+     {
+        <div class="alert alert-danger alert-dismissible fade show">
+      <i class="bi bi-x-circle"></i> @TempData["Error"]
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+   }
+     @if (TempData["Warning"] != null)
+        {
+    <div class="alert alert-warning alert-dismissible fade show">
+      <i class="bi bi-exclamation-triangle"></i> @TempData["Warning"]
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+             }
+
+   <form asp-action="BulkAdd" method="post" id="bulkAddForm">
+          @Html.AntiForgeryToken()
+
+                <!-- Genel Bilgiler -->
+       <div class="card mb-3">
+       <div class="card-header bg-info text-white">
+      <h5><i class="bi bi-info-circle"></i> 1. Genel Bilgiler</h5>
+    </div>
+           <div class="card-body">
+        <div class="row">
+      <div class="col-md-4">
+       <div class="form-group mb-3">
+               <label class="form-label"><strong>Fakülte</strong> <span class="text-danger">*</span></label>
+     <select asp-for="FakulteId" class="form-select" id="fakulteSelect" required>
+            <option value="">-- Fakülte Seçiniz --</option>
+    @foreach (var f in ViewBag.Fakulteler as SelectList)
+   {
+    <option value="@f.Value">@f.Text</option>
+               }
+      </select>
+      </div>
+   </div>
+
+          <div class="col-md-4">
+         <div class="form-group mb-3">
+   <label class="form-label"><strong>Ders</strong> <span class="text-danger">*</span></label>
+     <select asp-for="DersId" class="form-select" id="dersSelect" required>
+        <option value="">-- Ders Seçiniz --</option>
+           </select>
+         </div>
+     </div>
+
+   <div class="col-md-4">
+        <div class="form-group mb-3">
+        <label class="form-label"><strong>Öðretim Elemaný</strong> <span class="text-danger">*</span></label>
+                 <input type="text" class="form-control" id="hocaInput" placeholder="Hoca adý yazýn..." autocomplete="off" />
+           <input type="hidden" id="selectedHocaAdi" />
+       <small class="text-success" id="hocaStatus"></small>
+          </div>
+          </div>
+   </div>
+      </div>
+     </div>
+
+               <!-- HIZLI GÝRÝÞ TABLOSU -->
+          <div class="card mb-3">
+         <div class="card-header bg-success text-white">
+             <h5><i class="bi bi-lightning-fill"></i> 2. Hýzlý Ders Giriþi</h5>
+          <small>Gün/Saat hücrelerine kýsým numarasý girin (1, 2, 3...). Birden fazla kýsým için virgülle ayýrýn (1,2,3)</small>
+     </div>
+    <div class="card-body">
+      <div class="table-responsive">
+   <table class="table table-bordered table-sm" id="quickEntryTable">
+       <thead class="table-dark text-center">
+       <tr>
+     <th style="width: 120px;">GÜN</th>
+            @for (int saat = 1; saat <= 8; saat++)
+     {
+    <th style="width: 80px;">@saat. Saat</th>
+         }
+   </tr>
+           </thead>
+              <tbody>
+           @foreach (var gun in ViewBag.Gunler as List<string>)
+   {
+        <tr>
+        <td class="fw-bold bg-light">@gun</td>
+              @for (int saat = 1; saat <= 8; saat++)
+            {
+      <td class="p-0">
+             <input type="text"
+           class="form-control form-control-sm border-0 text-center quick-input"
+         data-gun="@gun"
+      data-saat="@saat"
+             placeholder="-"
+          style="height: 40px;" />
+         </td>
+    }
+                </tr>
+       }
+             </tbody>
+         </table>
+   </div>
+     <div class="alert alert-info mt-2">
+             <i class="bi bi-info-circle"></i> <strong>Kullaným:</strong>
+        Hücreye <code>1</code> ? 1. Kýsým | <code>1,2,3</code> ? 1., 2. ve 3. Kýsýmlar
+       </div>
+</div>
+         </div>
+
+      <!-- Önizleme -->
+       <div class="card mb-3">
+       <div class="card-header bg-warning text-dark">
+                  <h5><i class="bi bi-eye"></i> 3. Önizleme</h5>
+     </div>
+      <div class="card-body">
+  <div id="previewContainer">
+   <p class="text-muted">Yukarýdaki tabloya ders girdiðinizde burada önizleme görünecek.</p>
+          </div>
+   </div>
+    </div>
+
+          <!-- Hidden inputs -->
+          <div id="hiddenInputsContainer"></div>
+
+               <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+    <button type="submit" class="btn btn-success btn-lg" id="btnSubmit">
+           <i class="bi bi-check-circle"></i> Kaydet
+     </button>
+          <a asp-action="Index" class="btn btn-secondary btn-lg">
+           <i class="bi bi-arrow-left"></i> Geri Dön
+          </a>
+               </div>
+          </form>
+          </div>
+            </div>
+        </div>
+ </div>
+</div>
+
+@section Scripts {
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+
+    <script>
+        $(document).ready(function() {
+  let fakulteId = 0;
+       let selectedDersId = 0;
+     let selectedHocaAdi = '';
+
+     // Fakülte deðiþince
+            $('#fakulteSelect').change(function() {
+          fakulteId = $(this).val();
+        $('#dersSelect').empty().append('<option value="">-- Ders Seçiniz --</option>');
+  selectedDersId = 0;
+
+       if (fakulteId) {
+       $.get('/DersProgrami/SearchDersler', { term: '' })
+    .done(function(data) {
+           $.each(data, function(i, item) {
+      $('#dersSelect').append($('<option>', {
+               value: item.id,
+     text: item.dersAdi
+              }));
+      });
+       });
+       }
+            });
+
+         // Ders seçilince
+            $('#dersSelect').change(function() {
+         selectedDersId = $(this).val();
+        updatePreview();
+         });
+
+        // Hoca Autocomplete
+          $('#hocaInput').autocomplete({
+           source: function(request, response) {
+     if (!fakulteId) {
+         alert('Önce fakülte seçiniz!');
+           return;
+         }
+       if (!selectedDersId) {
+alert('Önce ders seçiniz!');
+  return;
+       }
+
+          $.ajax({
+      url: '/DersProgrami/SearchHocalar',
+      data: {
+  fakulteId: fakulteId,
+  term: request.term,
+      dersId: selectedDersId
+      },
+ success: function(data) {
+         if (data.length === 0) {
+     response([{ label: 'Bu dersi veren hoca bulunamadý', value: '' }]);
+       } else {
+           response(data.map(h => ({
+   label: `${h.rutbe} ${h.adSoyad}`,
+            value: h.adSoyad
+           })));
+           }
+            }
+      });
+             },
+       select: function(event, ui) {
+   selectedHocaAdi = ui.item.value;
+       $('#selectedHocaAdi').val(selectedHocaAdi);
+        $('#hocaStatus').text('? ' + selectedHocaAdi + ' seçildi').addClass('text-success');
+              updatePreview();
+        },
+         minLength: 2
+       });
+
+    // Manuel hoca giriþi için
+            $('#hocaInput').on('blur', function() {
+     const manualInput = $(this).val().trim();
+         if (manualInput && !selectedHocaAdi) {
+   selectedHocaAdi = manualInput;
+      $('#selectedHocaAdi').val(selectedHocaAdi);
+               $('#hocaStatus').text('? Manuel: ' + selectedHocaAdi).addClass('text-warning');
+             updatePreview();
+       }
+            });
+
+ // Hýzlý giriþ
+            $('.quick-input').on('input', function() {
+     updatePreview();
+   });
+
+       // Önizleme güncelle
+            function updatePreview() {
+          const entries = [];
+     let index = 0;
+
+  $('.quick-input').each(function() {
+    const value = $(this).val().trim();
+     if (value) {
+            const gun = $(this).data('gun');
+          const saat = $(this).data('saat');
+
+               const kisimlar = value.split(',').map(k => k.trim()).filter(k => k && !isNaN(k));
+
+       kisimlar.forEach(kisim => {
+             entries.push({
+       gun: gun,
+        saat: saat,
+          kisim: parseInt(kisim),
+       index: index++
+        });
+           });
+  }
+          });
+
+           // Önizleme HTML
+       let previewHtml = '';
+     if (entries.length > 0) {
+          previewHtml = '<table class="table table-sm table-bordered"><thead class="table-dark"><tr><th>#</th><th>Gün</th><th>Saat</th><th>Kýsým</th></tr></thead><tbody>';
+  entries.forEach((entry, idx) => {
+  previewHtml += `<tr>
+   <td>${idx + 1}</td>
+           <td>${entry.gun}</td>
+        <td>${entry.saat}. Saat</td>
+       <td>Kýsým ${entry.kisim}</td>
+     </tr>`;
+          });
+             previewHtml += '</tbody></table>';
+        previewHtml += `<p class="text-success fw-bold">? Toplam: ${entries.length} ders eklenecek</p>`;
+          } else {
+             previewHtml = '<p class="text-muted">Henüz ders girilmedi.</p>';
+     }
+
+   $('#previewContainer').html(previewHtml);
+                createHiddenInputs(entries);
+       }
+
+     // Hidden input'lar oluþtur
+  function createHiddenInputs(entries) {
+          $('#hiddenInputsContainer').empty();
+
+      const dersAdi = $('#dersSelect option:selected').text();
+
+      entries.forEach(entry => {
+  $('#hiddenInputsContainer').append(`
+     <input type="hidden" name="Dersler[${entry.index}].Selected" value="true" />
+   <input type="hidden" name="Dersler[${entry.index}].DersAdi" value="${dersAdi}" />
+       <input type="hidden" name="Dersler[${entry.index}].HocaAdi" value="${selectedHocaAdi}" />
+            <input type="hidden" name="Dersler[${entry.index}].Gun" value="${entry.gun}" />
+      <input type="hidden" name="Dersler[${entry.index}].Saat" value="${entry.saat}" />
+      <input type="hidden" name="Dersler[${entry.index}].KisimNo" value="${entry.kisim}" />
+     `);
+   });
+
+  // DEBUG
+   console.log('Hidden inputs oluþturuldu:', entries.length);
+              console.log('Hoca Adý:', selectedHocaAdi);
+            }
+
+            // Form submit
+            $('#bulkAddForm').submit(function(e) {
+                if (!fakulteId || !selectedDersId) {
+    e.preventDefault();
+                    alert('? Lütfen Fakülte ve Ders seçiniz!');
+        return false;
+ }
+
+       if (!selectedHocaAdi) {
+      e.preventDefault();
+            alert('? Lütfen Hoca seçiniz veya yazýnýz!');
+        return false;
+            }
+
+  const hasEntries = $('.quick-input').filter(function() {
+   return $(this).val().trim() !== '';
+        }).length > 0;
+
+        if (!hasEntries) {
+             e.preventDefault();
+      alert('? Lütfen en az bir ders giriþi yapýnýz!');
+     return false;
+        }
+
+   console.log('Form gönderiliyor...');
+       return true;
+        });
+        });
+    </script>
+
+    <style>
+        .quick-input:focus {
+         background-color: #fff3cd;
+     border: 2px solid #0d6efd !important;
+        }
+        .quick-input:not(:placeholder-shown) {
+  background-color: #d1e7dd;
+        font-weight: bold;
+   }
+    </style>
+}

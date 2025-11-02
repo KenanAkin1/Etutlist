@@ -1,0 +1,35 @@
+﻿@model IEnumerable<Etutlist.Models.Personel>
+
+<h2>Personel Listesi</h2>
+<p><a asp-action="Create" class="btn btn-primary">Yeni Personel</a></p>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Ad</th>
+            <th>Rutbe</th>
+            <th>Pazar</th>
+            <th>Özel Gün</th>
+            <th>Hafta İçi</th>
+            <th>Yedek</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var p in Model)
+        {
+            <tr>
+                <td>@p.Ad</td>
+                <th>@p.Rutbe</th>
+                <td>@p.PazarSayisi</td>
+                <td>@p.OzelGunSayisi</td>
+                <td>@p.HaftaIciSayisi</td>
+                <td>@p.YedekSayisi</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@p.Id">Düzenle</a> |
+                    <a asp-action="Delete" asp-route-id="@p.Id">Sil</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

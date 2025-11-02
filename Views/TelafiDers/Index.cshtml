@@ -1,0 +1,269 @@
+@model List<Etutlist.Models.TelafiDers>
+@using Etutlist.Services
+@{
+    ViewData["Title"] = "Telafi / Ýkame Yönetimi";
+    
+    // Saat gösterim helper
+    string GetSaatGosterim(TimeSpan baslangic, TimeSpan bitis)
+    {
+    int baslangicSaat = 1;
+   for (int i = 1; i <= 8; i++)
+        {
+            var saat = TelafiDersService.GetSaatTimeSpan(i);
+            if (saat == baslangic)
+     {
+         baslangicSaat = i;
+   break;
+     }
+        }
+        
+      int bitisSaat = baslangicSaat;
+ for (int i = baslangicSaat; i <= 8; i++)
+     {
+  var saat = TelafiDersService.GetSaatTimeSpan(i);
+            var sonraki = saat.Add(new TimeSpan(0, 40, 0));
+        if (sonraki >= bitis)
+    {
+         bitisSaat = i;
+          break;
+   }
+    }
+        
+        if (baslangicSaat == bitisSaat)
+        {
+            return $"{baslangicSaat}. Saat";
+        }
+    else
+        {
+       return $"{baslangicSaat}-{bitisSaat}. Saatler";
+        }
+    }
+}
+
+<div class="container mt-4">
+    <div class="row">
+      <div class="col-md-12">
+ <div class="d-flex justify-content-between align-items-center mb-4">
+     <h2><i class="bi bi-calendar-check"></i> Telafi / Ýkame Yönetimi</h2>
+        <div class="btn-group" role="group">
+        <a asp-action="CreateIkame" class="btn btn-warning btn-lg">
+ <i class="bi bi-arrow-repeat"></i> Ýkame / Birleþtirme Ekle
+   </a>
+           <a asp-action="CreateTelafi" class="btn btn-success btn-lg">
+         <i class="bi bi-calendar-plus"></i> Telafi Ekle
+           </a>
+      <a asp-action="ExportIkameBirlestirme" asp-route-fakulteId="@ViewBag.SelectedFakulteId" class="btn btn-info btn-lg">
+              <i class="bi bi-file-earmark-excel"></i> Ýkame/Birleþtirme Excel
+        </a>
+           <a asp-controller="DersProgrami" asp-action="Index" class="btn btn-secondary">
+   <i class="bi bi-arrow-left"></i> Programa Dön
+      </a>
+      </div>
+   </div>
+
+  @if (TempData["Success"] != null)
+       {
+    <div class="alert alert-success alert-dismissible fade show">
+    <i class="bi bi-check-circle"></i> @TempData["Success"]
+ <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+            @if (TempData["Error"] != null)
+        {
+        <div class="alert alert-danger alert-dismissible fade show">
+   <i class="bi bi-exclamation-triangle"></i> @TempData["Error"]
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+       }
+
+            <!-- FÝLTRE -->
+    <div class="card mb-4">
+     <div class="card-body">
+      <form method="get" class="row g-3">
+           <div class="col-md-4">
+    <label class="form-label">Fakülte Filtrele</label>
+    <select name="fakulteId" class="form-select" onchange="this.form.submit()">
+        <option value="">Tüm Fakülteler</option>
+           @foreach (var fakulte in ViewBag.Fakulteler as SelectList)
+            {
+   <option value="@fakulte.Value" selected="@(fakulte.Value == ViewBag.SelectedFakulteId?.ToString())">
+   @fakulte.Text
+        </option>
+            }
+            </select>
+           </div>
+     <div class="col-md-8 d-flex align-items-end">
+ <button type="submit" class="btn btn-primary">
+   <i class="bi bi-funnel"></i> Filtrele
+      </button>
+       @if (ViewBag.SelectedFakulteId != null)
+    {
+           <a asp-action="Index" class="btn btn-outline-secondary ms-2">
+              <i class="bi bi-x-circle"></i> Filtreyi Temizle
+       </a>
+            }
+     </div>
+              </form>
+     </div>
+</div>
+
+@if (Model.Any())
+          {
+   <!-- ÝSTATÝSTÝKLER -->
+                <div class="row mb-4">
+   <div class="col-md-3">
+           <div class="card bg-primary text-white">
+         <div class="card-body">
+         <h5>Toplam Kayýt</h5>
+   <h2>@Model.Count</h2>
+   </div>
+  </div>
+               </div>
+   <div class="col-md-3">
+   <div class="card bg-success text-white">
+     <div class="card-body">
+       <h5>Telafi</h5>
+            <h2>@Model.Count(t => t.TelafiTuru == "Telafi")</h2>
+         </div>
+     </div>
+   </div>
+     <div class="col-md-3">
+     <div class="card bg-warning text-dark">
+        <div class="card-body">
+           <h5>Ýkame</h5>
+  <h2>@Model.Count(t => t.TelafiTuru == "Ýkame")</h2>
+              </div>
+  </div>
+</div>
+   <div class="col-md-3">
+  <div class="card bg-info text-white">
+           <div class="card-body">
+            <h5>Birleþtirme</h5>
+      <h2>@Model.Count(t => t.TelafiTuru == "Birleþtirme")</h2>
+       </div>
+</div>
+              </div>
+       </div>
+
+        <!-- LÝSTE -->
+   <div class="card">
+     <div class="card-header bg-dark text-white">
+             <h5><i class="bi bi-list-ul"></i> Kayýt Listesi</h5>
+            </div>
+            <div class="card-body p-0">
+            <div class="table-responsive">
+         <table class="table table-hover table-striped mb-0">
+ <thead class="table-dark">
+            <tr>
+    <th>Tarih</th>
+        <th>Fakülte</th>
+ <th>Ders</th>
+         <th>Asýl Hoca</th>
+     <th>Görevli Hoca</th>
+        <th>Saat</th>
+         <th>Tür</th>
+  <th>Neden</th>
+       <th>Durum</th>
+      <th style="width: 220px;">Ýþlemler</th>
+     </tr>
+           </thead>
+    <tbody>
+@foreach (var telafi in Model)
+            {
+  var turBadge = telafi.TelafiTuru switch
+   {
+        "Telafi" => "badge bg-success",
+          "Ýkame" => "badge bg-warning text-dark",
+              "Birleþtirme" => "badge bg-info",
+    _ => "badge bg-secondary"
+  };
+
+           <tr>
+  <td>
+    <strong>@telafi.TelafiTarihi.ToString("dd.MM.yyyy")</strong><br/>
+     <small class="text-muted">@telafi.TelafiTarihi.ToString("dddd")</small>
+  </td>
+           <td>@telafi.Fakulte?.Ad</td>
+<td>
+         <strong>@telafi.DersProgrami?.DersAdi</strong><br/>
+  <small class="text-muted">@telafi.DersProgrami?.DersKodu</small>
+ </td>
+              <td>
+      <span class="badge bg-secondary">@telafi.DersProgrami?.Hoca?.Rutbe</span><br/>
+        @telafi.DersProgrami?.Hoca?.AdSoyad
+             </td>
+    <td>
+                  <span class="badge bg-primary">@telafi.YedekHoca?.Rutbe</span><br/>
+               @telafi.YedekHoca?.AdSoyad
+    </td>
+  <td>
+ <i class="bi bi-clock"></i>
+             <strong>@GetSaatGosterim(telafi.BaslangicSaat, telafi.BitisSaat)</strong>
+    </td>
+              <td><span class="@turBadge">@telafi.TelafiTuru</span></td>
+            <td>@telafi.TelafiNedeni</td>
+       <td>
+            @if (telafi.Onaylandi)
+  {
+  <span class="badge bg-success"><i class="bi bi-check-circle"></i> Onaylý</span>
+          }
+     else
+             {
+                <span class="badge bg-warning text-dark"><i class="bi bi-hourglass-split"></i> Bekliyor</span>
+   }
+          @if (telafi.CiktiAlindi)
+                  {
+         <br/><span class="badge bg-info mt-1"><i class="bi bi-printer"></i> Çýktý Alýndý</span>
+ }
+     </td>
+        <td>
+      <div class="btn-group btn-group-sm" role="group">
+           <a asp-action="Details" asp-route-id="@telafi.Id" class="btn btn-outline-info" title="Detaylar">
+     <i class="bi bi-eye"></i>
+              </a>
+             @if (!telafi.Onaylandi)
+          {
+    <a asp-action="Edit" asp-route-id="@telafi.Id" class="btn btn-outline-primary" title="Düzenle">
+    <i class="bi bi-pencil"></i>
+  </a>
+           <form asp-action="Onayla" asp-route-id="@telafi.Id" method="post" class="d-inline">
+            @Html.AntiForgeryToken()
+  <button type="submit" class="btn btn-outline-success" title="Onayla">
+     <i class="bi bi-check-lg"></i>
+         </button>
+              </form>
+     }
+   <form asp-action="Delete" asp-route-id="@telafi.Id" method="post" class="d-inline"
+            onsubmit="return confirm('Bu kaydý silmek istediðinize emin misiniz?')">
+  @Html.AntiForgeryToken()
+      <button type="submit" class="btn btn-outline-danger" title="Sil">
+    <i class="bi bi-trash"></i>
+   </button>
+              </form>
+       </div>
+   </td>
+           </tr>
+       }
+        </tbody>
+              </table>
+       </div>
+  </div>
+        </div>
+     }
+      else
+  {
+   <div class="alert alert-info">
+        <i class="bi bi-info-circle"></i> Henüz kayýt bulunmamaktadýr.
+         <div class="btn-group mt-2" role="group">
+       <a asp-action="CreateIkame" class="btn btn-sm btn-warning">
+    <i class="bi bi-arrow-repeat"></i> Ýkame/Birleþtirme Ekle
+        </a>
+      <a asp-action="CreateTelafi" class="btn btn-sm btn-success">
+        <i class="bi bi-calendar-plus"></i> Telafi Ekle
+ </a>
+           </div>
+        </div>
+      }
+        </div>
+    </div>
+</div>

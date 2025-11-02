@@ -1,0 +1,108 @@
+﻿@model Etutlist.Models.Mazeret
+
+<h2>Mazeret Ekle</h2>
+
+<form asp-action="Create" method="post">
+    @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+
+    <div class="form-group mb-3">
+        <label>Personel</label>
+
+        <!-- Görünen arama alanı -->
+        <input id="personelSearch" list="personelDatalist" class="form-control" autocomplete="off" placeholder="Rütbe veya isim yazın" />
+
+        <!-- Datalist içeriği: SelectListItem veya anonim listeyi destekler -->
+        <datalist id="personelDatalist">
+            @if (ViewBag.PersonelList != null)
+            {
+                foreach (var p in (IEnumerable<object>)ViewBag.PersonelList)
+                {
+                    if (p is Microsoft.AspNetCore.Mvc.Rendering.SelectListItem sli)
+                    {
+                        <option data-id="@sli.Value" value="@sli.Text"></option>
+                    }
+                    else
+                    {
+                        // anonim tip: Id ve Text bekleniyor
+                        var dict = p as IDictionary<string, object>;
+                        if (dict != null && dict.ContainsKey("Id") && dict.ContainsKey("Text"))
+                        {
+                            <option data-id="@(dict["Id"])" value="@(dict["Text"])"></option>
+                        }
+                        else
+                        {
+                            <option value="@p.ToString()"></option>
+                        }
+                    }
+                }
+            }
+        </datalist>
+
+        <!-- Gönderilecek gerçek alan -->
+        <input type="hidden" id="PersonelId" name="PersonelId" />
+        <span asp-validation-for="PersonelId" class="text-danger"></span>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <label>Başlangıç</label>
+            <input asp-for="Baslangic" type="date" class="form-control" />
+            <span asp-validation-for="Baslangic" class="text-danger"></span>
+        </div>
+        <div class="col-md-6">
+            <label>Bitiş</label>
+            <input asp-for="Bitis" type="date" class="form-control" />
+            <span asp-validation-for="Bitis" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <button type="submit" class="btn btn-success">Kaydet</button>
+        <a asp-action="Index" class="btn btn-secondary ms-2">Geri</a>
+    </div>
+</form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const input = document.getElementById('personelSearch');
+      const datalist = document.getElementById('personelDatalist');
+      const hidden = document.getElementById('PersonelId');
+
+      function buildMap() {
+        const map = new Map();
+        Array.from(datalist.options || []).forEach(opt => {
+          const val = (opt.value || '').trim();
+          const id = opt.dataset.id || opt.getAttribute('data-id') || '';
+          if (val) map.set(val, id);
+        });
+        return map;
+      }
+
+      let valueToId = buildMap();
+
+      // Eğer ViewBag değiştiyse sayfa dış kaynaklı olarak yeniden oluşturulur, burada statik map kullanılıyor.
+      input.addEventListener('input', function () {
+        const val = input.value && input.value.trim();
+        if (!val) { hidden.value = ''; return; }
+        const id = valueToId.get(val) || '';
+        hidden.value = id;
+      });
+
+      input.addEventListener('blur', function () {
+        setTimeout(() => {
+          const val = input.value && input.value.trim();
+          hidden.value = (valueToId.get(val) || '');
+        }, 120);
+      });
+
+      // Form submit öncesi doğrulama: PersonelId dolu olmalı
+      const form = input.closest('form');
+      form.addEventListener('submit', function (ev) {
+        if (!hidden.value || hidden.value === '') {
+          ev.preventDefault();
+          alert('Lütfen listeden bir personel seçin (adı üzerine tıklayın) veya seçiminizi doğrulayın.');
+          input.focus();
+        }
+      });
+    });
+</script>

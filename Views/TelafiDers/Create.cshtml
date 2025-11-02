@@ -1,0 +1,240 @@
+@model Etutlist.Services.TelafiOneriViewModel
+@{
+ ViewData["Title"] = "Telafi Dersi Oluþtur";
+}
+
+<div class="container mt-4">
+    <div class="row">
+     <div class="col-md-12">
+       <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2><i class="bi bi-calendar-plus"></i> Telafi Dersi Oluþtur</h2>
+    <a asp-action="Index" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Geri
+  </a>
+            </div>
+
+    <!-- DERS BÝLGÝLERÝ -->
+   <div class="card mb-4">
+             <div class="card-header bg-primary text-white">
+             <h5><i class="bi bi-info-circle"></i> Ders Bilgileri</h5>
+     </div>
+                <div class="card-body">
+      <div class="row">
+     <div class="col-md-4">
+          <p><strong>Fakülte:</strong> @Model.DersProgrami.Fakulte.Ad</p>
+</div>
+     <div class="col-md-4">
+   <p><strong>Ders:</strong> @Model.DersProgrami.DersAdi (@Model.DersProgrami.DersKodu)</p>
+            </div>
+          <div class="col-md-4">
+   <p><strong>Asýl Hoca:</strong> @Model.DersProgrami.Hoca.Rutbe @Model.DersProgrami.Hoca.AdSoyad</p>
+       </div>
+         </div>
+              <div class="row">
+         <div class="col-md-4">
+   <p><strong>Normal Gün:</strong> @Model.DersProgrami.DersGunu</p>
+ </div>
+  <div class="col-md-4">
+ <p><strong>Normal Saat:</strong> @Model.DersProgrami.DersSaati. ders saati</p>
+      </div>
+  <div class="col-md-4">
+      <p><strong>Kýsým No:</strong> @Model.DersProgrami.KisimNo</p>
+  </div>
+    </div>
+                </div>
+ </div>
+
+ <!-- ÖNERÝ KARTI -->
+      <div class="alert alert-@(Model.OnerilenTur == "Telafi" ? "success" : Model.OnerilenTur == "Ýkame" ? "warning" : "info") mb-4">
+ <h5>
+         <i class="bi bi-@(Model.OnerilenTur == "Telafi" ? "check-circle" : Model.OnerilenTur == "Ýkame" ? "arrow-repeat" : "link-45deg")"></i>
+   Önerilen: <strong>@Model.OnerilenTur</strong>
+      </h5>
+                <p>@Model.Aciklama</p>
+         </div>
+
+         <!-- FORM -->
+ <form asp-action="Create" method="post" id="telafiForm">
+      @Html.AntiForgeryToken()
+  <input type="hidden" name="DersProgramiId" value="@Model.DersProgrami.Id" />
+       <input type="hidden" name="FakulteId" value="@Model.DersProgrami.FakulteId" />
+
+      <div class="card mb-4">
+        <div class="card-header bg-info text-white">
+                   <h5><i class="bi bi-calendar-event"></i> Telafi Tarihi ve Saati</h5>
+            </div>
+    <div class="card-body">
+     <div class="row g-3">
+       <div class="col-md-4">
+        <label class="form-label"><strong>Telafi Tarihi</strong></label>
+    <input type="date" name="TelafiTarihi" class="form-control" value="@Model.TelafiTarihi.ToString("yyyy-MM-dd")" 
+        id="telafiTarihi" required onchange="yenidenHesapla()" />
+            </div>
+            <div class="col-md-4">
+      <label class="form-label"><strong>Baþlangýç Saati</strong></label>
+       <input type="time" name="BaslangicSaat" class="form-control" value="@Model.BaslangicSaat.ToString(@"hh\:mm")" 
+      id="baslangicSaat" required onchange="yenidenHesapla()" />
+          </div>
+      <div class="col-md-4">
+           <label class="form-label"><strong>Bitiþ Saati</strong></label>
+    <input type="time" name="BitisSaat" class="form-control" value="@Model.BitisSaat.ToString(@"hh\:mm")" 
+          id="bitisSaat" required />
+                </div>
+   </div>
+         </div>
+    </div>
+
+        <div class="card mb-4">
+   <div class="card-header bg-warning text-dark">
+  <h5><i class="bi bi-gear"></i> Telafi Türü ve Detaylar</h5>
+          </div>
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-md-6">
+               <label class="form-label"><strong>Telafi Türü</strong></label>
+         <select name="TelafiTuru" class="form-select" required id="telafiTuru" onchange="turDegisti()">
+       <option value="Telafi" selected>Telafi (Ayný hoca, farklý zaman)</option>
+          <option value="Ýkame">Ýkame (Farklý hoca)</option>
+                <option value="Birleþtirme">Birleþtirme (Baþka bölümle birleþtir)</option>
+      </select>
+             </div>
+         <div class="col-md-6">
+   <label class="form-label"><strong>Telafi Nedeni</strong></label>
+       <select name="TelafiNedeni" class="form-select" required>
+          <option value="">Seçiniz...</option>
+           <option value="Ýzin">Ýzin</option>
+   <option value="Hastalýk">Hastalýk</option>
+           <option value="Görev">Görev</option>
+      <option value="Resmi Tatil">Resmi Tatil</option>
+             <option value="Diðer">Diðer</option>
+      </select>
+       </div>
+         </div>
+
+  <!-- HOCA SEÇÝMÝ (Telafi ve Ýkame için) -->
+ <div class="mt-3" id="hocaSecimDiv">
+  <label class="form-label"><strong>Görevli Hoca</strong></label>
+        <select name="YedekHocaId" class="form-select" required id="hocaSelect">
+         @if (Model.MusaitYedekHocalar.Any())
+          {
+          @foreach (var hoca in Model.MusaitYedekHocalar)
+         {
+        <option value="@hoca.Id">
+             @hoca.Rutbe @hoca.AdSoyad
+         @if (hoca.Id == Model.DersProgrami.HocaId)
+     {
+         <text>(Asýl Hoca)</text>
+         }
+       </option>
+            }
+     }
+             else
+   {
+          <option value="">Müsait hoca bulunamadý</option>
+          }
+    </select>
+             <small class="text-muted">Müsait hocalar listesi gösteriliyor.</small>
+   </div>
+
+        <!-- BÝRLEÞTÝRME SEÇÝMÝ -->
+ <div class="mt-3" id="birlestirmeDiv" style="display:none;">
+            <label class="form-label"><strong>Birleþtirilecek Kýsým</strong></label>
+   <select name="KisimNo" class="form-select" id="kisimSelect">
+    @if (Model.BirlestirilebilirDersler.Any())
+           {
+       @foreach (var ders in Model.BirlestirilebilirDersler)
+               {
+          <option value="@ders.KisimNo">
+          Kýsým @ders.KisimNo - @ders.Hoca.AdSoyad (@ders.DersGunu @ders.DersSaati. saat)
+</option>
+ }
+              }
+        else
+      {
+       <option value="">Birleþtirilebilir ders bulunamadý</option>
+     }
+   </select>
+                   <small class="text-muted">Bu ders hangi kýsýmla birleþtirilecek?</small>
+              <input type="hidden" name="YedekHocaId" value="@Model.DersProgrami.HocaId" id="hiddenHocaId" />
+         </div>
+
+            <div class="mt-3">
+                  <label class="form-label"><strong>Açýklama (Opsiyonel)</strong></label>
+  <textarea name="Aciklama" class="form-control" rows="3" 
+  placeholder="Ek açýklama varsa buraya yazýnýz..."></textarea>
+       </div>
+         </div>
+        </div>
+
+       <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+        <a asp-action="Index" class="btn btn-secondary">
+               <i class="bi bi-x-circle"></i> Ýptal
+  </a>
+          <button type="submit" class="btn btn-primary">
+       <i class="bi bi-save"></i> Telafi Dersi Oluþtur
+       </button>
+         </div>
+   </form>
+    </div>
+    </div>
+</div>
+
+<div id="oneriGuncelDiv" class="mt-3"></div>
+
+@section Scripts {
+    <script>
+        function turDegisti() {
+    var tur = document.getElementById('telafiTuru').value;
+        var hocaDiv = document.getElementById('hocaSecimDiv');
+  var birlestirmeDiv = document.getElementById('birlestirmeDiv');
+          var hocaSelect = document.getElementById('hocaSelect');
+         var kisimSelect = document.getElementById('kisimSelect');
+
+if (tur === 'Birleþtirme') {
+     hocaDiv.style.display = 'none';
+                birlestirmeDiv.style.display = 'block';
+        hocaSelect.required = false;
+    kisimSelect.required = true;
+       } else {
+    hocaDiv.style.display = 'block';
+birlestirmeDiv.style.display = 'none';
+       hocaSelect.required = true;
+     kisimSelect.required = false;
+            }
+        }
+
+        function yenidenHesapla() {
+            var dersId = @Model.DersProgrami.Id;
+  var tarih = document.getElementById('telafiTarihi').value;
+     var basSaat = document.getElementById('baslangicSaat').value;
+            var bitSaat = document.getElementById('bitisSaat').value;
+
+            if (tarih && basSaat && bitSaat) {
+      fetch('@Url.Action("GetOneri", "TelafiDers")', {
+        method: 'POST',
+   headers: {
+     'Content-Type': 'application/json',
+              'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+        },
+     body: JSON.stringify({
+             dersId: dersId,
+           telafiTarihi: tarih,
+      baslangicSaat: basSaat,
+  bitisSaat: bitSaat
+         })
+     })
+      .then(response => response.json())
+     .then(data => {
+      // Öneriyi güncelle
+     console.log('Yeni öneri:', data);
+           // Burada öneri kartýný güncelleyebilirsiniz
+        });
+            }
+        }
+
+        // Sayfa yüklendiðinde tür kontrolü yap
+    document.addEventListener('DOMContentLoaded', function() {
+      turDegisti();
+        });
+    </script>
+}

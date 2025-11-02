@@ -1,0 +1,27 @@
+﻿@model IEnumerable<Etutlist.Models.OzelGun>
+
+<h2>Özel Günler</h2>
+<p><a asp-action="Create" class="btn btn-primary">Yeni Özel Gün</a></p>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Tarih</th>
+            <th>Açıklama</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var g in Model)
+        {
+            <tr>
+                <td>@g.Tarih.ToString("dd.MM.yyyy dddd")</td>
+                <td>@g.Aciklama</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@g.Id">Düzenle</a> |
+                    <a asp-action="Delete" asp-route-id="@g.Id">Sil</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

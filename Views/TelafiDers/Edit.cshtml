@@ -1,0 +1,148 @@
+@model Etutlist.Services.TelafiOneriViewModel
+@{
+    ViewData["Title"] = "Telafi Dersi Düzenle";
+    var mevcutTelafi = ViewBag.MevcutTelafi as Etutlist.Models.TelafiDers;
+}
+
+<div class="container mt-4">
+    <div class="row">
+     <div class="col-md-12">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+     <h2><i class="bi bi-pencil-square"></i> Telafi Dersi Düzenle</h2>
+     <a asp-action="Details" asp-route-id="@ViewBag.TelafiId" class="btn btn-secondary">
+           <i class="bi bi-arrow-left"></i> Detaylara Dön
+     </a>
+   </div>
+
+ @if (TempData["Error"] != null)
+{
+  <div class="alert alert-danger alert-dismissible fade show">
+      <i class="bi bi-exclamation-triangle"></i> @TempData["Error"]
+     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+ }
+
+<!-- DERS BÝLGÝLERÝ -->
+ <div class="card mb-4">
+       <div class="card-header bg-primary text-white">
+    <h5><i class="bi bi-info-circle"></i> Ders Bilgileri</h5>
+       </div>
+<div class="card-body">
+  <div class="row">
+ <div class="col-md-4">
+ <p><strong>Fakülte:</strong> @Model.DersProgrami.Fakulte.Ad</p>
+  </div>
+        <div class="col-md-4">
+  <p><strong>Ders:</strong> @Model.DersProgrami.DersAdi</p>
+    </div>
+      <div class="col-md-4">
+  <p><strong>Asýl Hoca:</strong> @Model.DersProgrami.Hoca.AdSoyad</p>
+  </div>
+    </div>
+ </div>
+    </div>
+
+        <!-- ÖNERÝ -->
+  <div class="alert alert-@(Model.OnerilenTur == "Telafi" ? "success" : Model.OnerilenTur == "Ýkame" ? "warning" : "info")">
+        <h5><i class="bi bi-lightbulb"></i> Öneri: <strong>@Model.OnerilenTur</strong></h5>
+  <p>@Model.Aciklama</p>
+            </div>
+
+  <!-- DÜZENLEME FORMU -->
+          <form asp-action="Edit" asp-route-id="@ViewBag.TelafiId" method="post">
+     @Html.AntiForgeryToken()
+   <input type="hidden" name="Id" value="@mevcutTelafi.Id" />
+            <input type="hidden" name="DersProgramiId" value="@Model.DersProgrami.Id" />
+     <input type="hidden" name="FakulteId" value="@Model.DersProgrami.FakulteId" />
+
+  <div class="card mb-4">
+   <div class="card-header bg-info text-white">
+    <h5><i class="bi bi-calendar-event"></i> Telafi Bilgileri</h5>
+   </div>
+      <div class="card-body">
+       <div class="row g-3">
+     <div class="col-md-4">
+       <label class="form-label"><strong>Telafi Tarihi</strong></label>
+  <input type="date" name="TelafiTarihi" class="form-control" 
+   value="@mevcutTelafi.TelafiTarihi.ToString("yyyy-MM-dd")" required />
+       </div>
+      <div class="col-md-4">
+      <label class="form-label"><strong>Baþlangýç Saati</strong></label>
+       <input type="time" name="BaslangicSaat" class="form-control" 
+   value="@mevcutTelafi.BaslangicSaat.ToString(@"hh\:mm")" required />
+     </div>
+       <div class="col-md-4">
+     <label class="form-label"><strong>Bitiþ Saati</strong></label>
+       <input type="time" name="BitisSaat" class="form-control" 
+      value="@mevcutTelafi.BitisSaat.ToString(@"hh\:mm")" required />
+     </div>
+  </div>
+
+  <div class="row g-3 mt-2">
+      <div class="col-md-6">
+           <label class="form-label"><strong>Telafi Türü</strong></label>
+        <select name="TelafiTuru" class="form-select" required>
+  <option value="Telafi" selected="@(mevcutTelafi.TelafiTuru == "Telafi")">Telafi</option>
+    <option value="Ýkame" selected="@(mevcutTelafi.TelafiTuru == "Ýkame")">Ýkame</option>
+      <option value="Birleþtirme" selected="@(mevcutTelafi.TelafiTuru == "Birleþtirme")">Birleþtirme</option>
+      </select>
+        </div>
+      <div class="col-md-6">
+     <label class="form-label"><strong>Telafi Nedeni</strong></label>
+       <select name="TelafiNedeni" class="form-select" required>
+        <option value="Ýzin" selected="@(mevcutTelafi.TelafiNedeni == "Ýzin")">Ýzin</option>
+     <option value="Hastalýk" selected="@(mevcutTelafi.TelafiNedeni == "Hastalýk")">Hastalýk</option>
+      <option value="Görev" selected="@(mevcutTelafi.TelafiNedeni == "Görev")">Görev</option>
+ <option value="Resmi Tatil" selected="@(mevcutTelafi.TelafiNedeni == "Resmi Tatil")">Resmi Tatil</option>
+  <option value="Diðer" selected="@(mevcutTelafi.TelafiNedeni == "Diðer")">Diðer</option>
+   </select>
+            </div>
+     </div>
+
+<div class="mt-3">
+   <label class="form-label"><strong>Görevli Hoca</strong></label>
+       <select name="YedekHocaId" class="form-select" required>
+   @if (Model.MusaitYedekHocalar.Any())
+         {
+ @foreach (var hoca in Model.MusaitYedekHocalar)
+  {
+ <option value="@hoca.Id" selected="@(hoca.Id == mevcutTelafi.YedekHocaId)">
+      @hoca.Rutbe @hoca.AdSoyad
+    @if (hoca.Id == Model.DersProgrami.HocaId)
+     {
+          <text>(Asýl Hoca)</text>
+    }
+    </option>
+     }
+      }
+  else
+     {
+      <option value="@mevcutTelafi.YedekHocaId" selected>@mevcutTelafi.YedekHoca.AdSoyad</option>
+        }
+   </select>
+     </div>
+
+      <div class="mt-3">
+  <label class="form-label"><strong>Kýsým No (Birleþtirme için)</strong></label>
+            <input type="number" name="KisimNo" class="form-control" value="@mevcutTelafi.KisimNo" />
+       </div>
+
+    <div class="mt-3">
+     <label class="form-label"><strong>Açýklama</strong></label>
+  <textarea name="Aciklama" class="form-control" rows="3">@mevcutTelafi.Aciklama</textarea>
+      </div>
+   </div>
+  </div>
+
+ <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+     <a asp-action="Details" asp-route-id="@ViewBag.TelafiId" class="btn btn-secondary">
+<i class="bi bi-x-circle"></i> Ýptal
+    </a>
+         <button type="submit" class="btn btn-primary">
+   <i class="bi bi-save"></i> Deðiþiklikleri Kaydet
+ </button>
+      </div>
+ </form>
+</div>
+    </div>
+</div>

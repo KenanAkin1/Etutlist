@@ -1,0 +1,10 @@
+﻿@model Etutlist.Models.OzelGun
+
+<h2>Özel Gün Sil</h2>
+<h4>@Model.Tarih.ToString("dd.MM.yyyy") - @Model.Aciklama</h4>
+
+<form asp-action="DeleteConfirmed">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Sil</button>
+    <a asp-action="Index" class="btn btn-secondary">İptal</a>
+</form>

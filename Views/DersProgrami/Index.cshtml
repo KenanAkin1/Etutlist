@@ -1,0 +1,363 @@
+@model List<Etutlist.Controllers.DersGrupViewModel>
+
+@{
+    ViewData["Title"] = "Haftalýk Ders Programý";
+    var gunler = new[] { "Pazartesi", "Salý", "Çarþamba", "Perþembe", "Cuma" };
+    var fakulteler = ViewBag.Fakulteler as List<Etutlist.Models.Fakulte>;
+    var selectedFakulteId = ViewBag.SelectedFakulteId;
+}
+
+<div class="container-fluid mt-4">
+    <!-- Üst Baþlýk ve Fakülte Switch -->
+    <div class="row mb-3">
+  <div class="col-md-6">
+     <h2><i class="bi bi-calendar-week"></i> Haftalýk Ders Programý</h2>
+       <p class="text-muted">HocaDers tablosundan otomatik doldurulur - Boþ saatlere týklayarak kýsým ekleyin</p>
+ </div>
+   <div class="col-md-6 text-end">
+       <!-- Fakülte Switch -->
+            <div class="btn-group btn-group-lg" role="group">
+      @foreach (var fakulte in fakulteler)
+    {
+    var activeClass = fakulte.Id == selectedFakulteId ? "btn-primary" : "btn-outline-primary";
+ <a href="@Url.Action("Index", new { fakulteId = fakulte.Id })" 
+   class="btn @activeClass">
+ <i class="bi bi-building"></i> @fakulte.Ad
+       </a>
+  }
+      </div>
+</div>
+    </div>
+
+    @if (TempData["Success"] != null)
+  {
+   <div class="alert alert-success alert-dismissible fade show">
+      <i class="bi bi-check-circle"></i> @TempData["Success"]
+   <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+    }
+
+ <!-- Aksiyon Butonlarý -->
+    <div class="row mb-3">
+        <div class="col-md-12 text-end">
+   <a asp-action="BulkAdd" class="btn btn-primary">
+      <i class="bi bi-plus-circle"></i> Toplu Ders Ekle
+            </a>
+            <a asp-controller="TelafiDers" asp-action="Index" class="btn btn-success">
+       <i class="bi bi-arrow-repeat"></i> Ýkame/Telafi
+</a>
+    <a asp-controller="Ayarlar" asp-action="Index" class="btn btn-secondary">
+       <i class="bi bi-gear"></i> Ayarlar
+        </a>
+      </div>
+    </div>
+
+    <!-- EXCEL FORMATINDA TABLO -->
+    <div class="table-responsive">
+        <table class="table table-bordered table-sm" id="dersProgramiTable" style="font-size: 0.85rem;">
+    <thead class="table-dark">
+  <tr class="text-center">
+       <th rowspan="2" style="width: 40px;">S.NO</th>
+        <th rowspan="2" style="width: 150px;">DERS</th>
+ <th rowspan="2" style="width: 180px;">ÖÐRETÝM ELEMANI</th>
+  <th rowspan="2" style="width: 50px;">D/S</th>
+      @foreach (var gun in gunler)
+         {
+    <th colspan="8">@gun</th>
+     }
+        </tr>
+         <tr class="text-center">
+  @foreach (var gun in gunler)
+      {
+          @for (int saat = 1; saat <= 8; saat++)
+      {
+    <th style="width: 45px; font-size: 0.75rem;">@saat</th>
+    }
+   }
+        </tr>
+       </thead>
+   <tbody>
+         @{
+int siraNo = 1;
+   }
+       @foreach (var dersGrup in Model.OrderBy(d => d.DersAdi))
+  {
+   @foreach (var hoca in dersGrup.Hocalar)
+  {
+  <tr>
+     <td class="text-center">@siraNo</td>
+      <td><strong>@dersGrup.DersAdi</strong></td>
+<td>@hoca.HocaAdi</td>
+        <td class="text-center"><span class="badge bg-primary">@hoca.DersSaatleri.Count</span></td>
+
+    @foreach (var gun in gunler)
+    {
+       @for (int saat = 1; saat <= 8; saat++)
+    {
+var dersler = hoca.DersSaatleri
+        .Where(d => d.DersGunu == gun && d.DersSaati == saat)
+  .ToList();
+
+     <td class="text-center p-1 position-relative saat-cell" 
+   style="vertical-align: middle; cursor: pointer;"
+   data-hocaid="@hoca.HocaId"
+       data-dersid="@dersGrup.DersId"
+    data-gun="@gun"
+         data-saat="@saat">
+          @if (dersler.Any())
+   {
+         @foreach (var ders in dersler)
+       {
+  <div class="badge bg-info text-dark position-relative d-inline-block" 
+ style="font-size: 0.75rem;"
+    title="Kýsým @ders.KisimNo - @ders.DersGunu @ders.DersSaati. Saat">
+        @ders.KisimNo
+  <form asp-action="DersSil" asp-route-id="@ders.Id" asp-route-fakulteId="@selectedFakulteId" method="post" 
+style="display:inline; position: absolute; top: -5px; right: -5px;">
+  @Html.AntiForgeryToken()
+           <button type="submit" 
+         class="btn btn-sm p-0 text-danger" 
+         style="font-size: 10px; width: 15px; height: 15px; line-height: 1; border: none; background: white; border-radius: 50%;"
+  onclick="return confirm('Kýsým @ders.KisimNo - @ders.DersGunu @ders.DersSaati. Saat dersini silmek istediðinize emin misiniz?')"
+      title="Sil">
+       ×
+     </button>
+ </form>
+  </div>
+     }
+   }
+  else
+{
+           <span class="text-muted bos-saat" style="font-size: 0.7rem;">+</span>
+          }
+         </td>
+          }
+      }
+   </tr>
+          siraNo++;
+    }
+}
+
+         @if (!Model.Any())
+   {
+    <tr>
+   <td colspan="@(4 + (gunler.Length * 8))" class="text-center text-muted py-5">
+   <i class="bi bi-inbox" style="font-size: 3rem;"></i>
+       <br/>
+      Henüz HocaDers kaydý yok. Önce Ayarlar'dan Hoca-Ders eþleþtirmesi yapýn.
+     </td>
+</tr>
+  }
+    </tbody>
+        </table>
+    </div>
+
+    <!-- SAAT BÝLGÝLERÝ -->
+    <div class="row mt-4">
+     <div class="col-md-12">
+  <div class="card">
+   <div class="card-header bg-secondary text-white">
+         <h6 class="mb-0"><i class="bi bi-clock"></i> Ders Saatleri</h6>
+     </div>
+       <div class="card-body">
+    <div class="row">
+       @foreach (var saat in Etutlist.Models.DersSaatleri.Saatler)
+{
+      <div class="col-md-3 mb-2">
+    <span class="badge bg-dark">@saat.Value</span>
+      </div>
+   }
+        </div>
+       </div>
+  </div>
+   </div>
+    </div>
+
+<!-- ÝSTATÝSTÝKLER -->
+    <div class="row mt-3">
+     <div class="col-md-12">
+  <div class="card">
+         <div class="card-header bg-info text-white">
+    <h6 class="mb-0"><i class="bi bi-graph-up"></i> Ýstatistikler</h6>
+   </div>
+         <div class="card-body">
+            <div class="row text-center">
+ <div class="col-md-3">
+  <h3 class="text-primary">@Model.Sum(d => d.Hocalar.Count)</h3>
+   <p class="text-muted">Öðretim Elemaný</p>
+   </div>
+            <div class="col-md-3">
+          <h3 class="text-success">@Model.Count</h3>
+   <p class="text-muted">Farklý Ders</p>
+          </div>
+        <div class="col-md-3">
+        <h3 class="text-warning">@Model.Sum(d => d.Hocalar.Sum(h => h.DersSaatleri.Count))</h3>
+     <p class="text-muted">Dolu Ders Saati</p>
+       </div>
+     <div class="col-md-3">
+   <h3 class="text-danger">@Model.SelectMany(d => d.Hocalar).SelectMany(h => h.DersSaatleri).Select(d => d.KisimNo).Distinct().Count()</h3>
+      <p class="text-muted">Farklý Kýsým</p>
+        </div>
+  </div>
+  </div>
+      </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL - Ders Ekle -->
+<div class="modal fade" id="addDersModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+   <h5 class="modal-title"><i class="bi bi-plus-circle"></i> Ders Ekle</h5>
+      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+       <div class="modal-body">
+            <div class="mb-3">
+         <label class="form-label"><strong>Ders:</strong></label>
+       <p id="modalDersAdi" class="text-muted"></p>
+    </div>
+  <div class="mb-3">
+  <label class="form-label"><strong>Hoca:</strong></label>
+     <p id="modalHocaAdi" class="text-muted"></p>
+            </div>
+   <div class="mb-3">
+      <label class="form-label"><strong>Gün & Saat:</strong></label>
+     <p id="modalGunSaat" class="text-muted"></p>
+    </div>
+       <div class="mb-3">
+    <label for="kisimNoInput" class="form-label"><strong>Kýsým No <span class="text-danger">*</span></strong></label>
+      <input type="number" class="form-control" id="kisimNoInput" min="1" placeholder="Örn: 1, 2, 3..." required>
+   </div>
+       </div>
+  <div class="modal-footer">
+  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Ýptal</button>
+     <button type="button" class="btn btn-primary" id="btnDersEkle">
+<i class="bi bi-save"></i> Kaydet
+    </button>
+  </div>
+      </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+ let selectedHocaId = 0;
+        let selectedDersId = 0;
+        let selectedGun = '';
+      let selectedSaat = 0;
+        let fakulteId = @selectedFakulteId;
+
+   $(document).ready(function() {
+    // Boþ saatlere týklanýnca modal aç
+       $('.saat-cell').on('click', function(e) {
+     if ($(e.target).closest('button').length > 0) return;
+     if ($(this).find('.badge').length > 0) return;
+
+  selectedHocaId = $(this).data('hocaid');
+ selectedDersId = $(this).data('dersid');
+            selectedGun = $(this).data('gun');
+     selectedSaat = $(this).data('saat');
+
+var dersAdi = $(this).closest('tr').find('td').eq(1).text();
+    var hocaAdi = $(this).closest('tr').find('td').eq(2).text();
+
+   $('#modalDersAdi').text(dersAdi);
+            $('#modalHocaAdi').text(hocaAdi);
+     $('#modalGunSaat').text(selectedGun + ' - ' + selectedSaat + '. Saat');
+          $('#kisimNoInput').val('').focus();
+
+  $('#addDersModal').modal('show');
+   });
+
+     // Ders ekle butonu
+   $('#btnDersEkle').on('click', function() {
+   var kisimNo = $('#kisimNoInput').val();
+
+         if (!kisimNo || kisimNo < 1) {
+         alert('Lütfen geçerli bir kýsým numarasý girin!');
+     return;
+  }
+
+       $(this).prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span> Kaydediliyor...');
+
+         $.ajax({
+   url: '@Url.Action("AddDers", "DersProgrami")',
+   type: 'POST',
+                contentType: 'application/json',
+     data: JSON.stringify({
+ fakulteId: fakulteId,
+        hocaId: selectedHocaId,
+ dersId: selectedDersId,
+  kisimNo: parseInt(kisimNo),
+              gun: selectedGun,
+ saat: selectedSaat
+      }),
+       success: function(response) {
+       if (response.success) {
+      location.reload();
+ } else {
+   alert('Hata: ' + response.message);
+    $('#btnDersEkle').prop('disabled', false).html('<i class="bi bi-save"></i> Kaydet');
+    }
+         },
+       error: function() {
+alert('Bir hata oluþtu!');
+        $('#btnDersEkle').prop('disabled', false).html('<i class="bi bi-save"></i> Kaydet');
+   }
+          });
+   });
+
+      // Enter tuþu ile kaydet
+     $('#kisimNoInput').on('keypress', function(e) {
+if (e.which === 13) {
+      $('#btnDersEkle').click();
+            }
+      });
+
+// Tablo hover efekti
+     $('#dersProgramiTable tbody tr').hover(
+  function() {
+            $(this).addClass('table-active');
+       },
+   function() {
+   $(this).removeClass('table-active');
+          }
+    );
+        });
+    </script>
+
+    <style>
+ #dersProgramiTable {
+  border-collapse: collapse;
+}
+  #dersProgramiTable th,
+        #dersProgramiTable td {
+       border: 1px solid #dee2e6;
+ padding: 4px !important;
+        }
+   #dersProgramiTable thead th {
+    background-color: #212529;
+ color: white;
+   font-weight: bold;
+     text-align: center;
+ }
+        #dersProgramiTable tbody td {
+    font-size: 0.8rem;
+        }
+  .badge {
+ margin: 1px;
+     padding: 3px 5px;
+   }
+  .saat-cell:hover {
+            background-color: #e3f2fd !important;
+     transition: all 0.2s;
+ }
+  .bos-saat {
+  font-size: 1.2rem !important;
+     color: #28a745 !important;
+    font-weight: bold;
+        }
+    </style>
+}

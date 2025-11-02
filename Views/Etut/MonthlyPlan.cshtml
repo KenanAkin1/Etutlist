@@ -1,0 +1,102 @@
+﻿@model Etutlist.Models.MonthlyPlanViewModel
+
+<h2>
+    @Model.Yil @System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(Model.Ay) Planı
+</h2>
+
+<div class="d-flex justify-content-end mb-3">
+    <a asp-controller="Personel" asp-action="Create" class="btn btn-outline-primary me-2">Yeni Personel Ekle</a>
+    <a asp-controller="Personel" asp-action="Index" class="btn btn-outline-secondary me-2">Personel Listesi</a>
+</div>
+
+<div class="mb-3">
+    <a asp-action="MonthlyPlan" asp-route-yil="@Model.Yil" asp-route-ay="@(Model.Ay - 1)" class="btn btn-outline-secondary">← Önceki Ay</a>
+    <a asp-action="MonthlyPlan" asp-route-yil="@Model.Yil" asp-route-ay="@(Model.Ay + 1)" class="btn btn-outline-secondary">Sonraki Ay →</a>
+</div>
+
+@if (!Model.Plan.Any())
+{
+    <p>Bu ay için plan bulunamadı.</p>
+    <form asp-action="CreateMonthlyPlan" method="post">
+        <input type="hidden" name="yil" value="@Model.Yil" />
+        <input type="hidden" name="ay" value="@Model.Ay" />
+        <button type="submit" class="btn btn-primary">Plan Oluştur</button>
+    </form>
+}
+else
+{
+    <div class="mb-3 d-flex gap-2">
+        <form asp-action="DeleteMonth" method="post" onsubmit="return confirm('Bu ayın planını silmek istediğinize emin misiniz?');">
+            <input type="hidden" name="yil" value="@Model.Yil" />
+            <input type="hidden" name="ay" value="@Model.Ay" />
+            <button type="submit" class="btn btn-danger">Planı Sil</button>
+        </form>
+
+        <form asp-action="ExportMonthlyPlanToExcel" method="get" class="d-inline">
+            <input type="hidden" name="yil" value="@Model.Yil" />
+            <input type="hidden" name="ay" value="@Model.Ay" />
+            <button type="submit" class="btn btn-success">Excel Olarak Dışa Aktar</button>
+        </form>
+
+        <form asp-action="GenerateYedekForMonth" method="post">
+            <input type="hidden" name="yil" value="@Model.Yil" />
+            <input type="hidden" name="ay" value="@Model.Ay" />
+            <button type="submit" class="btn btn-outline-primary">Manuel Yedek Üret (+5)</button>
+        </form>
+    </div>
+
+    <table class="table table-bordered text-center mb-4">
+        <thead>
+            <tr>
+                <th style="width:150px;">Tarih</th>
+                <th>Sınıf 1</th>
+                <th>Sınıf 2</th>
+                <th>Sınıf 3</th>
+                <th>Sınıf 4</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var gun in Model.Plan.OrderBy(x => x.Key))
+            {
+                <tr>
+                    <td>@gun.Key.ToString("dd.MM.yyyy dddd")</td>
+                    @for (int i = 1; i <= 4; i++)
+                    {
+                        var etut = gun.Value.FirstOrDefault(e => e.SinifNo == i);
+                        <td>
+                            @(etut != null ? etut.Personel?.Ad : "-")
+                            @if (etut != null)
+                            {
+                                <div class="mt-1">
+                                    <a asp-action="Manage" asp-controller="Etut"
+                                       asp-route-id="@etut.Id" asp-route-yil="@Model.Yil" asp-route-ay="@Model.Ay"
+                                       class="btn btn-sm btn-outline-primary">Yönet</a>
+                                </div>
+                            }
+                        </td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <h4>Bu Ayın Yedek Listesi (15 kişi)</h4>
+    @if (Model.Yedekler?.Any() == true)
+    {
+        <ul class="list-group">
+            @foreach (var y in Model.Yedekler)
+            {
+                <li class="list-group-item d-flex justify-content-between">
+                    <span>@y.Ad</span>
+                    <small class="text-muted">
+                        Hafta içi: @y.HaftaIciSayisi, Pazar: @y.PazarSayisi, Özel: @y.OzelGunSayisi, Yedek: @y.YedekSayisi
+                    </small>
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <p>Yedek listesi henüz oluşturulmadı.</p>
+    }
+}

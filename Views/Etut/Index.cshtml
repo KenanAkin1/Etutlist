@@ -1,0 +1,38 @@
+﻿@model List<Etutlist.Models.AyBilgisi>
+
+@if (!Model.Any())
+{
+    <p>Henüz hiç plan yok.</p>
+    <form asp-action="CreateMonthlyPlan" method="post">
+        <input type="hidden" name="yil" value="@DateTime.Now.Year" />
+        <input type="hidden" name="ay" value="@DateTime.Now.Month" />
+        <button type="submit" class="btn btn-primary">Bu Ay İçin Plan Oluştur</button>
+    </form>
+}
+else
+{
+    <ul class="list-group">
+        @foreach (var ay in Model)
+        {
+            <li class="list-group-item">
+                <a asp-action="MonthlyPlan" asp-route-yil="@ay.Yil" asp-route-ay="@ay.Ay">
+                    @($"{ay.Yil} {System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(ay.Ay)}")
+                </a>
+            </li>
+        }
+    </ul>
+}
+
+
+<h2>Aylık Etüt Planları</h2>
+
+<ul class="list-group">
+    @foreach (var ay in Model)
+    {
+        <li class="list-group-item">
+            <a asp-action="MonthlyPlan" asp-route-yil="@ay.Yil" asp-route-ay="@ay.Ay">
+                @($"{ay.Yil} {System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(ay.Ay)}")
+            </a>
+        </li>
+    }
+</ul>

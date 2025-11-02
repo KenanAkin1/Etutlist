@@ -1,0 +1,101 @@
+﻿@model Etutlist.Models.Personel
+
+@{
+    ViewData["Title"] = "Personel Düzenle";
+}
+
+<h3>Personel Düzenle</h3>
+
+<div class="mb-3">
+    <a asp-action="Index" class="btn btn-sm btn-secondary">← Geri</a>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<form asp-action="Edit" asp-controller="Personel" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id" />
+
+    <div class="mb-3">
+        <label class="form-label">Ad Soyad</label>
+        <input asp-for="Ad" class="form-control" />
+        <span asp-validation-for="Ad" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Rütbe</label>
+        <input asp-for="Rutbe" class="form-control" />
+        <span asp-validation-for="Rutbe" class="text-danger"></span>
+    </div>
+
+    <h5>Sayaçlar (manuel düzenleme)</h5>
+
+    <div class="row g-2 mb-3">
+        <div class="col">
+            <label class="form-label">Hafta İçi</label>
+            <input asp-for="HaftaIciSayisi" type="number" min="0" class="form-control" />
+        </div>
+        <div class="col">
+            <label class="form-label">Pazar</label>
+            <input asp-for="PazarSayisi" type="number" min="0" class="form-control" />
+        </div>
+        <div class="col">
+            <label class="form-label">Özel Gün</label>
+            <input asp-for="OzelGunSayisi" type="number" min="0" class="form-control" />
+        </div>
+        <div class="col">
+            <label class="form-label">Yedek</label>
+            <input asp-for="YedekSayisi" type="number" min="0" class="form-control" />
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Kaydet</button>
+    <a asp-action="Index" class="btn btn-secondary ms-2">İptal</a>
+</form>
+
+<hr />
+
+<h4>Atandığı Etütler</h4>
+
+@if (ViewBag.Etutler != null && ((IEnumerable<Etutlist.Models.Etut>)ViewBag.Etutler).Any())
+{
+    <table class="table table-sm">
+        <thead>
+            <tr>
+                <th>Tarih</th>
+                <th>Sınıf No</th>
+                <th>Tip</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var et in (IEnumerable<Etutlist.Models.Etut>)ViewBag.Etutler)
+            {
+                <tr>
+                    <td>@et.Tarih.ToString("dd.MM.yyyy dddd")</td>
+                    <td>@et.SinifNo</td>
+                    <td>@et.Tip</td>
+                    <td>
+                        <form asp-action="RemoveEtutFromPersonel" asp-controller="Personel" method="post" onsubmit="return confirm('Bu etütü silmek istediğinize emin misiniz? Sayaçlar geri alınacaktır.');" style="display:inline">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="etutId" value="@et.Id" />
+                            <input type="hidden" name="personelId" value="@Model.Id" />
+                            <button type="submit" class="btn btn-sm btn-danger">Kaldır</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p class="text-muted">Bu personel için atılmış etüt bulunamadı.</p>
+}

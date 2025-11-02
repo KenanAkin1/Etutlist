@@ -1,0 +1,23 @@
+﻿@model Etutlist.Models.Mazeret
+
+<h2>Mazeret Sil</h2>
+
+<h4>Bu mazereti silmek istediğinize emin misiniz?</h4>
+<hr />
+
+<dl class="row">
+    <dt class="col-sm-2">Personel</dt>
+    <dd class="col-sm-10">@Model.Personel?.Ad</dd>
+
+    <dt class="col-sm-2">Başlangıç</dt>
+    <dd class="col-sm-10">@Model.Baslangic.ToString("dd.MM.yyyy")</dd>
+
+    <dt class="col-sm-2">Bitiş</dt>
+    <dd class="col-sm-10">@Model.Bitis.ToString("dd.MM.yyyy")</dd>
+</dl>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Sil</button>
+    <a asp-action="Index" class="btn btn-secondary">Geri</a>
+</form>

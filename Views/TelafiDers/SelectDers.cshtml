@@ -1,0 +1,164 @@
+@{
+ ViewData["Title"] = "Ders Seçin - Telafi/Ýkame";
+}
+
+<div class="container mt-4">
+    <div class="row">
+     <div class="col-md-12">
+   <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-search"></i> Telafi/Ýkame Ýçin Ders Seçin</h2>
+      <a asp-action="Index" class="btn btn-secondary">
+   <i class="bi bi-arrow-left"></i> Geri
+    </a>
+  </div>
+
+<!-- AÇIKLAMA -->
+            <div class="alert alert-info">
+      <i class="bi bi-info-circle"></i>
+    <strong>Nasýl kullanýlýr?</strong> Telafi veya ikame dersi oluþturmak için önce ilgili dersi seçin.
+     </div>
+
+      <!-- FAKÜLTE SEÇÝMÝ -->
+   <div class="card mb-4">
+      <div class="card-header bg-primary text-white">
+       <h5><i class="bi bi-building"></i> 1. Fakülte Seçin</h5>
+     </div>
+      <div class="card-body">
+       <select id="fakulteSelect" class="form-select form-select-lg">
+    <option value="">-- Fakülte Seçiniz --</option>
+      @foreach (var fakulte in ViewBag.Fakulteler as SelectList)
+     {
+   <option value="@fakulte.Value">@fakulte.Text</option>
+     }
+    </select>
+    </div>
+   </div>
+
+<!-- DERS LÝSTESÝ -->
+ <div class="card" id="dersListesiCard" style="display:none;">
+     <div class="card-header bg-success text-white">
+<h5><i class="bi bi-book"></i> 2. Ders Seçin</h5>
+     </div>
+     <div class="card-body">
+   <div class="input-group mb-3">
+     <span class="input-group-text"><i class="bi bi-search"></i></span>
+   <input type="text" id="dersAra" class="form-control" placeholder="Ders adý, hoca adý veya kýsým ara...">
+ </div>
+
+  <div id="dersListesi" class="list-group">
+       <!-- AJAX ile doldurulacak -->
+       </div>
+
+   <div id="loadingSpinner" class="text-center py-4" style="display:none;">
+     <div class="spinner-border text-primary" role="status">
+    <span class="visually-hidden">Yükleniyor...</span>
+     </div>
+   </div>
+
+ <div id="noDersMessage" class="alert alert-warning" style="display:none;">
+    <i class="bi bi-exclamation-triangle"></i> Bu fakültede ders bulunamadý.
+   </div>
+   </div>
+ </div>
+   </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+    // Fakülte deðiþtiðinde
+     $('#fakulteSelect').on('change', function() {
+    var fakulteId = $(this).val();
+   
+          if (fakulteId) {
+    $('#dersListesiCard').show();
+       $('#loadingSpinner').show();
+      $('#dersListesi').empty();
+       $('#noDersMessage').hide();
+
+        // AJAX ile dersleri getir
+   $.ajax({
+       url: '@Url.Action("GetDersler", "TelafiDers")',
+     data: { fakulteId: fakulteId },
+       success: function(data) {
+     $('#loadingSpinner').hide();
+          
+        if (data.length === 0) {
+      $('#noDersMessage').show();
+      } else {
+       renderDersler(data);
+        }
+     },
+   error: function() {
+      $('#loadingSpinner').hide();
+         alert('Dersler yüklenirken hata oluþtu.');
+       }
+     });
+   } else {
+    $('#dersListesiCard').hide();
+       }
+  });
+
+   // Ders arama
+         $('#dersAra').on('input', function() {
+   var searchText = $(this).val().toLowerCase();
+
+          $('#dersListesi .list-group-item').each(function() {
+  var text = $(this).text().toLowerCase();
+       if (text.includes(searchText)) {
+    $(this).show();
+    } else {
+         $(this).hide();
+         }
+      });
+   });
+
+ // Dersleri render et
+     function renderDersler(dersler) {
+   var html = '';
+       
+    dersler.forEach(function(ders) {
+ var gunBadge = getGunBadge(ders.dersGunu);
+      var saatBadge = 'badge bg-dark';
+     
+      html += `
+    <a href="@Url.Action("Create")?dersId=${ders.id}" 
+       class="list-group-item list-group-item-action">
+    <div class="d-flex w-100 justify-content-between align-items-center">
+        <div>
+           <h6 class="mb-1"><strong>${ders.dersAdi}</strong></h6>
+  <p class="mb-1">
+      <span class="badge bg-secondary">${ders.dersKodu || ''}</span>
+        <span class="badge bg-info">Kýsým ${ders.kisimNo}</span>
+   </p>
+   <small class="text-muted">
+     <i class="bi bi-person"></i> ${ders.hocaRutbe} ${ders.hocaAd}
+      </small>
+         </div>
+        <div class="text-end">
+      <span class="${gunBadge}">${ders.dersGunu}</span><br/>
+  <span class="${saatBadge}">${ders.dersSaati}. Saat</span>
+     </div>
+   </div>
+     </a>
+        `;
+     });
+       
+      $('#dersListesi').html(html);
+     }
+
+       // Gün badge rengi
+       function getGunBadge(gun) {
+        switch(gun) {
+      case 'Pazartesi': return 'badge bg-primary';
+        case 'Salý': return 'badge bg-success';
+       case 'Çarþamba': return 'badge bg-info';
+      case 'Perþembe': return 'badge bg-warning text-dark';
+     case 'Cuma': return 'badge bg-danger';
+         default: return 'badge bg-secondary';
+     }
+    }
+ });
+    </script>
+}

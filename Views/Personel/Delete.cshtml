@@ -1,0 +1,39 @@
+﻿@model Etutlist.Models.Personel
+
+@{
+    ViewData["Title"] = "Personel Sil";
+}
+
+<h2>Personel Sil</h2>
+
+@if (TempData["DeleteError"] != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @TempData["DeleteError"]
+    </div>
+}
+
+<div class="card mb-3">
+    <div class="card-body">
+        <dl class="row mb-0">
+            <dt class="col-sm-3">Id</dt>
+            <dd class="col-sm-9">@Model.Id</dd>
+
+            <dt class="col-sm-3">Ad Soyad</dt>
+            <dd class="col-sm-9">@(!string.IsNullOrEmpty(Model.Ad) ? Model.Ad : "(—)")</dd>
+
+            <dt class="col-sm-3">Rütbe</dt>
+            <dd class="col-sm-9">@(!string.IsNullOrEmpty(Model.Rutbe) ? Model.Rutbe : "(—)")</dd>
+
+        </dl>
+    </div>
+</div>
+
+<form asp-action="Delete" method="post" class="d-inline">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="id" value="@Model.Id" />
+    <button type="submit" class="btn btn-danger" onclick="return confirm('Bu personeli silmek istediğinize emin misiniz? Bu işlem geri alınamaz.');">
+        Sil
+    </button>
+    <a asp-action="Index" class="btn btn-secondary ms-2">Geri</a>
+</form>

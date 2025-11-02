@@ -1,0 +1,166 @@
+@model Etutlist.Models.Hoca
+
+@{
+    ViewData["Title"] = "Hoca Düzenle - " + Model.AdSoyad;
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+       <div class="card shadow-lg">
+ <div class="card-header bg-warning text-dark">
+         <h4><i class="bi bi-person-gear"></i> Hoca Düzenle: @Model.Rutbe @Model.AdSoyad</h4>
+         </div>
+          <div class="card-body">
+      @if (TempData["Success"] != null)
+            {
+ <div class="alert alert-success alert-dismissible fade show">
+              <i class="bi bi-check-circle"></i> @TempData["Success"]
+     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+       </div>
+         }
+
+   @if (TempData["Error"] != null)
+      {
+       <div class="alert alert-danger alert-dismissible fade show">
+ <i class="bi bi-x-circle"></i> @TempData["Error"]
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+   </div>
+}
+
+            <!-- Hoca Bilgileri -->
+      <div class="card mb-4 bg-light">
+          <div class="card-body">
+    <div class="row">
+     <div class="col-md-3">
+        <p><strong>Fakülte:</strong> @Model.Fakulte.Ad</p>
+         </div>
+  <div class="col-md-3">
+    <p><strong>Rütbe:</strong> @Model.Rutbe</p>
+   </div>
+     <div class="col-md-3">
+     <p><strong>Ad Soyad:</strong> @Model.AdSoyad</p>
+      </div>
+      <div class="col-md-3">
+       <p><strong>Ders Yükü:</strong> 
+          <span class="badge bg-primary fs-5">@Model.DersYuku saat</span>
+    </p>
+        </div>
+  </div>
+         </div>
+       </div>
+
+    <!-- Hocanýn Dersleri -->
+  <div class="card">
+   <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+      <h5 class="mb-0"><i class="bi bi-calendar-week"></i> Haftalýk Ders Programý</h5>
+     <span class="badge bg-light text-dark">Toplam: @(Model.Dersler?.Count ?? 0) ders</span>
+  </div>
+ <div class="card-body">
+         @if (Model.Dersler?.Any() == true)
+         {
+     <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+        <thead class="table-dark">
+          <tr>
+       <th>Ders Adý</th>
+       <th style="width: 120px;">Kýsým</th>
+      <th style="width: 120px;">Gün</th>
+        <th style="width: 100px;">Saat</th>
+         <th style="width: 100px;">Ýþlemler</th>
+       </tr>
+      </thead>
+       <tbody>
+ @foreach (var ders in Model.Dersler.OrderBy(d => d.DersGunu).ThenBy(d => d.DersSaati))
+    {
+         <tr>
+         <td><strong>@ders.DersAdi</strong></td>
+       <td class="text-center">
+         <span class="badge bg-secondary">@ders.KisimNo. Kýsým</span>
+   </td>
+     <td>
+       @{
+  var gunClass = ders.DersGunu switch
+    {
+      "Pazartesi" => "badge bg-primary",
+     "Salý" => "badge bg-success",
+  "Çarþamba" => "badge bg-info",
+   "Perþembe" => "badge bg-warning text-dark",
+           "Cuma" => "badge bg-danger",
+         _ => "badge bg-secondary"
+   };
+   }
+       <span class="@gunClass">@ders.DersGunu</span>
+      </td>
+    <td class="text-center">
+        <span class="badge bg-dark">@ders.DersSaati. Saat</span>
+  </td>
+      <td class="text-center">
+        <form asp-controller="Ayarlar" asp-action="HocadanDersSil" 
+        asp-route-hocaId="@Model.Id" asp-route-dersId="@ders.Id" method="post">
+       @Html.AntiForgeryToken()
+       <button type="submit" class="btn btn-sm btn-danger"
+        onclick="return confirm('Bu dersi silmek istediðinize emin misiniz?')">
+          <i class="bi bi-trash"></i> Sil
+        </button>
+       </form>
+       </td>
+       </tr>
+ }
+     </tbody>
+       </table>
+    </div>
+       }
+          else
+     {
+       <div class="alert alert-warning">
+         <i class="bi bi-exclamation-triangle"></i> Bu hocanýn henüz atanmýþ dersi bulunmuyor.
+       </div>
+     }
+      </div>
+            </div>
+
+<!-- Haftalýk Özet -->
+        @if (Model.Dersler?.Any() == true)
+ {
+         <div class="card mt-4">
+     <div class="card-header bg-info text-white">
+          <h5><i class="bi bi-bar-chart"></i> Haftalýk Özet</h5>
+</div>
+        <div class="card-body">
+       <div class="row">
+   @{
+        var gunler = new[] { "Pazartesi", "Salý", "Çarþamba", "Perþembe", "Cuma" };
+    foreach (var gun in gunler)
+        {
+       var dersSayisi = Model.Dersler.Count(d => d.DersGunu == gun);
+       var badgeClass = dersSayisi > 0 ? "bg-success" : "bg-secondary";
+        <div class="col">
+        <div class="text-center">
+           <div class="badge @badgeClass fs-6 w-100 p-2 mb-1">
+     @gun
+        </div>
+      <div class="fs-5"><strong>@dersSayisi</strong> ders</div>
+    </div>
+     </div>
+  }
+      }
+     </div>
+        </div>
+      </div>
+            }
+
+            <!-- Butonlar -->
+     <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+       <a asp-controller="DersProgrami" asp-action="BulkAdd" class="btn btn-success btn-lg">
+       <i class="bi bi-plus-circle"></i> Yeni Ders Ekle
+       </a>
+       <a asp-controller="Ayarlar" asp-action="Index" class="btn btn-secondary btn-lg">
+      <i class="bi bi-arrow-left"></i> Ayarlara Dön
+    </a>
+            </div>
+        </div>
+            </div>
+        </div>
+    </div>
+</div>

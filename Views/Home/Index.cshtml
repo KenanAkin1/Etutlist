@@ -1,0 +1,132 @@
+@{
+ ViewData["Title"] = "Ana Sayfa";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+    <div class="text-center mb-5">
+       <h1 class="display-4"><i class="bi bi-calendar-check"></i> Etüt ve Ders Planlama Sistemi</h1>
+  <p class="lead">Personel, etüt ve ders programý yönetim sistemi</p>
+        </div>
+
+   <div class="row g-4">
+    <!-- Personel Yönetimi -->
+       <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+    <div class="card-body text-center">
+       <i class="bi bi-people display-1 text-primary mb-3"></i>
+   <h5 class="card-title">Personel Yönetimi</h5>
+      <p class="card-text">Personel ekleme, düzenleme ve mazeret yönetimi</p>
+   <a asp-controller="Personel" asp-action="Index" class="btn btn-primary">
+  <i class="bi bi-arrow-right-circle"></i> Personel Listesi
+   </a>
+      </div>
+   </div>
+  </div>
+
+      <!-- Etüt Planý -->
+   <div class="col-md-4">
+   <div class="card h-100 shadow-sm">
+    <div class="card-body text-center">
+       <i class="bi bi-calendar-event display-1 text-success mb-3"></i>
+<h5 class="card-title">Etüt Planý</h5>
+        <p class="card-text">Aylýk etüt planlamasý ve yedek atama</p>
+  <a asp-controller="Etut" asp-action="Index" class="btn btn-success">
+   <i class="bi bi-arrow-right-circle"></i> Etüt Planý
+   </a>
+ </div>
+  </div>
+   </div>
+
+      <!-- Ders Programý -->
+    <div class="col-md-4">
+ <div class="card h-100 shadow-sm">
+  <div class="card-body text-center">
+   <i class="bi bi-calendar3 display-1 text-info mb-3"></i>
+   <h5 class="card-title">Ders Programý</h5>
+ <p class="card-text">Haftalýk ders programý ve yönetimi</p>
+     <a asp-controller="DersProgrami" asp-action="Index" class="btn btn-info">
+    <i class="bi bi-arrow-right-circle"></i> Ders Programý
+   </a>
+       </div>
+     </div>
+   </div>
+
+    <!-- Telafi Dersleri -->
+    <div class="col-md-4">
+   <div class="card h-100 shadow-sm">
+       <div class="card-body text-center">
+    <i class="bi bi-calendar-plus display-1 text-warning mb-3"></i>
+          <h5 class="card-title">Telafi Dersleri</h5>
+      <p class="card-text">Telafi, ikame ve birleþtirme dersleri</p>
+  <a asp-controller="TelafiDers" asp-action="Index" class="btn btn-warning">
+         <i class="bi bi-arrow-right-circle"></i> Telafi Dersleri
+   </a>
+ </div>
+   </div>
+      </div>
+
+      <!-- Mazeretler -->
+   <div class="col-md-4">
+   <div class="card h-100 shadow-sm">
+  <div class="card-body text-center">
+   <i class="bi bi-file-medical display-1 text-danger mb-3"></i>
+   <h5 class="card-title">Mazeretler</h5>
+  <p class="card-text">Personel mazeret kayýtlarý</p>
+        <a asp-controller="Mazeret" asp-action="Index" class="btn btn-danger">
+         <i class="bi bi-arrow-right-circle"></i> Mazeretler
+      </a>
+    </div>
+   </div>
+     </div>
+
+<!-- Özel Günler -->
+    <div class="col-md-4">
+  <div class="card h-100 shadow-sm">
+      <div class="card-body text-center">
+   <i class="bi bi-star display-1 text-secondary mb-3"></i>
+   <h5 class="card-title">Özel Günler</h5>
+    <p class="card-text">Resmi tatil ve özel günler</p>
+  <a asp-controller="OzelGun" asp-action="Index" class="btn btn-secondary">
+    <i class="bi bi-arrow-right-circle"></i> Özel Günler
+   </a>
+       </div>
+  </div>
+        </div>
+  </div>
+
+      <div class="row mt-5">
+   <div class="col-md-12">
+   <div class="card">
+      <div class="card-header bg-primary text-white">
+    <h5><i class="bi bi-info-circle"></i> Sistem Bilgileri</h5>
+ </div>
+         <div class="card-body">
+       <div class="row">
+    <div class="col-md-6">
+          <h6>Etüt Sistemi:</h6>
+        <ul>
+ <li>Otomatik etüt planlamasý</li>
+       <li>Yedek personel atama</li>
+  <li>Etüt deðiþtirme ve takas</li>
+       <li>Aylýk raporlama</li>
+       </ul>
+    </div>
+      <div class="col-md-6">
+    <h6>Telafi Sistemi:</h6>
+     <ul>
+     <li><strong>Telafi:</strong> Bölüm dersliklerinde yapýlan telafi</li>
+   <li><strong>Ýkame:</strong> Müsait hocanýn dersliðinde yapýlan telafi</li>
+   <li><strong>Birleþtirme:</strong> Amfide birleþtirilen dersler</li>
+   <li>Otomatik öneri sistemi</li>
+  </ul>
+      </div>
+</div>
+      </div>
+       </div>
+      </div>
+   </div>
+        </div>
+    </div>
+</div>

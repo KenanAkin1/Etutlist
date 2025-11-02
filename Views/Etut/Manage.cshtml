@@ -1,0 +1,105 @@
+﻿@model Etutlist.Models.ManageEtutViewModel
+
+@{
+    ViewData["Title"] = "Etüt Yönetimi";
+}
+
+<h3>Etüt Yönetimi</h3>
+
+<div class="mb-2">
+    <a asp-action="MonthlyPlan" asp-route-yil="@ViewBag.Yil" asp-route-ay="@ViewBag.Ay" class="btn btn-sm btn-secondary">← Geri</a>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<div class="card mb-3">
+    <div class="card-body">
+        <h5 class="card-title">@Model.Etut.Tarih.ToString("dd.MM.yyyy dddd")</h5>
+        <p class="card-text"><strong>Kişi:</strong> @Model.Etut.Personel?.Rutbe - @Model.Etut.Personel?.Ad</p>
+        <p class="card-text"><strong>Sınıf No:</strong> @Model.Etut.SinifNo</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+
+        <div class="card mb-3">
+            <div class="card-header">Etüt Kaydını Sil</div>
+            <div class="card-body">
+                <form asp-action="DeleteEtut" asp-controller="Etut" method="post" onsubmit="return confirm('Etüt kaydını silip sayaçları geri almak istiyor musunuz?');">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="etutId" value="@Model.Etut.Id" />
+                    <input type="hidden" name="yil" value="@ViewBag.Yil" />
+                    <input type="hidden" name="ay" value="@ViewBag.Ay" />
+                    <button type="submit" class="btn btn-danger">Etüt Kaydını Sil</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card mb-3">
+            <div class="card-header">Yedekten Ata</div>
+            <div class="card-body">
+                @if (Model.MusaitYedekler?.Any() == true)
+                {
+                    <form asp-action="ReplaceWithYedek" asp-controller="Etut" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="etutId" value="@Model.Etut.Id" />
+                        <input type="hidden" name="yil" value="@ViewBag.Yil" />
+                        <input type="hidden" name="ay" value="@ViewBag.Ay" />
+
+                        <div class="mb-3">
+                            <label class="form-label">Müsait Yedekler (@Model.Etut.Tarih.ToString("dd.MM.yyyy"))</label>
+                            <select name="yedekPersonelId" class="form-control" required>
+                                <option value="">-- Seçiniz --</option>
+                                @foreach (var y in Model.MusaitYedekler)
+                                {
+                                    <option value="@y.Id">@y.Rutbe - @y.Ad (Yedek:@y.YedekSayisi)</option>
+                                }
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn btn-warning">Yedeği Ata</button>
+                    </form>
+                }
+                else
+                {
+                    <div class="alert alert-info">Bu tarihte müsait yedek bulunamadı.</div>
+                }
+            </div>
+        </div>
+
+        <div class="card mb-3">
+            <div class="card-header">Takas Et</div>
+            <div class="card-body">
+                <form asp-action="SwapPersons" asp-controller="Etut" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="etutAId" value="@Model.Etut.Id" />
+                    <input type="hidden" name="yil" value="@ViewBag.Yil" />
+                    <input type="hidden" name="ay" value="@ViewBag.Ay" />
+
+                    <div class="mb-3">
+                        <label class="form-label">Takas Yapılacak Etüt</label>
+                        <select name="etutBId" class="form-control" required>
+                            <option value="">-- Seçiniz --</option>
+                            @foreach (var et in Model.TumEtutler.Where(x => x.Id != Model.Etut.Id).OrderBy(x => x.Tarih))
+                            {
+                                <option value="@et.Id">@et.Tarih.ToString("dd.MM.yyyy dddd") - @et.Personel?.Ad</option>
+                            }
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-secondary">Takas Et</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

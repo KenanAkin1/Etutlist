@@ -1,0 +1,304 @@
+@model Etutlist.Controllers.DersDetayViewModel
+@{
+    ViewData["Title"] = "Ders Detaylarý";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+   <h2><i class="bi bi-book-fill"></i> Ders Detaylarý</h2>
+     <div>
+<a asp-action="Index" class="btn btn-secondary">
+    <i class="bi bi-arrow-left"></i> Programa Dön
+          </a>
+       <a asp-controller="TelafiDers" asp-action="Create" asp-route-dersId="@Model.Ders.Id" class="btn btn-warning">
+   <i class="bi bi-calendar-plus"></i> Telafi Ekle
+       </a>
+ </div>
+            </div>
+
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show">
+     <i class="bi bi-check-circle"></i> @TempData["Success"]
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+       }
+
+ <!-- DERS BÝLGÝLERÝ -->
+          <div class="row mb-4">
+      <div class="col-md-8">
+          <div class="card h-100">
+             <div class="card-header bg-primary text-white">
+              <h5><i class="bi bi-info-circle"></i> Ders Bilgileri</h5>
+          </div>
+             <div class="card-body">
+     <table class="table table-borderless">
+   <tr>
+        <th style="width: 30%;">Fakülte:</th>
+      <td><strong>@Model.Ders.Fakulte.Ad</strong></td>
+           </tr>
+          <tr>
+      <th>Ders Adý:</th>
+             <td><h5 class="mb-0">@Model.Ders.DersAdi</h5></td>
+             </tr>
+          <tr>
+       <th>Ders Kodu:</th>
+         <td><span class="badge bg-secondary">@Model.Ders.DersKodu</span></td>
+ </tr>
+      <tr>
+ <th>Kýsým No:</th>
+      <td><span class="badge bg-info">@Model.Ders.KisimNo. Kýsým</span></td>
+     </tr>
+               <tr>
+   <th>Ders Günü:</th>
+             <td>
+           @{
+       var gunClass = Model.Ders.DersGunu switch
+         {
+           "Pazartesi" => "badge bg-primary",
+        "Salý" => "badge bg-success",
+           "Çarþamba" => "badge bg-info",
+      "Perþembe" => "badge bg-warning text-dark",
+           "Cuma" => "badge bg-danger",
+      _ => "badge bg-secondary"
+                 };
+             }
+     <span class="@gunClass">@Model.Ders.DersGunu</span>
+         </td>
+         </tr>
+     <tr>
+  <th>Ders Saati:</th>
+   <td>
+              <span class="badge bg-dark">@Model.Ders.DersSaati. Saat</span>
+         <small class="text-muted ms-2">(@Etutlist.Models.DersSaatleri.Saatler[@Model.Ders.DersSaati])</small>
+    </td>
+ </tr>
+  </table>
+        </div>
+         </div>
+         </div>
+
+      <div class="col-md-4">
+           <div class="card h-100">
+ <div class="card-header bg-success text-white">
+   <h5><i class="bi bi-person-badge"></i> Hoca</h5>
+            </div>
+        <div class="card-body text-center">
+     <div class="mb-3">
+           <i class="bi bi-person-circle" style="font-size: 4rem; color: #198754;"></i>
+          </div>
+<h4 class="mb-2">@Model.Ders.Hoca.AdSoyad</h4>
+         <p class="mb-2">
+    <span class="badge bg-success">@Model.Ders.Hoca.Rutbe</span>
+      </p>
+         <hr/>
+ <p class="text-muted mb-1">Toplam Ders Yükü</p>
+     <h3 class="text-primary">@Model.HocaDersleri.Count <small>saat</small></h3>
+     <a asp-controller="Ayarlar" asp-action="HocaEdit" asp-route-id="@Model.Ders.HocaId" class="btn btn-outline-primary btn-sm mt-2">
+     <i class="bi bi-pencil"></i> Hoca Detaylarý
+ </a>
+       </div>
+           </div>
+   </div>
+    </div>
+
+     <!-- HOCANIN DÝÐER DERSLERÝ -->
+            <div class="card mb-4">
+      <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+          <h5 class="mb-0"><i class="bi bi-calendar-week"></i> @Model.Ders.Hoca.AdSoyad - Haftalýk Program</h5>
+  <span class="badge bg-light text-dark">@Model.HocaDersleri.Count ders</span>
+          </div>
+          <div class="card-body">
+    @if (Model.HocaDersleri.Any())
+      {
+     <div class="table-responsive">
+  <table class="table table-hover table-bordered">
+<thead class="table-dark">
+   <tr>
+      <th>Ders</th>
+     <th style="width: 100px;">Kýsým</th>
+  <th style="width: 120px;">Gün</th>
+     <th style="width: 100px;">Saat</th>
+             <th style="width: 100px;">Ýþlemler</th>
+        </tr>
+    </thead>
+      <tbody>
+    @foreach (var ders in Model.HocaDersleri)
+       {
+   var isCurrentDers = ders.Id == Model.Ders.Id;
+     <tr class="@(isCurrentDers ? "table-primary" : "")">
+      <td>
+   <strong>@ders.DersAdi</strong>
+   @if (isCurrentDers)
+       {
+       <span class="badge bg-primary ms-2">Þu An</span>
+               }
+    </td>
+   <td class="text-center">
+  <span class="badge bg-secondary">@ders.KisimNo</span>
+    </td>
+     <td>
+      @{
+              var gunBadge = ders.DersGunu switch
+            {
+      "Pazartesi" => "badge bg-primary",
+               "Salý" => "badge bg-success",
+           "Çarþamba" => "badge bg-info",
+    "Perþembe" => "badge bg-warning text-dark",
+   "Cuma" => "badge bg-danger",
+        _ => "badge bg-secondary"
+     };
+  }
+    <span class="@gunBadge">@ders.DersGunu</span>
+         </td>
+           <td class="text-center">
+                <span class="badge bg-dark">@ders.DersSaati. Saat</span>
+                  </td>
+     <td class="text-center">
+   @if (!isCurrentDers)
+    {
+       <a asp-action="Details" asp-route-id="@ders.Id" class="btn btn-sm btn-outline-info" title="Detaylar">
+   <i class="bi bi-eye"></i>
+          </a>
+        }
+      </td>
+</tr>
+      }
+                  </tbody>
+       </table>
+         </div>
+            }
+         else
+         {
+   <p class="text-muted text-center py-3">Hocanýn baþka dersi yok.</p>
+          }
+         </div>
+            </div>
+
+       <!-- AYNI DERSÝ VEREN DÝÐER HOCALAR -->
+ @if (Model.AyniDersHocalar.Any())
+  {
+      <div class="card mb-4">
+      <div class="card-header bg-warning text-dark">
+        <h5 class="mb-0"><i class="bi bi-people"></i> @Model.Ders.DersAdi Dersini Veren Diðer Hocalar</h5>
+          </div>
+      <div class="card-body">
+       <div class="row">
+       @foreach (var hoca in Model.AyniDersHocalar)
+ {
+         <div class="col-md-4 mb-3">
+   <div class="card">
+         <div class="card-body text-center">
+            <i class="bi bi-person-fill" style="font-size: 2.5rem; color: #ffc107;"></i>
+     <h6 class="mt-2">@hoca.AdSoyad</h6>
+           <p class="mb-2">
+                <span class="badge bg-warning text-dark">@hoca.Rutbe</span>
+    </p>
+           <a asp-controller="Ayarlar" asp-action="HocaEdit" asp-route-id="@hoca.Id" class="btn btn-sm btn-outline-warning">
+    <i class="bi bi-eye"></i> Görüntüle
+      </a>
+</div>
+            </div>
+       </div>
+          }
+      </div>
+</div>
+                </div>
+    }
+
+  <!-- TELAFÝ KAYITLARI -->
+   <div class="card mb-4">
+                <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
+  <h5 class="mb-0"><i class="bi bi-calendar-x"></i> Telafi Kayýtlarý</h5>
+           <span class="badge bg-light text-dark">@Model.Telafiler.Count kayýt</span>
+        </div>
+        <div class="card-body">
+ @if (Model.Telafiler.Any())
+        {
+     <div class="table-responsive">
+     <table class="table table-hover">
+       <thead class="table-dark">
+    <tr>
+          <th>Tarih</th>
+           <th>Saat</th>
+   <th>Tür</th>
+    <th>Görevli Hoca</th>
+      <th>Durum</th>
+ <th>Ýþlemler</th>
+   </tr>
+   </thead>
+ <tbody>
+      @foreach (var telafi in Model.Telafiler)
+   {
+            <tr>
+         <td>@telafi.TelafiTarihi.ToString("dd.MM.yyyy dddd")</td>
+   <td>
+        <i class="bi bi-clock"></i>
+                   @telafi.BaslangicSaat.ToString(@"hh\:mm") - @telafi.BitisSaat.ToString(@"hh\:mm")
+  </td>
+       <td>
+   <span class="badge bg-@(telafi.TelafiTuru == "Telafi" ? "success" : telafi.TelafiTuru == "Ýkame" ? "warning text-dark" : "info")">
+    @telafi.TelafiTuru
+     </span>
+              </td>
+      <td>@telafi.YedekHoca.AdSoyad</td>
+ <td>
+     @if (telafi.Onaylandi)
+        {
+           <span class="badge bg-success"><i class="bi bi-check-circle"></i> Onaylý</span>
+             }
+              else
+{
+       <span class="badge bg-warning text-dark"><i class="bi bi-hourglass-split"></i> Bekliyor</span>
+    }
+           </td>
+  <td>
+    <a asp-controller="TelafiDers" asp-action="Details" asp-route-id="@telafi.Id" class="btn btn-sm btn-outline-info">
+     <i class="bi bi-eye"></i>
+       </a>
+    </td>
+            </tr>
+    }
+      </tbody>
+            </table>
+           </div>
+     }
+          else
+        {
+ <div class="alert alert-info">
+      <i class="bi bi-info-circle"></i> Bu ders için henüz telafi kaydý bulunmamaktadýr.
+     </div>
+        }
+    </div>
+  </div>
+
+ <!-- ÝÞLEMLER -->
+       <div class="card">
+      <div class="card-header bg-dark text-white">
+    <h5 class="mb-0"><i class="bi bi-gear"></i> Ýþlemler</h5>
+      </div>
+   <div class="card-body">
+                    <div class="d-flex gap-2">
+               <a asp-controller="TelafiDers" asp-action="Create" asp-route-dersId="@Model.Ders.Id" class="btn btn-warning">
+      <i class="bi bi-calendar-plus"></i> Telafi Ekle
+     </a>
+ 
+        <form asp-action="DersSil" asp-route-id="@Model.Ders.Id" method="post" class="d-inline"
+      onsubmit="return confirm('Bu dersi silmek istediðinize emin misiniz?')">
+         @Html.AntiForgeryToken()
+       <button type="submit" class="btn btn-danger">
+         <i class="bi bi-trash"></i> Dersi Sil
+           </button>
+          </form>
+
+               <a asp-action="Index" class="btn btn-outline-secondary">
+     <i class="bi bi-arrow-left"></i> Programa Dön
+ </a>
+    </div>
+     </div>
+     </div>
+      </div>
+    </div>
+</div>

@@ -1,0 +1,234 @@
+@model Etutlist.Controllers.DersDetayAyarlarViewModel
+@{
+    ViewData["Title"] = "Ders Detaylarý";
+}
+
+<div class="container mt-4">
+    <div class="row">
+<div class="col-md-12">
+   <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-book-fill"></i> Ders Detaylarý</h2>
+   <a asp-action="Index" class="btn btn-secondary">
+     <i class="bi bi-arrow-left"></i> Ayarlara Dön
+  </a>
+ </div>
+
+ @if (TempData["Success"] != null)
+ {
+<div class="alert alert-success alert-dismissible fade show">
+       <i class="bi bi-check-circle"></i> @TempData["Success"]
+ <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+     </div>
+       }
+
+    <!-- DERS BÝLGÝSÝ -->
+    <div class="card mb-4">
+       <div class="card-header bg-info text-white">
+     <h5><i class="bi bi-info-circle"></i> Ders Bilgisi</h5>
+  </div>
+   <div class="card-body">
+    <div class="row">
+ <div class="col-md-6">
+          <h3 class="mb-3">@Model.Ders.DersAdi</h3>
+       </div>
+    <div class="col-md-6 text-end">
+    <div class="d-inline-flex gap-2">
+        <span class="badge bg-primary fs-5">
+     <i class="bi bi-person-workspace"></i>
+    @Model.DersHocalari.Count hoca
+     </span>
+   <span class="badge bg-success fs-5">
+       <i class="bi bi-calendar-week"></i>
+ @Model.DersProgramlari.Count program
+   </span>
+  </div>
+    </div>
+    </div>
+     </div>
+ </div>
+
+    <!-- BU DERSÝ VEREN HOCALAR -->
+    <div class="card mb-4">
+     <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
+   <h5 class="mb-0"><i class="bi bi-people-fill"></i> Bu Dersi Verebilen Hocalar</h5>
+        <span class="badge bg-dark">@Model.DersHocalari.Count kiþi</span>
+  </div>
+<div class="card-body">
+      @if (Model.DersHocalari.Any())
+    {
+  <div class="row">
+           @foreach (var hoca in Model.DersHocalari)
+ {
+     <div class="col-md-4 mb-3">
+ <div class="card h-100 @(!hoca.AktifMi ? "border-secondary" : "border-primary")">
+        <div class="card-body">
+       <div class="d-flex align-items-center mb-2">
+        <i class="bi bi-person-circle" style="font-size: 3rem; color: @(hoca.AktifMi ? "#0d6efd" : "#6c757d");"></i>
+  <div class="ms-3">
+  <h6 class="mb-1">@hoca.AdSoyad</h6>
+ <p class="mb-1">
+     <span class="badge bg-secondary">@hoca.Rutbe</span>
+  </p>
+          <p class="mb-0">
+   <span class="badge bg-@(hoca.AktifMi ? "success" : "secondary")">
+        @(hoca.AktifMi ? "Aktif" : "Pasif")
+         </span>
+       </p>
+ </div>
+        </div>
+       <hr/>
+       <div class="d-flex justify-content-between align-items-center">
+      <div>
+       <small class="text-muted">Fakülte:</small><br/>
+   <strong>@hoca.Fakulte.Ad</strong>
+        </div>
+<div class="text-end">
+       <small class="text-muted">Ders Yükü:</small><br/>
+  <span class="badge bg-primary">@hoca.DersYuku saat</span>
+  </div>
+       </div>
+    <div class="mt-2">
+      <a asp-action="HocaEdit" asp-route-id="@hoca.Id" class="btn btn-sm btn-outline-primary w-100">
+      <i class="bi bi-eye"></i> Detaylarý Gör
+   </a>
+  </div>
+       </div>
+       </div>
+    </div>
+       }
+    </div>
+   }
+    else
+ {
+            <div class="alert alert-info">
+    <i class="bi bi-info-circle"></i> Bu dersi verebilen hoca henüz tanýmlanmamýþ.
+   </div>
+        }
+    </div>
+   </div>
+
+<!-- DERS PROGRAMLARI -->
+  <div class="card mb-4">
+     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+    <h5 class="mb-0"><i class="bi bi-calendar-week"></i> Ders Programlarý (@Model.Ders.DersAdi)</h5>
+   <span class="badge bg-light text-dark">@Model.DersProgramlari.Count kayýt</span>
+  </div>
+ <div class="card-body">
+        @if (Model.DersProgramlari.Any())
+        {
+       <div class="table-responsive">
+ <table class="table table-hover table-bordered">
+    <thead class="table-dark">
+     <tr>
+ <th>Fakülte</th>
+       <th>Hoca</th>
+          <th style="width: 100px;">Kýsým</th>
+ <th style="width: 120px;">Gün</th>
+<th style="width: 100px;">Saat</th>
+         <th style="width: 120px;">Ýþlemler</th>
+      </tr>
+ </thead>
+       <tbody>
+    @foreach (var program in Model.DersProgramlari)
+  {
+          <tr>
+ <td>@program.Fakulte.Ad</td>
+         <td>
+   <span class="badge bg-secondary me-2">@program.Hoca.Rutbe</span>
+   <strong>@program.Hoca.AdSoyad</strong>
+   </td>
+  <td class="text-center">
+     <span class="badge bg-info">@program.KisimNo. Kýsým</span>
+    </td>
+   <td>
+      @{
+    var gunBadge = program.DersGunu switch
+     {
+          "Pazartesi" => "badge bg-primary",
+      "Salý" => "badge bg-success",
+        "Çarþamba" => "badge bg-info",
+     "Perþembe" => "badge bg-warning text-dark",
+         "Cuma" => "badge bg-danger",
+ _ => "badge bg-secondary"
+      };
+        }
+       <span class="@gunBadge">@program.DersGunu</span>
+   </td>
+     <td class="text-center">
+   <span class="badge bg-dark">@program.DersSaati. Saat</span>
+  </td>
+           <td class="text-center">
+  <a asp-controller="DersProgrami" asp-action="Details" asp-route-id="@program.Id" class="btn btn-sm btn-outline-info" title="Program Detayý">
+   <i class="bi bi-eye"></i>
+   </a>
+       <a asp-action="HocaEdit" asp-route-id="@program.HocaId" class="btn btn-sm btn-outline-primary" title="Hoca Detayý">
+  <i class="bi bi-person"></i>
+         </a>
+     </td>
+     </tr>
+     }
+   </tbody>
+   </table>
+      </div>
+
+        <!-- ÝSTATÝSTÝKLER -->
+ <div class="row mt-3">
+            @{
+       var gunler = Model.DersProgramlari.GroupBy(p => p.DersGunu);
+  var fakulteler = Model.DersProgramlari.GroupBy(p => p.Fakulte.Ad);
+      }
+
+  @foreach (var gun in gunler)
+ {
+       <div class="col-md-3 mb-2">
+   <div class="card">
+     <div class="card-body text-center">
+ <h6>@gun.Key</h6>
+           <h3 class="text-primary">@gun.Count()</h3>
+      <small class="text-muted">ders saati</small>
+      </div>
+      </div>
+    </div>
+        }
+   </div>
+  }
+  else
+        {
+      <div class="alert alert-warning">
+   <i class="bi bi-exclamation-triangle"></i> Bu ders için henüz program oluþturulmamýþ.
+      <a asp-controller="DersProgrami" asp-action="BulkAdd" class="btn btn-sm btn-primary ms-2">
+    <i class="bi bi-plus-circle"></i> Hemen Ekle
+  </a>
+  </div>
+     }
+        </div>
+    </div>
+
+    <!-- ÝÞLEMLER -->
+    <div class="card">
+        <div class="card-header bg-dark text-white">
+<h5 class="mb-0"><i class="bi bi-gear"></i> Ýþlemler</h5>
+ </div>
+  <div class="card-body">
+      <div class="d-flex gap-2">
+      <a asp-controller="DersProgrami" asp-action="BulkAdd" class="btn btn-success">
+     <i class="bi bi-plus-circle"></i> Yeni Program Ekle
+      </a>
+   
+   <form asp-action="DersSil" asp-route-id="@Model.Ders.Id" method="post" class="d-inline"
+  onsubmit="return confirm('Bu dersi silmek istediðinize emin misiniz? Ýliþkili tüm programlar da silinecektir!')">
+ @Html.AntiForgeryToken()
+   <button type="submit" class="btn btn-danger">
+     <i class="bi bi-trash"></i> Dersi Sil
+      </button>
+        </form>
+
+    <a asp-action="Index" class="btn btn-outline-secondary">
+   <i class="bi bi-arrow-left"></i> Ayarlara Dön
+        </a>
+       </div>
+    </div>
+ </div>
+  </div>
+    </div>
+</div>

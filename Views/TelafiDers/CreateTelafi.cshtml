@@ -1,0 +1,223 @@
+@{
+    ViewData["Title"] = "Telafi Ekle";
+}
+
+<div class="container mt-4">
+ <div class="row">
+        <div class="col-md-12">
+     <div class="d-flex justify-content-between align-items-center mb-4">
+       <h2><i class="bi bi-calendar-plus"></i> Telafi Dersi Ekle</h2>
+       <a asp-action="Index" class="btn btn-secondary">
+       <i class="bi bi-arrow-left"></i> Geri
+      </a>
+      </div>
+
+ @if (TempData["Error"] != null)
+  {
+    <div class="alert alert-danger alert-dismissible fade show">
+       <i class="bi bi-exclamation-triangle"></i> @TempData["Error"]
+       <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+   </div>
+    }
+
+  <!-- AÇIKLAMA -->
+   <div class="alert alert-success">
+      <h5><i class="bi bi-info-circle"></i> Telafi Nedir?</h5>
+        <p class="mb-0"><strong>Telafi:</strong> Ayný hoca, dersi farklý bir tarih ve saatte yapýyor.</p>
+  </div>
+
+       <!-- FORM -->
+            <form asp-action="CreateTelafi" method="post">
+   @Html.AntiForgeryToken()
+
+       <div class="card mb-4">
+   <div class="card-header bg-primary text-white">
+      <h5><i class="bi bi-1-circle"></i> Fakülte Seçin</h5>
+   </div>
+ <div class="card-body">
+  <select name="FakulteId" id="fakulteSelect" class="form-select" required onchange="fakulteSecildi()">
+  <option value="">-- Fakülte Seçiniz --</option>
+      @foreach (var fakulte in ViewBag.Fakulteler as SelectList)
+   {
+      <option value="@fakulte.Value">@fakulte.Text</option>
+     }
+  </select>
+      </div>
+ </div>
+
+       <div class="card mb-4" id="dersCard" style="display:none;">
+     <div class="card-header bg-success text-white">
+      <h5><i class="bi bi-2-circle"></i> Hangi Ders?</h5>
+   </div>
+     <div class="card-body">
+  <div class="row g-3">
+         <div class="col-md-6">
+    <label class="form-label"><strong>Ders Adý</strong> <span class="text-danger">*</span></label>
+   <input type="text" name="DersAdi" id="dersAdiInput" class="form-control" 
+   placeholder="Örn: Kriminoloji" required autocomplete="off" />
+       <div id="dersOneri" class="list-group mt-1" style="position: absolute; z-index: 1000; width: 45%;"></div>
+         </div>
+    <div class="col-md-3">
+     <label class="form-label"><strong>Kýsým No</strong> <span class="text-danger">*</span></label>
+   <input type="number" name="KisimNo" class="form-control" min="1" required />
+        </div>
+     <div class="col-md-3">
+ <label class="form-label"><strong>Normal Ders Saati</strong> <span class="text-danger">*</span></label>
+  <select name="NormalDersSaati" class="form-select" required>
+  <option value="">Seçiniz</option>
+       @for (int i = 1; i <= 8; i++)
+     {
+    <option value="@i">@i. Saat</option>
+    }
+ </select>
+      </div>
+      </div>
+
+   <div class="row g-3 mt-2">
+        <div class="col-md-6">
+     <label class="form-label"><strong>Hoca</strong> <span class="text-danger">*</span></label>
+       <input type="text" name="HocaAdi" id="hocaInput" class="form-control" 
+            placeholder="Hoca adý" required autocomplete="off" />
+       <input type="hidden" name="HocaId" id="hocaId" />
+   <div id="hocaOneri" class="list-group mt-1" style="position: absolute; z-index: 1000; width: 45%;"></div>
+    </div>
+       <div class="col-md-6">
+      <label class="form-label"><strong>Normal Gün</strong> <span class="text-danger">*</span></label>
+<select name="NormalGun" class="form-select" required>
+    <option value="">Seçiniz</option>
+    <option value="Pazartesi">Pazartesi</option>
+  <option value="Salý">Salý</option>
+       <option value="Çarþamba">Çarþamba</option>
+   <option value="Perþembe">Perþembe</option>
+      <option value="Cuma">Cuma</option>
+ </select>
+     </div>
+   </div>
+ </div>
+ </div>
+
+   <div class="card mb-4" id="telafiCard" style="display:none;">
+    <div class="card-header bg-warning text-dark">
+         <h5><i class="bi bi-3-circle"></i> Telafi Tarihi ve Saati</h5>
+ </div>
+        <div class="card-body">
+   <div class="row g-3">
+            <div class="col-md-4">
+      <label class="form-label"><strong>Telafi Tarihi</strong> <span class="text-danger">*</span></label>
+ <input type="date" name="TelafiTarihi" class="form-control" required />
+   </div>
+       <div class="col-md-4">
+ <label class="form-label"><strong>Baþlangýç Saati</strong> <span class="text-danger">*</span></label>
+  <input type="time" name="BaslangicSaat" class="form-control" value="09:00" required />
+   </div>
+       <div class="col-md-4">
+       <label class="form-label"><strong>Bitiþ Saati</strong> <span class="text-danger">*</span></label>
+         <input type="time" name="BitisSaat" class="form-control" value="10:00" required />
+     </div>
+  </div>
+     </div>
+  </div>
+
+   <div class="card mb-4" id="detayCard" style="display:none;">
+  <div class="card-header bg-info text-white">
+   <h5><i class="bi bi-4-circle"></i> Ek Bilgiler</h5>
+     </div>
+        <div class="card-body">
+    <div class="row g-3">
+   <div class="col-md-6">
+   <label class="form-label"><strong>Telafi Nedeni</strong> <span class="text-danger">*</span></label>
+<select name="TelafiNedeni" class="form-select" required>
+    <option value="">Seçiniz</option>
+     <option value="Ýzin">Ýzin</option>
+        <option value="Hastalýk">Hastalýk</option>
+         <option value="Görev">Görev</option>
+     <option value="Resmi Tatil">Resmi Tatil</option>
+         <option value="Diðer">Diðer</option>
+   </select>
+      </div>
+     <div class="col-md-6">
+       <label class="form-label"><strong>Açýklama</strong></label>
+    <textarea name="Aciklama" class="form-control" rows="3" placeholder="Ek açýklama (opsiyonel)"></textarea>
+       </div>
+            </div>
+      </div>
+      </div>
+
+    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+     <a asp-action="Index" class="btn btn-secondary">
+   <i class="bi bi-x-circle"></i> Ýptal
+     </a>
+   <button type="submit" class="btn btn-success btn-lg">
+     <i class="bi bi-save"></i> Telafi Ekle
+  </button>
+        </div>
+   </form>
+     </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+     let fakulteId = 0;
+
+   function fakulteSecildi() {
+     fakulteId = $('#fakulteSelect').val();
+   if (fakulteId) {
+     $('#dersCard, #telafiCard, #detayCard').show();
+       }
+  }
+
+   // Ders autocomplete
+        $('#dersAdiInput').on('input', function() {
+   let term = $(this).val();
+      if (term.length < 2) {
+    $('#dersOneri').empty();
+     return;
+   }
+
+    $.ajax({
+  url: '@Url.Action("SearchDersler", "DersProgrami")',
+    data: { term: term },
+      success: function(data) {
+     let html = '';
+       data.forEach(d => {
+         html += `<a href="#" class="list-group-item list-group-item-action" onclick="dersSecildi('${d.dersAdi}'); return false;">${d.dersAdi}</a>`;
+   });
+     $('#dersOneri').html(html);
+      }
+   });
+        });
+
+   function dersSecildi(ad) {
+   $('#dersAdiInput').val(ad);
+  $('#dersOneri').empty();
+        }
+
+      // Hoca autocomplete
+  $('#hocaInput').on('input', function() {
+   let term = $(this).val();
+     if (term.length < 2 || !fakulteId) {
+   $('#hocaOneri').empty();
+       return;
+      }
+
+   $.ajax({
+     url: '@Url.Action("SearchHocalar", "DersProgrami")',
+        data: { fakulteId: fakulteId, term: term },
+   success: function(data) {
+   let html = '';
+           data.forEach(h => {
+        html += `<a href="#" class="list-group-item list-group-item-action" onclick="hocaSecildi('${h.adSoyad}', ${h.id}); return false;">${h.rutbe} ${h.adSoyad}</a>`;
+      });
+      $('#hocaOneri').html(html);
+   }
+      });
+        });
+
+        function hocaSecildi(ad, id) {
+  $('#hocaInput').val(ad);
+   $('#hocaId').val(id);
+      $('#hocaOneri').empty();
+        }
+  </script>
+}
