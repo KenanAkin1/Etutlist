@@ -1,35 +1,171 @@
-ï»¿@model IEnumerable<Etutlist.Models.Personel>
+@model Etutlist.ViewModels.PersonelIndexViewModel
 
-<h2>Personel Listesi</h2>
-<p><a asp-action="Create" class="btn btn-primary">Yeni Personel</a></p>
+@{
+    ViewData["Title"] = "Personel Listesi";
+}
 
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Ad</th>
-            <th>Rutbe</th>
-            <th>Pazar</th>
-            <th>Ã–zel GÃ¼n</th>
-            <th>Hafta Ä°Ã§i</th>
-            <th>Yedek</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var p in Model)
-        {
+<div class="container-fluid mt-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>
+        <i class="bi bi-people-fill"></i> Personel Listesi
+        </h2>
+        <a asp-action="Create" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Yeni Personel
+  </a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+     <div class="alert alert-success alert-dismissible fade show" role="alert">
+  <i class="bi bi-check-circle-fill"></i> @TempData["Success"]
+<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i> @TempData["Error"]
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Aktif Personeller -->
+<div class="card mb-4">
+     <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">
+      <i class="bi bi-person-check-fill"></i> Aktif Personeller
+   </h5>
+  </div>
+        <div class="card-body">
+            @if (Model.AktifPersoneller.Any())
+     {
+        <div class="table-responsive">
+           <table class="table table-hover table-striped">
+           <thead class="table-light">
             <tr>
-                <td>@p.Ad</td>
-                <th>@p.Rutbe</th>
-                <td>@p.PazarSayisi</td>
-                <td>@p.OzelGunSayisi</td>
-                <td>@p.HaftaIciSayisi</td>
-                <td>@p.YedekSayisi</td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@p.Id">DÃ¼zenle</a> |
-                    <a asp-action="Delete" asp-route-id="@p.Id">Sil</a>
-                </td>
-            </tr>
+      <th>Ad Soyad</th>
+       <th>Rütbe</th>
+    <th class="text-center">Pazar</th>
+            <th class="text-center">Özel Gün</th>
+       <th class="text-center">Hafta Ýçi</th>
+        <th class="text-center">Yedek</th>
+               <th class="text-center">Ýþlemler</th>
+   </tr>
+            </thead>
+       <tbody>
+           @foreach (var p in Model.AktifPersoneller)
+    {
+     <tr>
+       <td><strong>@p.Ad</strong></td>
+        <td>@p.Rutbe</td>
+          <td class="text-center">
+     <span class="badge bg-info">@p.PazarSayisi</span>
+     </td>
+     <td class="text-center">
+          <span class="badge bg-warning text-dark">@p.OzelGunSayisi</span>
+     </td>
+   <td class="text-center">
+       <span class="badge bg-success">@p.HaftaIciSayisi</span>
+           </td>
+          <td class="text-center">
+         <span class="badge bg-secondary">@p.YedekSayisi</span>
+    </td>
+        <td class="text-center">
+       <div class="btn-group btn-group-sm" role="group">
+       <a asp-action="Edit" asp-route-id="@p.Id" 
+     class="btn btn-warning" title="Düzenle">
+        <i class="bi bi-pencil-fill"></i>
+        </a>
+        <a asp-action="Delete" asp-route-id="@p.Id" 
+            class="btn btn-secondary" title="Pasif Yap">
+         <i class="bi bi-archive-fill"></i>
+</a>
+            </div>
+            </td>
+           </tr>
+       }
+           </tbody>
+         </table>
+         </div>
+                <div class="text-muted small">
+       <i class="bi bi-info-circle"></i> Toplam <strong>@Model.AktifPersoneller.Count</strong> aktif personel
+   </div>
+ }
+          else
+            {
+        <div class="alert alert-info mb-0">
+     <i class="bi bi-info-circle"></i> Aktif personel bulunamadý.
+           </div>
         }
-    </tbody>
-</table>
+        </div>
+ </div>
+
+    <!-- Pasif Personeller -->
+    <div class="card">
+      <div class="card-header bg-secondary text-white">
+     <h5 class="mb-0">
+  <i class="bi bi-person-x-fill"></i> Pasif Personeller
+            </h5>
+        </div>
+   <div class="card-body">
+  @if (Model.PasifPersoneller.Any())
+            {
+  <div class="table-responsive">
+          <table class="table table-hover">
+       <thead class="table-light">
+       <tr>
+               <th>Ad Soyad</th>
+   <th>Rütbe</th>
+        <th class="text-center">Ýþlemler</th>
+</tr>
+              </thead>
+        <tbody>
+              @foreach (var p in Model.PasifPersoneller)
+         {
+          <tr class="table-secondary">
+   <td>
+         <del class="text-muted">@p.Ad</del>
+            </td>
+     <td>
+        <del class="text-muted">@p.Rutbe</del>
+  </td>
+               <td class="text-center">
+   <form asp-action="Reactivate" method="post" 
+         style="display:inline;" 
+     onsubmit="return confirm('? @p.Ad tekrar aktif hale getirilecek. Emin misiniz?');">
+    @Html.AntiForgeryToken()
+           <input type="hidden" name="id" value="@p.Id" />
+           <button type="submit" class="btn btn-sm btn-success">
+ <i class="bi bi-arrow-counterclockwise"></i> Aktif Et
+           </button>
+            </form>
+       </td>
+     </tr>
+       }
+            </tbody>
+       </table>
+    </div>
+     <div class="text-muted small">
+       <i class="bi bi-info-circle"></i> Toplam <strong>@Model.PasifPersoneller.Count</strong> pasif personel
+                </div>
+            }
+    else
+            {
+        <div class="alert alert-info mb-0">
+           <i class="bi bi-info-circle"></i> Pasif personel bulunmuyor.
+             </div>
+    }
+     </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Alert auto-dismiss (5 saniye sonra)
+        window.setTimeout(function() {
+   $('.alert').fadeTo(500, 0).slideUp(500, function(){
+        $(this).remove();
+    });
+        }, 5000);
+    </script>
+}

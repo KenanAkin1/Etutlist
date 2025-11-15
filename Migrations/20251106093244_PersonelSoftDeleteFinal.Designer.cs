@@ -4,6 +4,7 @@ using Etutlist.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Etutlist.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251106093244_PersonelSoftDeleteFinal")]
+    partial class PersonelSoftDeleteFinal
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -303,65 +306,6 @@ namespace Etutlist.Migrations
                     b.ToTable("Personeller", (string)null);
                 });
 
-            modelBuilder.Entity("Etutlist.Models.Tabur", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("FakulteId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MaxKisimNo")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MinKisimNo")
-                        .HasColumnType("int");
-
-                    b.Property<string>("TaburAdi")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FakulteId");
-
-                    b.ToTable("Taburlar");
-                });
-
-            modelBuilder.Entity("Etutlist.Models.TaburTelafiAyarlari", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("TaburId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TelafiBaslamaSaati")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TelafiMaxBitisSaati")
-                        .HasColumnType("int");
-
-                    b.Property<string>("TelafiYapilamayacakDersSaatleri")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("TelafiYapilamayacakGun")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TaburId");
-
-                    b.ToTable("TaburTelafiAyarlari");
-                });
-
             modelBuilder.Entity("Etutlist.Models.TelafiDers", b =>
                 {
                     b.Property<int>("Id")
@@ -512,28 +456,6 @@ namespace Etutlist.Migrations
                     b.Navigation("Personel");
                 });
 
-            modelBuilder.Entity("Etutlist.Models.Tabur", b =>
-                {
-                    b.HasOne("Etutlist.Models.Fakulte", "Fakulte")
-                        .WithMany()
-                        .HasForeignKey("FakulteId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Fakulte");
-                });
-
-            modelBuilder.Entity("Etutlist.Models.TaburTelafiAyarlari", b =>
-                {
-                    b.HasOne("Etutlist.Models.Tabur", "Tabur")
-                        .WithMany("TelafiAyarlari")
-                        .HasForeignKey("TaburId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Tabur");
-                });
-
             modelBuilder.Entity("Etutlist.Models.TelafiDers", b =>
                 {
                     b.HasOne("Etutlist.Models.DersProgrami", "DersProgrami")
@@ -600,11 +522,6 @@ namespace Etutlist.Migrations
                     b.Navigation("Etutler");
 
                     b.Navigation("Mazeretler");
-                });
-
-            modelBuilder.Entity("Etutlist.Models.Tabur", b =>
-                {
-                    b.Navigation("TelafiAyarlari");
                 });
 #pragma warning restore 612, 618
         }

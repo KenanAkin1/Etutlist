@@ -3,463 +3,386 @@ ViewData["Title"] = "Ýkame / Birleþtirme Ekle";
 }
 
 <div class="container mt-4">
-  <div class="row">
-    <div class="col-md-12">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-       <h2><i class="bi bi-arrow-repeat"></i> Ýkame / Birleþtirme Ekle</h2>
-  <a asp-action="Index" class="btn btn-secondary">
- <i class="bi bi-arrow-left"></i> Geri
-      </a>
-        </div>
+    <div class="row">
+        <div class="col-md-12">
+   <div class="d-flex justify-content-between align-items-center mb-4">
+  <h2><i class="bi bi-arrow-repeat"></i> Ýkame / Birleþtirme Ekle</h2>
+    <a asp-action="Index" class="btn btn-secondary">
+     <i class="bi bi-arrow-left"></i> Geri
+              </a>
+            </div>
 
-   @if (TempData["Error"] != null)
-   {
-      <div class="alert alert-danger alert-dismissible fade show">
- <i class="bi bi-exclamation-triangle"></i> @TempData["Error"]
-           <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-  }
+     @if (TempData["Error"] != null)
+       {
+            <div class="alert alert-danger alert-dismissible fade show">
+             <i class="bi bi-exclamation-triangle"></i> @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
 
-            <!-- AÇIKLAMA -->
  <div class="alert alert-info">
-      <h5><i class="bi bi-info-circle"></i> Nasýl Çalýþýr?</h5>
-      <ul class="mb-0">
-  <li><strong>Ýkame:</strong> Yerine girecek hocanýn o saatte dersi YOKSA ? Ýkame</li>
-      <li><strong>Birleþtirme:</strong> Yerine girecek hocanýn o saatte dersi VARSA ? Birleþtirme</li>
- <li>Hoca ve kýsým seçince, o kýsýmýn ders saatleri otomatik gelir</li>
-         <li>Ardýþýk saatler varsa (1-2, 3-4) tek seçenekte birleþtirilir</li>
-       <li>Tarih otomatik hesaplanýr: Bugün Pazar ise yarýn Pazartesi, deðilse bu haftanýn seçilen günü</li>
-       </ul>
-     </div>
-
-         <!-- FORM -->
- <form asp-action="CreateIkame" method="post" id="ikameForm">
-       @Html.AntiForgeryToken()
-      <input type="hidden" name="DersSaatleri" id="dersSaatleriHidden" />
-    <input type="hidden" name="TelafiTarihi" id="telafiTarihiHidden" />
-
-      <div class="card mb-4">
-   <div class="card-header bg-primary text-white">
-    <h5><i class="bi bi-1-circle"></i> Fakülte Seçin</h5>
-          </div>
-<div class="card-body">
- <select name="FakulteId" id="fakulteSelect" class="form-select" required onchange="fakulteSecildi()">
-  <option value="">-- Fakülte Seçiniz --</option>
-  @foreach (var fakulte in ViewBag.Fakulteler as SelectList)
- {
-       <option value="@fakulte.Value">@fakulte.Text</option>
- }
-     </select>
-       </div>
-     </div>
-
-   <div class="card mb-4" id="dersCard" style="display:none;">
-          <div class="card-header bg-success text-white">
-<h5><i class="bi bi-2-circle"></i> Ders ve Hoca Bilgileri</h5>
-</div>
-<div class="card-body">
-   <div class="row g-3">
-        <div class="col-md-4">
- <label class="form-label"><strong>Ders Adý</strong> <span class="text-danger">*</span></label>
-     <input type="text" name="DersAdi" id="dersAdiInput" class="form-control" 
-   placeholder="Örn: Kriminoloji" required autocomplete="off" />
-      <div id="dersOneri" class="list-group mt-1" style="position: absolute; z-index: 1000; width: 30%;"></div>
-    </div>
- <div class="col-md-4">
-    <label class="form-label"><strong>Asýl Hoca</strong> <span class="text-danger">*</span></label>
-       <input type="text" name="AsilHocaAdi" id="asilHocaInput" class="form-control" 
-  placeholder="Hoca adý" required autocomplete="off" />
-  <input type="hidden" name="AsilHocaId" id="asilHocaId" />
-    <div id="asilHocaOneri" class="list-group mt-1" style="position: absolute; z-index: 1000; width: 30%;"></div>
-        </div>
-   <div class="col-md-4">
-       <label class="form-label"><strong>Kýsým No</strong> <span class="text-danger">*</span></label>
-            <input type="number" name="KisimNo" id="kisimNoInput" class="form-control" 
-  placeholder="1, 2, 3..." min="1" required onchange="kisimSecildi()" />
-      </div>
-         </div>
-</div>
-    </div>
-
-   <div class="card mb-4" id="dersSaatCard" style="display:none;">
-        <div class="card-header bg-info text-white">
-       <h5><i class="bi bi-3-circle"></i> Hangi Ders Saatleri?</h5>
-      </div>
-   <div class="card-body">
-        <div id="dersSaatSecenekleri" class="row g-3">
-           <!-- AJAX ile doldurulacak -->
-    </div>
-  <div id="dersSaatLoading" class="text-center py-3" style="display:none;">
-       <div class="spinner-border text-primary" role="status"></div>
-<p class="mt-2">Ders saatleri getiriliyor...</p>
-       </div>
-        <div id="dersSaatYok" class="alert alert-warning" style="display:none;">
-    <i class="bi bi-exclamation-triangle"></i> Bu kýsým için ders saati bulunamadý.
-  </div>
-   </div>
-  </div>
-
-    <div class="card mb-4" id="yedekHocaCard" style="display:none;">
-  <div class="card-header bg-warning text-dark">
-          <h5><i class="bi bi-4-circle"></i> Yerine Girecek Hoca</h5>
-      </div>
-   <div class="card-body">
-       <div class="row g-3">
-   <div class="col-md-12">
-    <label class="form-label"><strong>Hoca Adý</strong> <span class="text-danger">*</span></label>
-     <input type="text" name="YedekHocaAdi" id="yedekHocaInput" class="form-control" 
-  placeholder="Yerine girecek hoca" required autocomplete="off" />
-     <input type="hidden" name="YedekHocaId" id="yedekHocaId" />
-       <div id="yedekHocaOneri" class="list-group mt-1" style="position: absolute; z-index: 1000; width: 50%;"></div>
-        </div>
-       </div>
-    </div>
-       </div>
-
-    <div class="card mb-4" id="detayCard" style="display:none;">
-       <div class="card-header bg-secondary text-white">
-    <h5><i class="bi bi-5-circle"></i> Tarih ve Ek Bilgiler</h5>
-      </div>
-  <div class="card-body">
-  <div class="row g-3 mb-3">
-  <div class="col-md-12">
-  <label class="form-label"><strong>Ýkame/Birleþtirme Tarihi</strong> <span class="text-danger">*</span></label>
- <input type="date" id="telafiTarihiInput" class="form-control" required />
-   <small class="text-muted" id="tarihAciklama">Otomatik hesaplanan tarih. Deðiþtirmek için týklayýn.</small>
+        <h5><i class="bi bi-info-circle"></i> Nasýl Çalýþýr?</h5>
+       <ul class="mb-0">
+          <li>? <strong>Blok seçimi:</strong> Tüm saatleri seçmek için ana bloða týklayýn</li>
+           <li>? <strong>Tek tek seçim:</strong> Sadece belirli saatleri seçmek için alt butonlarý kullanýn</li>
+      <li>?? Sistem otomatik olarak Ýkame veya Birleþtirme tipini belirleyecektir</li>
+                </ul>
  </div>
+
+            <form asp-action="CreateIkame" method="post" id="ikameForm">
+    @Html.AntiForgeryToken()
+       <input type="hidden" name="TelafiTarihi" id="telafiTarihiHidden" />
+
+                <div class="card mb-4">
+             <div class="card-header bg-primary text-white">
+     <h5><i class="bi bi-1-circle"></i> Fakülte Seçin</h5>
+       </div>
+    <div class="card-body">
+   <select name="FakulteId" id="fakulteSelect" class="form-select" required>
+            <option value="">-- Fakülte Seçiniz --</option>
+        @foreach (var fakulte in ViewBag.Fakulteler as SelectList)
+      {
+       <option value="@fakulte.Value">@fakulte.Text</option>
+       }
+      </select>
+     </div>
+     </div>
+
+     <div class="card mb-4" id="dersCard" style="display:none;">
+  <div class="card-header bg-success text-white">
+   <h5><i class="bi bi-2-circle"></i> Ders ve Hoca Bilgileri</h5>
          </div>
-         <div class="row g-3">
-        <div class="col-md-6">
-        <label class="form-label"><strong>Neden</strong> <span class="text-danger">*</span></label>
-  <select name="TelafiNedeni" id="nedenSelect" class="form-select" required onchange="nedenDegisti()">
-   <option value="">Seçiniz</option>
-            <option value="Ýzin">Ýzin</option>
-   <option value="Hastalýk">Hastalýk</option>
-      <option value="Görev">Görev</option>
-  <option value="Resmi Tatil">Resmi Tatil</option>
- <option value="Diðer">Diðer (Manuel Gir)</option>
-   </select>
-  <input type="text" name="DigerNeden" id="digerNedenInput" class="form-control mt-2" 
-    placeholder="Nedeni yazýnýz..." style="display:none;" />
+       <div class="card-body">
+       <div class="row g-3">
+       <div class="col-md-4">
+      <label class="form-label"><strong>Ders Adý</strong> <span class="text-danger">*</span></label>
+<input type="text" name="DersAdi" id="dersAdiInput" class="form-control" 
+         placeholder="Örn: Kriminoloji" required autocomplete="off" />
+    <div id="dersOneri" class="list-group mt-1" style="position: absolute; z-index: 1000; width: 30%;"></div>
+              </div>
+           <div class="col-md-4">
+              <label class="form-label"><strong>Asýl Hoca</strong> <span class="text-danger">*</span></label>
+          <input type="text" id="asilHocaInput" class="form-control" 
+      placeholder="Hoca adý" required autocomplete="off" />
+       <input type="hidden" name="AsilHocaId" id="asilHocaId" />
+  <div id="asilHocaOneri" class="list-group mt-1" style="position: absolute; z-index: 1000; width: 30%;"></div>
+             </div>
+      <div class="col-md-4">
+     <label class="form-label"><strong>Kýsým No</strong> <span class="text-danger">*</span></label>
+     <input type="number" name="KisimNo" id="kisimNoInput" class="form-control" 
+      placeholder="1, 2, 3..." min="1" required />
+  </div>
+          </div>
+  </div>
+  </div>
+
+        <div class="card mb-4" id="dersSaatCard" style="display:none;">
+       <div class="card-header bg-info text-white">
+   <h5><i class="bi bi-3-circle"></i> Hangi Ders Saatleri? (Blok veya Tek Seçim)</h5>
    </div>
-<div class="col-md-6">
-    <label class="form-label"><strong>Açýklama</strong></label>
-   <textarea name="Aciklama" id="aciklamaInput" class="form-control" rows="3" placeholder="Ek açýklama (opsiyonel)"></textarea>
-   </div>
+     <div class="card-body">
+ <div id="dersSaatSecenekleri"></div>
+     <div id="dersSaatLoading" class="text-center py-3" style="display:none;">
+           <div class="spinner-border text-primary" role="status"></div>
+          <p class="mt-2">Ders saatleri getiriliyor...</p>
+          </div>
+        <div id="dersSaatYok" class="alert alert-warning" style="display:none;">
+   <i class="bi bi-exclamation-triangle"></i> Bu kýsým için ders saati bulunamadý.
+                </div>
        </div>
-       </div>
+    </div>
+
+  <div class="card mb-4" id="yedekHocaCard" style="display:none;">
+                <div class="card-header bg-warning text-dark">
+ <h5><i class="bi bi-4-circle"></i> Yerine Girecek Hoca</h5>
+  </div>
+    <div class="card-body">
+         <input type="text" id="yedekHocaInput" class="form-control" 
+          placeholder="Yerine girecek hoca" required autocomplete="off" />
+       <input type="hidden" name="YedekHocaId" id="yedekHocaId" />
+     <div id="yedekHocaOneri" class="list-group mt-1" style="position: absolute; z-index: 1000; width: 50%;"></div>
+        </div>
+  </div>
+
+           <div class="card mb-4" id="detayCard" style="display:none;">
+      <div class="card-header bg-secondary text-white">
+  <h5><i class="bi bi-5-circle"></i> Tarih ve Ek Bilgiler</h5>
+        </div>
+          <div class="card-body">
+        <div class="row g-3 mb-3">
+    <div class="col-md-12">
+        <label class="form-label"><strong>Ýkame/Birleþtirme Tarihi</strong> <span class="text-danger">*</span></label>
+          <input type="date" id="telafiTarihiInput" class="form-control" required />
+       <small class="text-muted" id="tarihAciklama">Otomatik hesaplanan tarih</small>
       </div>
-
- <div id="sonucCard" class="alert alert-secondary" style="display:none;">
- <h5><i class="bi bi-lightbulb"></i> Sistem Tahmini:</h5>
- <p id="sonucMesaj" class="mb-0"></p>
+            </div>
+             <div class="row g-3">
+         <div class="col-md-6">
+   <label class="form-label"><strong>Neden</strong> <span class="text-danger">*</span></label>
+   <input type="text" name="TelafiNedeni" class="form-control" 
+       placeholder="Örn: Ýzin, Hastalýk, Görev..." required />
+        </div>
+      <div class="col-md-6">
+             <label class="form-label"><strong>Açýklama</strong></label>
+        <textarea name="Aciklama" class="form-control" rows="3" placeholder="Ek açýklama (opsiyonel)"></textarea>
        </div>
+   </div>
+       </div>
+              </div>
 
- <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-  <a asp-action="Index" class="btn btn-secondary">
-    <i class="bi bi-x-circle"></i> Ýptal
-    </a>
-   <button type="submit" class="btn btn-primary btn-lg">
-    <i class="bi bi-save"></i> Kaydet
-    </button>
-     </div>
-    </form>
-     </div>
+      <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+         <a asp-action="Index" class="btn btn-secondary">
+        <i class="bi bi-x-circle"></i> Ýptal
+                    </a>
+           <button type="submit" class="btn btn-primary btn-lg">
+       <i class="bi bi-save"></i> Kaydet
+         </button>
+    </div>
+      </form>
+  </div>
     </div>
 </div>
 
 @section Scripts {
-  <script>
-    let fakulteId = 0;
-        let secilenGun = '';
- let secilenSaatler = [];
-     let secilenTarih = null;
+<script>
+let fakulteId = 0;
+let secilenGun = '';
+let secilenSaatler = [];
 
-function fakulteSecildi() {
-    fakulteId = $('#fakulteSelect').val();
-   if (fakulteId) {
-$('#dersCard, #yedekHocaCard, #detayCard').show();
+$('#fakulteSelect').change(function() {
+    fakulteId = $(this).val();
+    if (fakulteId) {
+        $('#dersCard, #yedekHocaCard, #detayCard').show();
     }
+});
+
+$('#dersAdiInput').on('input', function() {
+    let term = $(this).val();
+    if (term.length < 2) {
+        $('#dersOneri').empty();
+        return;
     }
-
-        // Ders autocomplete
- $('#dersAdiInput').on('input', function() {
-let term = $(this).val();
-      if (term.length < 2) {
-       $('#dersOneri').empty();
-    return;
- }
-
-       $.ajax({
-  url: '@Url.Action("SearchDersler", "DersProgrami")',
+    $.ajax({
+        url: '@Url.Action("SearchDersler", "DersProgrami")',
         data: { term: term },
-     success: function(data) {
-      let html = '';
-   data.forEach(d => {
-        html += `<a href="#" class="list-group-item list-group-item-action" onclick="dersSecildi('${d.dersAdi}'); return false;">${d.dersAdi}</a>`;
-      });
-     $('#dersOneri').html(html);
-   }
-  });
+        success: function(data) {
+   let html = '';
+            data.forEach(d => {
+     html += `<a href="#" class="list-group-item list-group-item-action" onclick="dersSecildi('${d.dersAdi}'); return false;">${d.dersAdi}</a>`;
+     });
+            $('#dersOneri').html(html);
+      }
+    });
 });
 
-   function dersSecildi(ad) {
+function dersSecildi(ad) {
     $('#dersAdiInput').val(ad);
-          $('#dersOneri').empty();
-        }
+    $('#dersOneri').empty();
+}
 
- // Hoca autocomplete
- $('#asilHocaInput, #yedekHocaInput').on('input', function() {
- let term = $(this).val();
-     let targetDiv = $(this).attr('id') === 'asilHocaInput' ? '#asilHocaOneri' : '#yedekHocaOneri';
- 
-  if (term.length < 2 || !fakulteId) {
- $(targetDiv).empty();
-    return;
-  }
-
-         $.ajax({
-       url: '@Url.Action("SearchHocalar", "DersProgrami")',
-       data: { fakulteId: fakulteId, term: term },
-       success: function(data) {
-            let html = '';
-  data.forEach(h => {
-     let inputId = targetDiv === '#asilHocaOneri' ? 'asilHocaInput' : 'yedekHocaInput';
-       let hiddenId = targetDiv === '#asilHocaOneri' ? 'asilHocaId' : 'yedekHocaId';
-    html += `<a href="#" class="list-group-item list-group-item-action" onclick="hocaSecildi('${h.adSoyad}', ${h.id}, '${inputId}', '${hiddenId}'); return false;">${h.rutbe} ${h.adSoyad}</a>`;
-});
-   $(targetDiv).html(html);
+$('#asilHocaInput, #yedekHocaInput').on('input', function() {
+    let term = $(this).val();
+let targetDiv = $(this).attr('id') === 'asilHocaInput' ? '#asilHocaOneri' : '#yedekHocaOneri';
+    
+    if (term.length < 2 || !fakulteId) {
+   $(targetDiv).empty();
+        return;
     }
-        });
-  });
 
-        function hocaSecildi(ad, id, inputId, hiddenId) {
-   $('#' + inputId).val(ad);
-  $('#' + hiddenId).val(id);
- $('#' + inputId).next().next('.list-group').empty();
-  
-if (inputId === 'asilHocaInput') {
+    $.ajax({
+        url: '@Url.Action("SearchHocalar", "DersProgrami")',
+        data: { fakulteId: fakulteId, term: term },
+  success: function(data) {
+       let html = '';
+  data.forEach(h => {
+       let inputId = targetDiv === '#asilHocaOneri' ? 'asilHocaInput' : 'yedekHocaInput';
+    let hiddenId = targetDiv === '#asilHocaOneri' ? 'asilHocaId' : 'yedekHocaId';
+      html += `<a href="#" class="list-group-item list-group-item-action" onclick="hocaSecildi('${h.adSoyad}', ${h.id}, '${inputId}', '${hiddenId}'); return false;">${h.rutbe} ${h.adSoyad}</a>`;
+    });
+  $(targetDiv).html(html);
+      }
+    });
+});
+
+function hocaSecildi(ad, id, inputId, hiddenId) {
+    $('#' + inputId).val(ad);
+    $('#' + hiddenId).val(id);
+    $('#' + inputId).next().next('.list-group').empty();
+    
+    if (inputId === 'asilHocaInput') {
         kisimSecildi();
-     } else if (inputId === 'yedekHocaInput') {
-  kontrolEt();
     }
 }
 
-     // Kýsým seçilince ders saatlerini getir
-        function kisimSecildi() {
-   let hocaId = $('#asilHocaId').val();
-  let kisimNo = $('#kisimNoInput').val();
+$('#kisimNoInput').change(function() {
+    kisimSecildi();
+});
 
-  if (!fakulteId || !hocaId || !kisimNo) {
-return;
-  }
+function kisimSecildi() {
+    let hocaId = $('#asilHocaId').val();
+    let kisimNo = $('#kisimNoInput').val();
 
-      $('#dersSaatLoading').show();
-     $('#dersSaatSecenekleri').empty();
-       $('#dersSaatYok').hide();
+    if (!fakulteId || !hocaId || !kisimNo) return;
+
+    $('#dersSaatLoading').show();
+  $('#dersSaatSecenekleri').empty();
+    $('#dersSaatYok').hide();
     $('#dersSaatCard').show();
 
- $.ajax({
- url: '@Url.Action("GetDersSaatleri", "TelafiDers")',
-  data: { 
-    fakulteId: fakulteId,
-         hocaId: hocaId,
-    kisimNo: kisimNo
-      },
- success: function(data) {
+    $.ajax({
+        url: '@Url.Action("GetDersSaatleri", "TelafiDers")',
+        data: { fakulteId: fakulteId, hocaId: hocaId, kisimNo: kisimNo },
+        success: function(data) {
        $('#dersSaatLoading').hide();
-        
- if (data.length === 0) {
-        $('#dersSaatYok').show();
-return;
-      }
-
-     let html = '';
-   data.forEach((item, index) => {
-   let gunBadge = getGunBadge(item.gun);
-       let saatLabel = item.saatler.length === 1 ? 
-      `${item.saatler[0]}. Saat` : 
-       `${item.saatler[0]}-${item.saatler[item.saatler.length - 1]}. Saatler`;
-
-   html += `
-          <div class="col-md-6">
-  <div class="card border-primary">
-          <div class="card-body">
-  <div class="form-check">
-        <input class="form-check-input" type="radio" name="DersSaatSecim" 
-  id="saat${index}" value="${index}" 
-       data-gun="${item.gun}" 
- data-saatler='${JSON.stringify(item.saatler)}'
-     onchange="dersSaatSecildi(this)" required>
- <label class="form-check-label" for="saat${index}">
-   <span class="${gunBadge} me-2">${item.gun}</span>
-   <strong>${saatLabel}</strong>
-        </label>
-    </div>
- </div>
-     </div>
- </div>
-  `;
-       });
-
-  $('#dersSaatSecenekleri').html(html);
-   }
-    });
- }
-
- function dersSaatSecildi(element) {
-    secilenGun = $(element).data('gun');
-secilenSaatler = $(element).data('saatler');
-   $('#dersSaatleriHidden').val(JSON.stringify(secilenSaatler));
-       
-    // Tarihi hesapla
-   hesaplaTarih(secilenGun);
- kontrolEt();
-   }
-
-     // Tarihi otomatik hesapla - YENÝ MANTIK
-        function hesaplaTarih(gun) {
-   let bugun = new Date();
-       let bugunGunNo = bugun.getDay(); // 0=Pazar, 1=Pzt, 2=Salý...
   
-      // Gün adýný numaraya çevir
-        let gunMap = {
-      'Pazartesi': 1,
-    'Salý': 2,
-     'Çarþamba': 3,
-     'Perþembe': 4,
-    'Cuma': 5
-    };
-      
-     let hedefGunNo = gunMap[gun];
-        let fark = hedefGunNo - bugunGunNo;
-       
-   // YENÝ MANTIK:
-            // Eðer bugün Pazar (0) ise, yarýn Pazartesi
-            // Eðer bugün hafta içi ise, bu haftanýn seçilen gününe
-    // Eðer seçilen gün geçmiþte kaldýysa, bu haftaya deðil gelecek haftaya
-            
-   if (bugunGunNo === 0) {
-      // Pazar ise
-        if (hedefGunNo === 1) {
-           // Pazartesi seçildiyse yarýn
-                 fark = 1;
-  } else {
-          // Diðer günler için bu haftaya
-fark = hedefGunNo;
-        }
-  } else if (bugunGunNo === 6) {
- // Cumartesi ise, gelecek haftaya
-        fark = (7 - bugunGunNo) + hedefGunNo;
-            } else {
-  // Hafta içi ise
-          if (fark <= 0) {
-    // Seçilen gün geçmiþte kaldýysa gelecek haftaya
-                    fark += 7;
-       }
-   // fark pozitifse bu haftanýn o gününe
-     }
-   
-   let hedefTarih = new Date();
-          hedefTarih.setDate(bugun.getDate() + fark);
-            
-         secilenTarih = hedefTarih;
-   
-    // Input'a yaz
-   let tarihStr = hedefTarih.toISOString().split('T')[0];
-      $('#telafiTarihiInput').val(tarihStr);
-            $('#telafiTarihiHidden').val(tarihStr);
-   
-   // Tarih deðiþtiðinde hidden input'u güncelle
-  $('#telafiTarihiInput').off('change').on('change', function() {
-   $('#telafiTarihiHidden').val($(this).val());
-     });
-  
-       // Açýklama güncelle
-      let gunAdi = ['Pazar', 'Pazartesi', 'Salý', 'Çarþamba', 'Perþembe', 'Cuma', 'Cumartesi'][hedefTarih.getDay()];
-     $('#tarihAciklama').text(`${gunAdi}, ${hedefTarih.toLocaleDateString('tr-TR')} - Deðiþtirebilirsiniz`);
-        }
-
-   // Neden deðiþince
-        function nedenDegisti() {
-    let neden = $('#nedenSelect').val();
-    
-     if (neden === 'Diðer') {
-    $('#digerNedenInput').show().prop('required', true);
-      $('#aciklamaInput').prop('required', false);
-  } else {
-    $('#digerNedenInput').hide().prop('required', false).val('');
-  $('#aciklamaInput').prop('required', false);
+          if (data.length === 0) {
+    $('#dersSaatYok').show();
+          return;
             }
-  }
 
-  // Ýkame mi Birleþtirme mi kontrol et
-     function kontrolEt() {
-         let yedekHocaId = $('#yedekHocaId').val();
+    let html = '';
+      data.forEach((item, blokIndex) => {
+        let gunBadge = getGunBadge(item.gun);
+   
+           html += `<div class="card mb-3 border-primary">
+      <div class="card-header bg-light">
+         <div class="form-check">
+                 <input class="form-check-input blok-checkbox" type="checkbox" 
+              id="blok${blokIndex}" data-blok="${blokIndex}" 
+  data-gun="${item.gun}" 
+           data-saatler='${JSON.stringify(item.saatler)}'>
+          <label class="form-check-label fw-bold" for="blok${blokIndex}">
+<span class="${gunBadge} me-2">${item.gun}</span>
+        <strong>TÜMÜ (${item.saatler.join('-')}. Saatler)</strong>
+   </label>
+                   </div>
+        </div>
+        <div class="card-body">
+      <div class="d-flex flex-wrap gap-2">`;
+     
+                item.saatler.forEach(saat => {
+      html += `<div class="form-check form-check-inline">
+            <input class="form-check-input saat-checkbox" type="checkbox" 
+      id="saat_${blokIndex}_${saat}" 
+    data-blok="${blokIndex}" 
+                 data-gun="${item.gun}" 
+  data-saat="${saat}">
+    <label class="form-check-label" for="saat_${blokIndex}_${saat}">
+     ${saat}. Saat
+    </label>
+     </div>`;
+    });
 
-            if (!yedekHocaId || !secilenGun || secilenSaatler.length === 0) {
-           return;
- }
-
-      $.ajax({
-     url: '@Url.Action("KontrolEt", "TelafiDers")',
- data: { 
-fakulteId: fakulteId,
-       yedekHocaId: yedekHocaId,
-       gun: secilenGun,
-     saat: secilenSaatler[0]
- },
-    success: function(data) {
-    $('#sonucCard').show();
-    let saatStr = secilenSaatler.length === 1 ? 
-    `${secilenSaatler[0]}. saatte` : 
-        `${secilenSaatler[0]}-${secilenSaatler[secilenSaatler.length - 1]}. saatlerde`;
-
-     if (data.varMi) {
-     $('#sonucMesaj').html(`<span class="badge bg-info fs-6">BÝRLEÞTÝRME</span> - Bu hocanýn ${secilenGun} ${saatStr} dersi var. Dersler birleþtirilecek.`);
-     } else {
- $('#sonucMesaj').html(`<span class="badge bg-warning text-dark fs-6">ÝKAME</span> - Bu hocanýn ${secilenGun} ${saatStr} dersi yok. Ýkame yapýlacak.`);
-       }
-    }
+          html += `</div></div></div>`;
    });
+
+        $('#dersSaatSecenekleri').html(html);
+
+            $('.blok-checkbox').change(function() {
+     let blokIndex = $(this).data('blok');
+     let isChecked = $(this).is(':checked');
+   
+           $('.blok-checkbox').not(this).prop('checked', false);
+          $('.saat-checkbox').prop('checked', false);
+  
+         if (isChecked) {
+               $(`.saat-checkbox[data-blok="${blokIndex}"]`).prop('checked', true);
+                secilenGun = $(this).data('gun');
+               secilenSaatler = $(this).data('saatler');
+         hesaplaTarih(secilenGun);
+            }
+            });
+
+ $('.saat-checkbox').change(function() {
+let blokIndex = $(this).data('blok');
+ 
+             let secilenler = [];
+        $(`.saat-checkbox[data-blok="${blokIndex}"]:checked`).each(function() {
+          secilenler.push($(this).data('saat'));
+                });
+
+       if (secilenler.length > 0) {
+     $('.blok-checkbox').not(`#blok${blokIndex}`).prop('checked', false);
+           $(`.saat-checkbox:not([data-blok="${blokIndex}"])`).prop('checked', false);
+    
+       secilenGun = $(this).data('gun');
+                secilenSaatler = secilenler.sort((a, b) => a - b);
+        
+         let toplamSaat = $(`.saat-checkbox[data-blok="${blokIndex}"]`).length;
+     if (secilenler.length === toplamSaat) {
+  $(`#blok${blokIndex}`).prop('checked', true);
+        } else {
+  $(`#blok${blokIndex}`).prop('checked', false);
+      }
+         
+  hesaplaTarih(secilenGun);
+    } else {
+ $(`#blok${blokIndex}`).prop('checked', false);
+     }
+  });
+        }
+    });
 }
 
- function getGunBadge(gun) {
- switch(gun) {
-   case 'Pazartesi': return 'badge bg-primary';
-    case 'Salý': return 'badge bg-success';
-      case 'Çarþamba': return 'badge bg-info';
-case 'Perþembe': return 'badge bg-warning text-dark';
- case 'Cuma': return 'badge bg-danger';
-     default: return 'badge bg-secondary';
- }
+function hesaplaTarih(gun) {
+    let bugun = new Date();
+    let bugunGunNo = bugun.getDay();
+    
+    let gunMap = {
+        'Pazartesi': 1,
+        'Salý': 2,
+   'Çarþamba': 3,
+        'Perþembe': 4,
+        'Cuma': 5
+    };
+    
+    let hedefGunNo = gunMap[gun];
+    let fark = hedefGunNo - bugunGunNo;
+    
+    if (bugunGunNo === 0) {
+        fark = hedefGunNo === 1 ? 1 : hedefGunNo;
+    } else if (bugunGunNo === 6) {
+        fark = (7 - bugunGunNo) + hedefGunNo;
+    } else {
+        if (fark <= 0) fark += 7;
     }
+  
+    let hedefTarih = new Date();
+    hedefTarih.setDate(bugun.getDate() + fark);
+  
+    let tarihStr = hedefTarih.toISOString().split('T')[0];
+    $('#telafiTarihiInput').val(tarihStr);
+    $('#telafiTarihiHidden').val(tarihStr);
+  
+    $('#telafiTarihiInput').off('change').on('change', function() {
+        $('#telafiTarihiHidden').val($(this).val());
+    });
+    
+    let gunAdi = ['Pazar', 'Pazartesi', 'Salý', 'Çarþamba', 'Perþembe', 'Cuma', 'Cumartesi'][hedefTarih.getDay()];
+    $('#tarihAciklama').text(`${gunAdi}, ${hedefTarih.toLocaleDateString('tr-TR')} - Deðiþtirebilirsiniz`);
+}
 
- // Form submit öncesi
-  $('#ikameForm').on('submit', function(e) {
-  if (!secilenGun || secilenSaatler.length === 0) {
-      e.preventDefault();
-    alert('Lütfen ders saati seçin!');
-          return false;
-       }
+function getGunBadge(gun) {
+    switch(gun) {
+   case 'Pazartesi': return 'badge bg-primary';
+        case 'Salý': return 'badge bg-success';
+    case 'Çarþamba': return 'badge bg-info';
+        case 'Perþembe': return 'badge bg-warning text-dark';
+        case 'Cuma': return 'badge bg-danger';
+      default: return 'badge bg-secondary';
+    }
+}
+
+$('#ikameForm').on('submit', function(e) {
+    if (!secilenGun || secilenSaatler.length === 0) {
+        e.preventDefault();
+        alert('Lütfen ders saati seçin!');
+        return false;
+    }
     
- // Neden kontrolü
-    let neden = $('#nedenSelect').val();
-        if (neden === 'Diðer') {
-let digerNeden = $('#digerNedenInput').val().trim();
-       if (!digerNeden) {
-  e.preventDefault();
-    alert('Lütfen nedeni yazýnýz!');
-     return false;
-  }
-     // Diðer nedeni ana neden olarak kullan
-        $(this).append(`<input type="hidden" name="TelafiNedeni" value="${digerNeden}" />`);
-     }
-    
- // Hidden input olarak gün ve saatleri ekle
     $(this).append(`<input type="hidden" name="DersGunu" value="${secilenGun}" />`);
-            $(this).append(`<input type="hidden" name="DersSaati" value="${secilenSaatler[0]}" />`);
-   $(this).append(`<input type="hidden" name="KacSaat" value="${secilenSaatler.length}" />`);
-        });
-    </script>
+    $(this).append(`<input type="hidden" name="DersSaati" value="${secilenSaatler[0]}" />`);
+  $(this).append(`<input type="hidden" name="KacSaat" value="${secilenSaatler.length}" />`);
+});
+</script>
 }

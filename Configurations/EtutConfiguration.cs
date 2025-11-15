@@ -1,4 +1,4 @@
-ï»¿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Etutlist.Models;
 
@@ -10,18 +10,27 @@ namespace Etutlist.Configurations
         {
             builder.ToTable("Etutler");
 
-            builder.HasKey(e => e.Id);
+         builder.HasKey(e => e.Id);
 
             builder.Property(e => e.Tarih)
-                   .IsRequired();
+      .IsRequired();
 
-            builder.Property(e => e.Tip)
-                   .IsRequired()
-                   .HasMaxLength(20);
+      builder.Property(e => e.Tip)
+               .IsRequired()
+    .HasMaxLength(20);
 
+// ? Personel silinince NULL olsun (CASCADE DELETE DEÐÝL!)
             builder.HasOne(e => e.Personel)
-                   .WithMany(p => p.Etutler)
-                   .HasForeignKey(e => e.PersonelId);
+  .WithMany(p => p.Etutler)
+          .HasForeignKey(e => e.PersonelId)
+        .OnDelete(DeleteBehavior.SetNull); // ? ÖNEMLÝ!
+
+ // ? Yedek alanlar (opsiyonel)
+      builder.Property(e => e.PersonelAd)
+.HasMaxLength(100);
+
+  builder.Property(e => e.PersonelRutbe)
+ .HasMaxLength(50);
         }
     }
 }
