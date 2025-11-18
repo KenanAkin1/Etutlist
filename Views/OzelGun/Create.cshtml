@@ -1,16 +1,60 @@
 ﻿@model Etutlist.Models.OzelGun
 
-<h2>Özel Gün Ekle</h2>
+@{
+    ViewData["Title"] = "Özel Gün Ekle";
+}
 
-<form asp-action="Create">
-    <div class="form-group">
-        <label>Tarih</label>
-        <input asp-for="Tarih" type="date" class="form-control" />
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h3 class="mb-0">
+                        <i class="bi bi-plus-circle"></i> Yeni Özel Gün Ekle
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <div class="mb-3">
+                            <label asp-for="Tarih" class="form-label">
+                                <i class="bi bi-calendar-date"></i> Tarih
+                            </label>
+                            <input asp-for="Tarih" type="date" class="form-control form-control-lg" required />
+                            <span asp-validation-for="Tarih" class="text-danger"></span>
+                            <div class="form-text">
+                                <i class="bi bi-info-circle"></i> Özel gün tarihini seçiniz (örn: resmi tatil, bayram)
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Aciklama" class="form-label">
+                                <i class="bi bi-card-text"></i> Açıklama
+                            </label>
+                            <input asp-for="Aciklama" class="form-control form-control-lg" 
+                                   placeholder="Örn: Kurban Bayramı, Zafer Bayramı" required />
+                            <span asp-validation-for="Aciklama" class="text-danger"></span>
+                            <div class="form-text">
+                                <i class="bi bi-info-circle"></i> Özel günün açıklamasını giriniz
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-between mt-4">
+                            <a asp-action="Index" class="btn btn-secondary btn-lg">
+                                <i class="bi bi-arrow-left"></i> Geri
+                            </a>
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="bi bi-check-circle"></i> Kaydet
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="form-group">
-        <label>Açıklama</label>
-        <input asp-for="Aciklama" class="form-control" />
-    </div>
-    <button type="submit" class="btn btn-success">Kaydet</button>
-    <a asp-action="Index" class="btn btn-secondary">Geri</a>
-</form>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
