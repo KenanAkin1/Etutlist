@@ -28,6 +28,60 @@
       <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     }
+    <!-- 📊 ORTALAMA DEĞERLERİ -->
+    @if (Model.AktifPersoneller.Any())
+    {
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-graph-up"></i> Ortalama Etüt Sayıları
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row text-center">
+                            <div class="col">
+                                <div class="p-3 bg-light rounded">
+                                    <i class="bi bi-calendar-week display-6 text-success"></i>
+                                    <h3 class="mt-2 mb-1">@ViewBag.OrtalamaHaftaIci.ToString("F2")</h3>
+                                    <small class="text-muted">Hafta İçi Ort.</small>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="p-3 bg-light rounded">
+                                    <i class="bi bi-calendar-day display-6 text-info"></i>
+                                    <h3 class="mt-2 mb-1">@ViewBag.OrtalamaPazar.ToString("F2")</h3>
+                                    <small class="text-muted">Pazar Ort.</small>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="p-3 bg-light rounded">
+                                    <i class="bi bi-star-fill display-6 text-warning"></i>
+                                    <h3 class="mt-2 mb-1">@ViewBag.OrtalamaOzelGun.ToString("F2")</h3>
+                                    <small class="text-muted">Özel Gün Ort.</small>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="p-3 bg-light rounded">
+                                    <i class="bi bi-person-plus display-6 text-secondary"></i>
+                                    <h3 class="mt-2 mb-1">@ViewBag.OrtalamaYedek.ToString("F2")</h3>
+                                    <small class="text-muted">Yedek Ort.</small>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="p-3 bg-primary text-white rounded">
+                                    <i class="bi bi-calculator display-6"></i>
+                                    <h3 class="mt-2 mb-1">@ViewBag.OrtalamaToplam.ToString("F2")</h3>
+                                    <small>Toplam Ort.</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
 
     <!-- Aktif Personeller -->
 <div class="card mb-4">
