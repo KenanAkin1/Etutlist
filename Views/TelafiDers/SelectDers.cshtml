@@ -1,31 +1,31 @@
-@{
- ViewData["Title"] = "Ders Seçin - Telafi/İkame";
+ï»¿@{
+ ViewData["Title"] = "Ders SeÃ§in - Telafi/Ä°kame";
 }
 
 <div class="container mt-4">
     <div class="row">
      <div class="col-md-12">
    <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2><i class="bi bi-search"></i> Telafi/İkame İçin Ders Seçin</h2>
+    <h2><i class="bi bi-search"></i> Telafi/Ä°kame Ä°Ã§in Ders SeÃ§in</h2>
       <a asp-action="Index" class="btn btn-secondary">
    <i class="bi bi-arrow-left"></i> Geri
     </a>
   </div>
 
-<!-- AÇIKLAMA -->
+<!-- AÃ‡IKLAMA -->
             <div class="alert alert-info">
       <i class="bi bi-info-circle"></i>
-    <strong>Nasıl kullanılır?</strong> Telafi veya ikame dersi oluşturmak için önce ilgili dersi seçin.
+    <strong>NasÄ±l kullanÄ±lÄ±r?</strong> Telafi veya ikame dersi oluÅŸturmak iÃ§in Ã¶nce ilgili dersi seÃ§in.
      </div>
 
-      <!-- FAKÜLTE SEÇİMİ -->
+      <!-- FAKÃœLTE SEÃ‡Ä°MÄ° -->
    <div class="card mb-4">
       <div class="card-header bg-primary text-white">
-       <h5><i class="bi bi-building"></i> 1. Fakülte Seçin</h5>
+       <h5><i class="bi bi-building"></i> 1. FakÃ¼lte SeÃ§in</h5>
      </div>
       <div class="card-body">
        <select id="fakulteSelect" class="form-select form-select-lg">
-    <option value="">-- Fakülte Seçiniz --</option>
+    <option value="">-- FakÃ¼lte SeÃ§iniz --</option>
       @foreach (var fakulte in ViewBag.Fakulteler as SelectList)
      {
    <option value="@fakulte.Value">@fakulte.Text</option>
@@ -34,15 +34,15 @@
     </div>
    </div>
 
-<!-- DERS LİSTESİ -->
+<!-- DERS LÄ°STESÄ° -->
  <div class="card" id="dersListesiCard" style="display:none;">
      <div class="card-header bg-success text-white">
-<h5><i class="bi bi-book"></i> 2. Ders Seçin</h5>
+<h5><i class="bi bi-book"></i> 2. Ders SeÃ§in</h5>
      </div>
      <div class="card-body">
    <div class="input-group mb-3">
      <span class="input-group-text"><i class="bi bi-search"></i></span>
-   <input type="text" id="dersAra" class="form-control" placeholder="Ders adı, hoca adı veya kısım ara...">
+   <input type="text" id="dersAra" class="form-control" placeholder="Ders adÄ±, hoca adÄ± veya kÄ±sÄ±m ara...">
  </div>
 
   <div id="dersListesi" class="list-group">
@@ -51,12 +51,12 @@
 
    <div id="loadingSpinner" class="text-center py-4" style="display:none;">
      <div class="spinner-border text-primary" role="status">
-    <span class="visually-hidden">Yükleniyor...</span>
+    <span class="visually-hidden">YÃ¼kleniyor...</span>
      </div>
    </div>
 
  <div id="noDersMessage" class="alert alert-warning" style="display:none;">
-    <i class="bi bi-exclamation-triangle"></i> Bu fakültede ders bulunamadı.
+    <i class="bi bi-exclamation-triangle"></i> Bu fakÃ¼ltede ders bulunamadÄ±.
    </div>
    </div>
  </div>
@@ -67,7 +67,7 @@
 @section Scripts {
     <script>
         $(document).ready(function() {
-    // Fakülte değiştiğinde
+    // FakÃ¼lte deÄŸiÅŸtiÄŸinde
      $('#fakulteSelect').on('change', function() {
     var fakulteId = $(this).val();
    
@@ -92,7 +92,7 @@
      },
    error: function() {
       $('#loadingSpinner').hide();
-         alert('Dersler yüklenirken hata oluştu.');
+         alert('Dersler yÃ¼klenirken hata oluÅŸtu.');
        }
      });
    } else {
@@ -130,7 +130,7 @@
            <h6 class="mb-1"><strong>${ders.dersAdi}</strong></h6>
   <p class="mb-1">
       <span class="badge bg-secondary">${ders.dersKodu || ''}</span>
-        <span class="badge bg-info">Kısım ${ders.kisimNo}</span>
+        <span class="badge bg-info">KÄ±sÄ±m ${ders.kisimNo}</span>
    </p>
    <small class="text-muted">
      <i class="bi bi-person"></i> ${ders.hocaRutbe} ${ders.hocaAd}
@@ -148,13 +148,13 @@
       $('#dersListesi').html(html);
      }
 
-       // Gün badge rengi
+       // GÃ¼n badge rengi
        function getGunBadge(gun) {
         switch(gun) {
       case 'Pazartesi': return 'badge bg-primary';
-        case 'Salı': return 'badge bg-success';
-       case 'Çarşamba': return 'badge bg-info';
-      case 'Perşembe': return 'badge bg-warning text-dark';
+        case 'SalÄ±': return 'badge bg-success';
+       case 'Ã‡arÅŸamba': return 'badge bg-info';
+      case 'PerÅŸembe': return 'badge bg-warning text-dark';
      case 'Cuma': return 'badge bg-danger';
          default: return 'badge bg-secondary';
      }

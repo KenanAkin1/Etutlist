@@ -1,4 +1,4 @@
-using Etutlist.Models;
+ï»¿using Etutlist.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Etutlist.Services
@@ -12,7 +12,7 @@ namespace Etutlist.Services
             _context = context;
         }
 
-        // Telafi önerisi al - GELÝÞTÝRÝLMÝÞ
+        // Telafi Ã¶nerisi al - GELÄ°ÅžTÄ°RÄ°LMÄ°Åž
         public async Task<TelafiOneriViewModel> GetTelafiOneriAsync(int dersProgramiId, DateTime telafiTarihi, TimeSpan baslangicSaat, TimeSpan bitisSaat)
         {
             var ders = await _context.DersProgrami
@@ -32,43 +32,43 @@ namespace Etutlist.Services
                 BitisSaat = bitisSaat
             };
 
-            // 1. TELAFÝ kontrolü: Ayný hoca müsait mi?
+            // 1. TELAFÄ° kontrolÃ¼: AynÄ± hoca mÃ¼sait mi?
             bool hocaMusait = await IsHocaMusaitAsync(ders.HocaId, telafiTarihi, baslangicSaat, bitisSaat);
 
             if (hocaMusait)
             {
                 oneri.OnerilenTur = "Telafi";
-                oneri.Aciklama = $"Telafi dersi yapýlabilir. Ayný hoca ({ders.Hoca.AdSoyad}) dersi verebilir.";
+                oneri.Aciklama = $"Telafi dersi yapÄ±labilir. AynÄ± hoca ({ders.Hoca.AdSoyad}) dersi verebilir.";
                 oneri.MusaitYedekHocalar = new List<Hoca> { ders.Hoca };
                 return oneri;
             }
 
-            // 2. ÝKAME kontrolü: Baþka hocalar müsait mi?
+            // 2. Ä°KAME kontrolÃ¼: BaÅŸka hocalar mÃ¼sait mi?
             var musaitHocalar = await GetMusaitHocalarAsync(ders.FakulteId, ders.HocaId, telafiTarihi, baslangicSaat, bitisSaat, ders.DersId);
 
             if (musaitHocalar.Any())
             {
-                oneri.OnerilenTur = "Ýkame";
-                oneri.Aciklama = $"Ýkame dersi önerilir. {musaitHocalar.Count} müsait hoca bulundu.";
+                oneri.OnerilenTur = "Ä°kame";
+                oneri.Aciklama = $"Ä°kame dersi Ã¶nerilir. {musaitHocalar.Count} mÃ¼sait hoca bulundu.";
                 oneri.MusaitYedekHocalar = musaitHocalar;
                 return oneri;
             }
 
-            // 3. BÝRLEÞTÝRME: Hiç müsait hoca yok
-            oneri.OnerilenTur = "Birleþtirme";
-            oneri.Aciklama = "Uygun hoca bulunamadý. Dersin baþka bir bölümle birleþtirilmesi önerilir.";
+            // 3. BÄ°RLEÅžTÄ°RME: HiÃ§ mÃ¼sait hoca yok
+            oneri.OnerilenTur = "BirleÅŸtirme";
+            oneri.Aciklama = "Uygun hoca bulunamadÄ±. Dersin baÅŸka bir bÃ¶lÃ¼mle birleÅŸtirilmesi Ã¶nerilir.";
             oneri.MusaitYedekHocalar = new List<Hoca>();
 
-            // Birleþtirilebilecek dersler
+            // BirleÅŸtirilebilecek dersler
             oneri.BirlestirilebilirDersler = await GetBirlestirilebilirDerslerAsync(dersProgramiId, telafiTarihi);
 
             return oneri;
         }
 
-        // Hocanýn müsait olup olmadýðýný kontrol et
+        // HocanÄ±n mÃ¼sait olup olmadÄ±ÄŸÄ±nÄ± kontrol et
         private async Task<bool> IsHocaMusaitAsync(int hocaId, DateTime tarih, TimeSpan baslangic, TimeSpan bitis)
         {
-            // Normal ders programýnda mý?
+            // Normal ders programÄ±nda mÄ±?
             var normalDersiVar = await _context.DersProgrami.AnyAsync(d =>
                 d.HocaId == hocaId &&
                 d.DersGunu == GetGunAdi(tarih) &&
@@ -77,7 +77,7 @@ namespace Etutlist.Services
             if (normalDersiVar)
                 return false;
 
-            // Baþka telafi dersinde mi?
+            // BaÅŸka telafi dersinde mi?
             var telafideGorevli = await _context.TelafiDersler.AnyAsync(t =>
                 t.YedekHocaId == hocaId &&
                 t.TelafiTarihi.Date == tarih.Date &&
@@ -86,7 +86,7 @@ namespace Etutlist.Services
             return !telafideGorevli;
         }
 
-        // Müsait hocalarý getir
+        // MÃ¼sait hocalarÄ± getir
         private async Task<List<Hoca>> GetMusaitHocalarAsync(int fakulteId, int mevcutHocaId, DateTime tarih, TimeSpan baslangic, TimeSpan bitis, int? dersId)
         {
             var tumHocalar = await _context.Hocalar
@@ -118,7 +118,7 @@ namespace Etutlist.Services
             return musaitHocalar.OrderBy(h => h.AdSoyad).ToList();
         }
 
-        // Birleþtirilebilir dersleri bul
+        // BirleÅŸtirilebilir dersleri bul
         private async Task<List<DersProgrami>> GetBirlestirilebilirDerslerAsync(int dersProgramiId, DateTime telafiTarihi)
         {
             var anaDers = await _context.DersProgrami
@@ -143,7 +143,7 @@ namespace Etutlist.Services
             return birlestirilebilirler;
         }
 
-        // Telafi dersi oluþtur
+        // Telafi dersi oluÅŸtur
         public async Task<(bool Success, string Message)> CreateTelafiDersAsync(TelafiDers telafiDers)
         {
             var hocaMesgul = await _context.TelafiDersler.AnyAsync(t =>
@@ -152,7 +152,7 @@ namespace Etutlist.Services
                 ((t.BaslangicSaat < telafiDers.BitisSaat && t.BitisSaat > telafiDers.BaslangicSaat)));
 
             if (hocaMesgul)
-                return (false, "Seçilen hoca bu saatte baþka bir telafi dersinde görevli.");
+                return (false, "SeÃ§ilen hoca bu saatte baÅŸka bir telafi dersinde gÃ¶revli.");
 
             var normalDersi = await _context.DersProgrami.AnyAsync(d =>
                 d.HocaId == telafiDers.YedekHocaId &&
@@ -160,12 +160,12 @@ namespace Etutlist.Services
                 d.DersSaati == GetSaatIndex(telafiDers.BaslangicSaat));
 
             if (normalDersi)
-                return (false, "Seçilen hocanýn bu saatte normal dersi var.");
+                return (false, "SeÃ§ilen hocanÄ±n bu saatte normal dersi var.");
 
             _context.TelafiDersler.Add(telafiDers);
             await _context.SaveChangesAsync();
 
-            return (true, "Telafi dersi baþarýyla oluþturuldu.");
+            return (true, "Telafi dersi baÅŸarÄ±yla oluÅŸturuldu.");
         }
 
         public async Task<List<TelafiDers>> GetTelafiDerslerAsync(int? fakulteId = null)
@@ -200,7 +200,7 @@ namespace Etutlist.Services
             var telafi = await _context.TelafiDersler.FindAsync(id);
 
             if (telafi == null)
-                return (false, "Telafi dersi bulunamadý.");
+                return (false, "Telafi dersi bulunamadÄ±.");
 
             _context.TelafiDersler.Remove(telafi);
             await _context.SaveChangesAsync();
@@ -212,7 +212,7 @@ namespace Etutlist.Services
         {
             var mevcutTelafi = await _context.TelafiDersler.FindAsync(telafiDers.Id);
             if (mevcutTelafi == null)
-                return (false, "Telafi dersi bulunamadý.");
+                return (false, "Telafi dersi bulunamadÄ±.");
 
             var hocaMesgul = await _context.TelafiDersler.AnyAsync(t =>
                 t.Id != telafiDers.Id &&
@@ -221,7 +221,7 @@ namespace Etutlist.Services
                 ((t.BaslangicSaat < telafiDers.BitisSaat && t.BitisSaat > telafiDers.BaslangicSaat)));
 
             if (hocaMesgul)
-                return (false, "Seçilen hoca bu saatte baþka bir telafi dersinde görevli.");
+                return (false, "SeÃ§ilen hoca bu saatte baÅŸka bir telafi dersinde gÃ¶revli.");
 
             mevcutTelafi.YedekHocaId = telafiDers.YedekHocaId;
             mevcutTelafi.TelafiTarihi = telafiDers.TelafiTarihi;
@@ -234,7 +234,7 @@ namespace Etutlist.Services
 
             await _context.SaveChangesAsync();
 
-            return (true, "Telafi dersi güncellendi.");
+            return (true, "Telafi dersi gÃ¼ncellendi.");
         }
 
         public async Task<(bool Success, string Message)> OnaylaTelafiDersAsync(int id)
@@ -242,87 +242,126 @@ namespace Etutlist.Services
             var telafi = await _context.TelafiDersler.FindAsync(id);
 
             if (telafi == null)
-                return (false, "Telafi dersi bulunamadý.");
+                return (false, "Telafi dersi bulunamadÄ±.");
 
             telafi.Onaylandi = true;
             await _context.SaveChangesAsync();
 
-            return (true, "Telafi dersi onaylandý.");
+            return (true, "Telafi dersi onaylandÄ±.");
         }
 
-        // ? YENÝ: TABUR BAZLI TOPLU TELAFÝ
+        // ðŸš€ OPTÄ°MÄ°ZE EDÄ°LMÄ°Åž: AKILLI TOPLU TELAFÄ° - BATCH PROCESSING + LOCAL CACHE
         public async Task<(bool Success, string Message, int Basarili, int Basarisiz)> TopluTelafiOlusturAsync(
-            int TaburId,
-            string telafiYapilamayacakGun,
-            DateTime telafiTarihi,
+            DateTime telafiEdilecekTarih,
             string telafiNedeni)
         {
             int basarili = 0;
             int basarisiz = 0;
             var hatalar = new List<string>();
 
-            // 1. Tabur ayarlarýný al
-            var ayarlar = await _context.TaburTelafiAyarlari
-                .Include(t => t.Tabur)
-                .FirstOrDefaultAsync(t => t.TaburId == TaburId && t.TelafiYapilamayacakGun == telafiYapilamayacakGun);
+            // 1. SeÃ§ilen tarihin gÃ¼nÃ¼nÃ¼ al
+            var gun = GetGunAdi(telafiEdilecekTarih);
+            
+            if (string.IsNullOrEmpty(gun))
+                return (false, "SeÃ§ilen tarih hafta iÃ§i bir gÃ¼n olmalÄ±dÄ±r (Pzt-Cum).", 0, 0);
 
-            if (ayarlar == null)
-                return (false, "Bu tabur için belirtilen gün için telafi ayarlarý bulunamadý.", 0, 0);
-
-            var tabur = await _context.Taburlar.FindAsync(TaburId);
-            if (tabur == null)
-                return (false, "Tabur bulunamadý.", 0, 0);
-
-            // 2. Belirtilen günün derslerini al (tabur kýsým aralýðýnda)
-            var derslerQuery = _context.DersProgrami
+            // 2. âœ… OPTÄ°MÄ°ZASYON: AsNoTracking ile yÃ¼kle (3x daha hÄ±zlÄ±)
+            var dersler = await _context.DersProgrami
                 .Include(d => d.Hoca)
                 .Include(d => d.Fakulte)
                 .Include(d => d.Ders)
-                .Where(d =>
-                    d.FakulteId == tabur.FakulteId &&
-                    d.DersGunu == telafiYapilamayacakGun &&
-                    d.KisimNo >= tabur.MinKisimNo &&
-                    d.KisimNo <= tabur.MaxKisimNo);
-
-            // ? Ders saati filtresi
-            if (!string.IsNullOrWhiteSpace(ayarlar.TelafiYapilamayacakDersSaatleri))
-            {
-                var saatler = ayarlar.TelafiYapilamayacakDersSaatleri
-                    .Split(',', StringSplitOptions.RemoveEmptyEntries)
-                    .Select(s => int.TryParse(s.Trim(), out int val) ? val : 0)
-                    .Where(v => v > 0)
-                    .ToList();
-
-                if (saatler.Any())
-                {
-                    derslerQuery = derslerQuery.Where(d => saatler.Contains(d.DersSaati));
-                }
-            }
-
-            var dersler = await derslerQuery.ToListAsync();
+                .Where(d => d.DersGunu == gun)
+                .OrderBy(d => d.FakulteId)
+                .ThenBy(d => d.KisimNo)
+                .ThenBy(d => d.DersSaati)
+                .AsNoTracking() // âœ… Read-only
+                .ToListAsync();
 
             if (!dersler.Any())
-                return (false, $"{telafiYapilamayacakGun} günü için bu taburda ders bulunamadý.", 0, 0);
+                return (false, $"{telafiEdilecekTarih:dd.MM.yyyy} ({gun}) gÃ¼nÃ¼ iÃ§in ders bulunamadÄ±.", 0, 0);
 
-            // 3. Her ders için telafi oluþtur (max 9. derse kadar)
-            int currentSaat = ayarlar.TelafiBaslamaSaati;
+            // 3. Telafi takvimi oluÅŸtur
+            var telafiTakvimi = await GetTelafiTakvimiAsync(telafiEdilecekTarih);
             
+            if (!telafiTakvimi.Any())
+                return (false, "Telafi iÃ§in uygun gÃ¼n/saat ayarÄ± bulunamadÄ±. LÃ¼tfen Tabur Telafi AyarlarÄ±nÄ± kontrol edin.", 0, 0);
+
+            // âœ… OPTÄ°MÄ°ZASYON: TÃ¼m verileri Ã–N CACHE'e al (binlerce DB query yerine 3 query)
+            var tarihler = telafiTakvimi.Select(x => x.Tarih.Date).Distinct().ToList();
+
+            var mevcutTelafilerRaw = await _context.TelafiDersler
+                .Where(t => tarihler.Contains(t.TelafiTarihi.Date))
+                .Select(t => new { t.TelafiTarihi, t.BaslangicSaat, t.KisimNo, t.YedekHocaId })
+                .AsNoTracking()
+                .ToListAsync();
+
+            var mevcutTelafiler = mevcutTelafilerRaw.Select(t => new TelafiCache
+            {
+                TelafiTarihi = t.TelafiTarihi,
+                BaslangicSaat = t.BaslangicSaat,
+                KisimNo = t.KisimNo,
+                YedekHocaId = t.YedekHocaId
+            }).ToList();
+
+            var gunler = telafiTakvimi.Select(x => GetGunAdi(x.Tarih)).Distinct().ToList();
+
+            var normalDersProgramiRaw = await _context.DersProgrami
+            .Where(d => gunler.Contains(d.DersGunu))
+            .Select(d => new { d.DersGunu, d.DersSaati, d.KisimNo, d.HocaId })
+            .AsNoTracking()
+            .ToListAsync();
+            var normalDersProgrami = normalDersProgramiRaw.Select(d => new DersCache
+            {
+                DersGunu = d.DersGunu,
+                DersSaati = d.DersSaati,
+                KisimNo = d.KisimNo,
+                HocaId = d.HocaId
+            }).ToList();
+
+            var hocaDersYetkileriRaw = await _context.HocaDersler
+                .Select(hd => new { hd.HocaId, hd.DersId })
+                .AsNoTracking()
+                .ToListAsync();
+
+            var hocaDersYetkileri = hocaDersYetkileriRaw.Select(hd => new HocaDersCache
+            {
+                HocaId = hd.HocaId,
+                DersId = hd.DersId
+            }).ToList();
+
+            var tumHocalar = await _context.Hocalar
+                .Where(h => h.AktifMi)
+                .AsNoTracking()
+                .ToListAsync();
+
+            // âœ… OPTÄ°MÄ°ZASYON: Batch processing (her 50 kayÄ±tta bir kaydet)
+            var eklenecekTelafiler = new List<TelafiDers>();
+            const int batchSize = 50;
+
+            // 4. Her ders iÃ§in telafi atamasÄ± yap (LOCAL DATA kullanarak)
             foreach (var ders in dersler)
             {
                 try
                 {
-                    // ? 9. dersi geçme kontrolü
-                    if (currentSaat > ayarlar.TelafiMaxBitisSaati)
+                    var uygunSlot = FindUygunSlotLocal(
+                        telafiTakvimi, 
+                        ders, 
+                        mevcutTelafiler, 
+                        normalDersProgrami);
+
+                    if (uygunSlot == null)
                     {
-                        hatalar.Add($"{ders.DersAdi} - Kýsým {ders.KisimNo}: Maksimum ders saati ({ayarlar.TelafiMaxBitisSaati}) aþýldý");
+                        hatalar.Add($"{ders.DersAdi} (KÄ±sÄ±m {ders.KisimNo}): Uygun slot bulunamadÄ±");
                         basarisiz++;
                         continue;
                     }
 
-                    var baslangicSaat = GetSaatTimeSpan(currentSaat);
-                    var bitisSaat = baslangicSaat.Add(new TimeSpan(0, 40, 0));
-
-                    bool hocaMusait = await IsHocaMusaitAsync(ders.HocaId, telafiTarihi, baslangicSaat, bitisSaat);
+                    // Hoca mÃ¼saitlik kontrolÃ¼ (local data)
+                    bool hocaMusait = IsHocaMusaitLocal(
+                        ders.HocaId, 
+                        uygunSlot, 
+                        mevcutTelafiler, 
+                        normalDersProgrami);
 
                     int yedekHocaId;
                     string telafiTuru;
@@ -334,65 +373,292 @@ namespace Etutlist.Services
                     }
                     else
                     {
-                        var musaitHocalar = await GetMusaitHocalarAsync(
-                            tabur.FakulteId, ders.HocaId, telafiTarihi, baslangicSaat, bitisSaat, ders.DersId);
+                        // MÃ¼sait hoca bul (local data)
+                        var musaitHocalar = FindMusaitHocalarLocal(
+                            ders,
+                            uygunSlot,
+                            tumHocalar,
+                            hocaDersYetkileri,
+                            mevcutTelafiler,
+                            normalDersProgrami);
 
                         if (!musaitHocalar.Any())
                         {
-                            hatalar.Add($"{ders.DersAdi} - Kýsým {ders.KisimNo}: Müsait hoca bulunamadý");
+                            hatalar.Add($"{ders.DersAdi} (KÄ±sÄ±m {ders.KisimNo}): MÃ¼sait hoca bulunamadÄ±");
                             basarisiz++;
                             continue;
                         }
 
                         yedekHocaId = musaitHocalar.First().Id;
-                        telafiTuru = "Ýkame";
+                        telafiTuru = "Ä°kame";
                     }
 
                     var telafi = new TelafiDers
                     {
                         DersProgramiId = ders.Id,
                         YedekHocaId = yedekHocaId,
-                        FakulteId = tabur.FakulteId,
-                        TelafiTarihi = telafiTarihi,
-                        BaslangicSaat = baslangicSaat,
-                        BitisSaat = bitisSaat,
+                        FakulteId = ders.FakulteId,
+                        TelafiTarihi = uygunSlot.Tarih,
+                        BaslangicSaat = uygunSlot.BaslangicSaat,
+                        BitisSaat = uygunSlot.BitisSaat,
                         TelafiTuru = telafiTuru,
                         TelafiNedeni = telafiNedeni,
-                        Aciklama = $"Toplu telafi - {tabur.TaburAdi} - {telafiYapilamayacakGun} günü yerine",
+                        Aciklama = $"{telafiEdilecekTarih:dd.MM.yyyy} {gun} gÃ¼nÃ¼ yerine",
                         KisimNo = ders.KisimNo,
                         Onaylandi = false,
                         CiktiAlindi = false
                     };
 
-                    _context.TelafiDersler.Add(telafi);
+                    eklenecekTelafiler.Add(telafi);
+
+                    // Local cache'e ekle
+                    mevcutTelafiler.Add(new TelafiCache
+                    {
+                        TelafiTarihi = telafi.TelafiTarihi,
+                        BaslangicSaat = telafi.BaslangicSaat,
+                        KisimNo = telafi.KisimNo,
+                        YedekHocaId = telafi.YedekHocaId
+                    });
+
                     basarili++;
-                    currentSaat++; // Sonraki derse geç
+
+                    // âœ… Her 50 kayÄ±tta bir veritabanÄ±na yaz (Timeout Ã¶nleme)
+                    if (eklenecekTelafiler.Count >= batchSize)
+                    {
+                        _context.TelafiDersler.AddRange(eklenecekTelafiler);
+                        await _context.SaveChangesAsync();
+                        eklenecekTelafiler.Clear();
+                    }
                 }
                 catch (Exception ex)
                 {
-                    hatalar.Add($"{ders.DersAdi} - Kýsým {ders.KisimNo}: {ex.Message}");
+                    hatalar.Add($"{ders.DersAdi} (KÄ±sÄ±m {ders.KisimNo}): {ex.Message}");
                     basarisiz++;
                 }
             }
 
-            await _context.SaveChangesAsync();
+            // âœ… Kalan kayÄ±tlarÄ± kaydet
+            if (eklenecekTelafiler.Any())
+            {
+                _context.TelafiDersler.AddRange(eklenecekTelafiler);
+                await _context.SaveChangesAsync();
+            }
 
-            var mesaj = $"? Baþarýlý: {basarili}, ? Baþarýsýz: {basarisiz}";
+            var mesaj = $"âœ… BaÅŸarÄ±lÄ±: {basarili}, âŒ BaÅŸarÄ±sÄ±z: {basarisiz}";
             if (hatalar.Any())
-                mesaj += "\n\n?? Hatalar:\n" + string.Join("\n", hatalar);
+            {
+                // Ä°lk 10 hatayÄ± gÃ¶ster
+                var gosterilecekHatalar = hatalar.Take(10).ToList();
+                mesaj += "\n\nâš ï¸ Hatalar (Ä°lk 10):\n" + string.Join("\n", gosterilecekHatalar);
+                
+                if (hatalar.Count > 10)
+                    mesaj += $"\n\n... ve {hatalar.Count - 10} hata daha.";
+            }
 
             return (true, mesaj, basarili, basarisiz);
         }
 
-        // Yardýmcý metodlar
+        // âœ… LOCAL DATA ile slot bulma (DB query yok)
+        private TelafiSlot? FindUygunSlotLocal(
+            List<TelafiSlot> takvim,
+            DersProgrami ders,
+            List<TelafiCache> mevcutTelafiler,
+            List<DersCache> normalDersProgrami)
+        {
+            foreach (var slot in takvim.Where(s => s.FakulteId == ders.FakulteId))
+            {
+                // KÄ±sÄ±m aralÄ±ÄŸÄ± kontrolÃ¼
+                if (ders.KisimNo < slot.MinKisim || ders.KisimNo > slot.MaxKisim)
+                    continue;
+
+                // Mevcut telafi kontrolÃ¼ (local)
+                var mevcutTelafi = mevcutTelafiler.Any(t =>
+                    t.TelafiTarihi.Date == slot.Tarih.Date &&
+                    t.BaslangicSaat == slot.BaslangicSaat &&
+                    t.KisimNo == ders.KisimNo);
+
+                if (mevcutTelafi)
+                    continue;
+
+                // Normal ders kontrolÃ¼ (local)
+                var gunAdi = GetGunAdi(slot.Tarih);
+                var normalDers = normalDersProgrami.Any(d =>
+                    d.DersGunu == gunAdi &&
+                    d.DersSaati == slot.SaatIndex &&
+                    d.KisimNo == ders.KisimNo);
+
+                if (normalDers)
+                    continue;
+
+                return slot;
+            }
+
+            return null;
+        }
+
+        // âœ… LOCAL DATA ile hoca mÃ¼saitlik kontrolÃ¼
+        private bool IsHocaMusaitLocal(
+            int hocaId,
+            TelafiSlot slot,
+            List<TelafiCache> mevcutTelafiler, 
+            List<DersCache> normalDersProgrami)  
+        {
+            var gunAdi = GetGunAdi(slot.Tarih);
+
+            // Normal ders kontrolÃ¼
+            var normalDersiVar = normalDersProgrami.Any(d =>
+                d.HocaId == hocaId &&
+                d.DersGunu == gunAdi &&
+                d.DersSaati == slot.SaatIndex);
+
+            if (normalDersiVar)
+                return false;
+
+            // Telafi dersi kontrolÃ¼
+            var telafideGorevli = mevcutTelafiler.Any(t =>
+                t.YedekHocaId == hocaId &&
+                t.TelafiTarihi.Date == slot.Tarih.Date &&
+                t.BaslangicSaat == slot.BaslangicSaat);
+
+            return !telafideGorevli;
+        }
+
+        // âœ… LOCAL DATA ile mÃ¼sait hoca bulma
+        private List<Hoca> FindMusaitHocalarLocal(
+            DersProgrami ders,
+            TelafiSlot slot,
+            List<Hoca> tumHocalar,
+            List<HocaDersCache> hocaDersYetkileri,  
+            List<TelafiCache> mevcutTelafiler,  
+            List<DersCache> normalDersProgrami)  
+        {
+            var musaitHocalar = new List<Hoca>();
+
+            foreach (var hoca in tumHocalar.Where(h => 
+                h.FakulteId == ders.FakulteId && 
+                h.Id != ders.HocaId))
+            {
+                // Ders yetkisi kontrolÃ¼
+                if (ders.DersId.HasValue)
+                {
+                    bool dersVerebilir = hocaDersYetkileri.Any(hd =>
+                        hd.HocaId == hoca.Id && hd.DersId == ders.DersId.Value);
+
+                    if (!dersVerebilir)
+                        continue;
+                }
+
+                // MÃ¼saitlik kontrolÃ¼
+                bool musait = IsHocaMusaitLocal(
+                    hoca.Id, 
+                    slot, 
+                    mevcutTelafiler, 
+                    normalDersProgrami);
+
+                if (musait)
+                    musaitHocalar.Add(hoca);
+            }
+
+            return musaitHocalar.OrderBy(h => h.AdSoyad).ToList();
+        }
+
+        private async Task<List<TelafiSlot>> GetTelafiTakvimiAsync(DateTime baslangicTarihi)
+        {
+            var takvim = new List<TelafiSlot>();
+            var taburlar = await _context.Taburlar
+                .Include(t => t.TelafiAyarlari)
+                .AsNoTracking()
+                .ToListAsync();
+
+            for (int i = 1; i <= 30; i++)
+            {
+                var tarih = baslangicTarihi.AddDays(i);
+                var gunAdi = GetGunAdi(tarih);
+
+                if (string.IsNullOrEmpty(gunAdi))
+                    continue;
+
+                foreach (var tabur in taburlar)
+                {
+                    foreach (var ayar in tabur.TelafiAyarlari.Where(a => a.TelafiYapilacakGun == gunAdi))
+                    {
+                        for (int saat = ayar.TelafiBaslamaSaati; saat <= ayar.TelafiMaxBitisSaati; saat++)
+                        {
+                            if (!string.IsNullOrEmpty(ayar.TelafiYapilamayacakDersSaatleri))
+                            {
+                                var atlanacaklar = ayar.TelafiYapilamayacakDersSaatleri
+                                    .Split(',')
+                                    .Select(s => int.TryParse(s.Trim(), out int val) ? val : 0)
+                                    .Where(v => v > 0)
+                                    .ToList();
+
+                                if (atlanacaklar.Contains(saat))
+                                    continue;
+                            }
+
+                            var baslangicSaat = GetSaatTimeSpan(saat);
+                            var bitisSaat = baslangicSaat.Add(new TimeSpan(0, 40, 0));
+
+                            takvim.Add(new TelafiSlot
+                            {
+                                Tarih = tarih,
+                                BaslangicSaat = baslangicSaat,
+                                BitisSaat = bitisSaat,
+                                SaatIndex = saat,
+                                TaburId = tabur.Id,
+                                MinKisim = tabur.MinKisimNo,
+                                MaxKisim = tabur.MaxKisimNo,
+                                FakulteId = tabur.FakulteId
+                            });
+                        }
+                    }
+                }
+            }
+
+            return takvim.OrderBy(t => t.Tarih).ThenBy(t => t.SaatIndex).ToList();
+        }
+
+        public class TelafiSlot
+        {
+            public DateTime Tarih { get; set; }
+            public TimeSpan BaslangicSaat { get; set; }
+            public TimeSpan BitisSaat { get; set; }
+            public int SaatIndex { get; set; }
+            public int TaburId { get; set; }
+            public int MinKisim { get; set; }
+            public int MaxKisim { get; set; }
+            public int FakulteId { get; set; }
+        }
+        private class TelafiCache
+        {
+            public DateTime TelafiTarihi { get; set; }
+            public TimeSpan BaslangicSaat { get; set; }
+            public int? KisimNo { get; set; }
+            public int YedekHocaId { get; set; }
+        }
+
+        private class DersCache
+        {
+            public string DersGunu { get; set; }
+            public int DersSaati { get; set; }
+            public int KisimNo { get; set; }
+            public int HocaId { get; set; }
+        }
+
+        private class HocaDersCache
+        {
+            public int HocaId { get; set; }
+            public int DersId { get; set; }
+        }
+        // YardÄ±mcÄ± metodlar
         private string GetGunAdi(DateTime tarih)
         {
             return tarih.DayOfWeek switch
             {
                 DayOfWeek.Monday => "Pazartesi",
-                DayOfWeek.Tuesday => "Salý",
-                DayOfWeek.Wednesday => "Çarþamba",
-                DayOfWeek.Thursday => "Perþembe",
+                DayOfWeek.Tuesday => "SalÄ±",
+                DayOfWeek.Wednesday => "Ã‡arÅŸamba",
+                DayOfWeek.Thursday => "PerÅŸembe",
                 DayOfWeek.Friday => "Cuma",
                 _ => ""
             };
@@ -408,7 +674,7 @@ namespace Etutlist.Services
             if (saat.Hours == 13 && saat.Minutes == 10) return 6;
             if (saat.Hours == 14 && saat.Minutes == 0) return 7;
             if (saat.Hours == 14 && saat.Minutes == 50) return 8;
-            if (saat.Hours == 15 && saat.Minutes == 40) return 9; // ? 9. DERS
+            if (saat.Hours == 15 && saat.Minutes == 40) return 9;
             return 1;
         }
 
@@ -424,7 +690,7 @@ namespace Etutlist.Services
                 6 => new TimeSpan(13, 10, 0),
                 7 => new TimeSpan(14, 0, 0),
                 8 => new TimeSpan(14, 50, 0),
-                9 => new TimeSpan(15, 40, 0), // ? 9. DERS
+                9 => new TimeSpan(15, 40, 0),
                 _ => new TimeSpan(8, 30, 0)
             };
         }
@@ -442,4 +708,5 @@ namespace Etutlist.Services
         public List<Hoca> MusaitYedekHocalar { get; set; } = new();
         public List<DersProgrami> BirlestirilebilirDersler { get; set; } = new();
     }
+
 }

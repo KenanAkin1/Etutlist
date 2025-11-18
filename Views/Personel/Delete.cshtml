@@ -1,4 +1,4 @@
-@model Etutlist.Models.Personel
+ï»¿@model Etutlist.Models.Personel
 
 @{
     ViewData["Title"] = "Personeli Pasif Yap";
@@ -29,10 +29,10 @@
  <dd class="col-sm-9">@Model.Id</dd>
 
     <dt class="col-sm-3">Ad Soyad</dt>
-          <dd class="col-sm-9"><strong>@(!string.IsNullOrEmpty(Model.Ad) ? Model.Ad : "(—)")</strong></dd>
+          <dd class="col-sm-9"><strong>@(!string.IsNullOrEmpty(Model.Ad) ? Model.Ad : "(â€”)")</strong></dd>
 
-           <dt class="col-sm-3">Rütbe</dt>
-      <dd class="col-sm-9">@(!string.IsNullOrEmpty(Model.Rutbe) ? Model.Rutbe : "(—)")</dd>
+           <dt class="col-sm-3">RÃ¼tbe</dt>
+      <dd class="col-sm-9">@(!string.IsNullOrEmpty(Model.Rutbe) ? Model.Rutbe : "(â€”)")</dd>
 
        <dt class="col-sm-3">Durum</dt>
    <dd class="col-sm-9">
@@ -46,9 +46,9 @@
  <i class="bi bi-exclamation-triangle-fill"></i>
   <strong>Dikkat!</strong> Bu personel <u>silinmeyecek</u>, sadece <strong>pasif</strong> hale getirilecektir.
    <ul class="mt-2 mb-0">
-      <li>Eski etüt kayýtlarý korunacak</li>
-  <li>Yeni etüt planlamalarýnda görünmeyecek</li>
-        <li>Ýsterseniz daha sonra tekrar aktif edebilirsiniz</li>
+      <li>Eski etÃ¼t kayÄ±tlarÄ± korunacak</li>
+  <li>Yeni etÃ¼t planlamalarÄ±nda gÃ¶rÃ¼nmeyecek</li>
+        <li>Ä°sterseniz daha sonra tekrar aktif edebilirsiniz</li>
         </ul>
     </div>
 

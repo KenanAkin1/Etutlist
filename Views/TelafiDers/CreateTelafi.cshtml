@@ -1,4 +1,4 @@
-@{
+ï»¿@{
     ViewData["Title"] = "Telafi Ekle";
 }
 
@@ -20,24 +20,24 @@
  </div>
    }
 
-     <!-- AÇIKLAMA -->
+     <!-- AÃ‡IKLAMA -->
  <div class="alert alert-success">
              <h5><i class="bi bi-info-circle"></i> Telafi Nedir?</h5>
-     <p class="mb-0"><strong>Telafi:</strong> Ayný hoca, dersi farklý bir tarih ve saatte yapýyor. Birden fazla kýsým için tek seferde telafi ekleyebilirsiniz (Örn: 1-2-3).</p>
+     <p class="mb-0"><strong>Telafi:</strong> AynÄ± hoca, dersi farklÄ± bir tarih ve saatte yapÄ±yor. Birden fazla kÄ±sÄ±m iÃ§in tek seferde telafi ekleyebilirsiniz (Ã–rn: 1-2-3).</p>
   </div>
 
    <!-- FORM -->
         <form asp-action="CreateTelafi" method="post" id="telafiForm">
   @Html.AntiForgeryToken()
 
-     <!-- 1. ADIM: FAKÜLTE -->
+     <!-- 1. ADIM: FAKÃœLTE -->
       <div class="card mb-4">
               <div class="card-header bg-primary text-white">
-       <h5><i class="bi bi-1-circle"></i> Fakülte Seçin</h5>
+       <h5><i class="bi bi-1-circle"></i> FakÃ¼lte SeÃ§in</h5>
     </div>
  <div class="card-body">
        <select name="fakulteId" id="fakulteSelect" class="form-select" required>
-           <option value="">-- Fakülte Seçiniz --</option>
+           <option value="">-- FakÃ¼lte SeÃ§iniz --</option>
        @foreach (var fakulte in ViewBag.Fakulteler as SelectList)
       {
   <option value="@fakulte.Value">@fakulte.Text</option>
@@ -55,13 +55,13 @@
   <div class="row g-3">
           <div class="col-md-6">
        <label class="form-label"><strong>Ders</strong> <span class="text-danger">*</span></label>
-    <input type="text" id="dersInput" class="form-control" placeholder="Ders adý yazýn..." autocomplete="off" required />
+    <input type="text" id="dersInput" class="form-control" placeholder="Ders adÄ± yazÄ±n..." autocomplete="off" required />
          <input type="hidden" name="dersId" id="dersId" />
        <div id="dersOneri" class="list-group mt-1" style="position: absolute; z-index: 1000; max-width: 45%;"></div>
           </div>
        <div class="col-md-6">
 <label class="form-label"><strong>Hoca</strong> <span class="text-danger">*</span></label>
-        <input type="text" id="hocaInput" class="form-control" placeholder="Hoca adý yazýn..." autocomplete="off" required />
+        <input type="text" id="hocaInput" class="form-control" placeholder="Hoca adÄ± yazÄ±n..." autocomplete="off" required />
 <input type="hidden" name="hocaId" id="hocaId" />
           <div id="hocaOneri" class="list-group mt-1" style="position: absolute; z-index: 1000; max-width: 45%;"></div>
        </div>
@@ -72,14 +72,14 @@
        <!-- 3. ADIM: KISIM -->
              <div class="card mb-4" id="kisimCard" style="display:none;">
   <div class="card-header bg-info text-white">
-  <h5><i class="bi bi-3-circle"></i> Kýsým Seçimi</h5>
+  <h5><i class="bi bi-3-circle"></i> KÄ±sÄ±m SeÃ§imi</h5>
      </div>
             <div class="card-body">
             <div class="row g-3">
     <div class="col-md-6">
-     <label class="form-label"><strong>Kýsým No(larý)</strong> <span class="text-danger">*</span></label>
-     <input type="text" name="kisimlar" id="kisimInput" class="form-control" placeholder="Örn: 1-2-3" required />
-      <small class="text-muted">Birden fazla kýsým için tire ile ayýrýn: 1-2-3-4</small>
+     <label class="form-label"><strong>KÄ±sÄ±m No(larÄ±)</strong> <span class="text-danger">*</span></label>
+     <input type="text" name="kisimlar" id="kisimInput" class="form-control" placeholder="Ã–rn: 1-2-3" required />
+      <small class="text-muted">Birden fazla kÄ±sÄ±m iÃ§in tire ile ayÄ±rÄ±n: 1-2-3-4</small>
   </div>
      <div class="col-md-6">
 <label class="form-label"><strong>Saatleri Getir</strong></label>
@@ -89,9 +89,9 @@
    </div>
       </div>
 
-     <!-- DERS SAATLERÝ GÖSTERÝM -->
+     <!-- DERS SAATLERÄ° GÃ–STERÄ°M -->
       <div id="saatlerDiv" class="mt-3" style="display:none;">
-<label class="form-label"><strong>Normal Ders Günü ve Saati</strong> <span class="text-danger">*</span></label>
+<label class="form-label"><strong>Normal Ders GÃ¼nÃ¼ ve Saati</strong> <span class="text-danger">*</span></label>
   <div id="saatListesi" class="d-flex flex-wrap gap-2"></div>
        <input type="hidden" name="normalGun" id="normalGunInput" />
          <input type="hidden" name="normalDersSaati" id="normalSaatInput" />
@@ -99,7 +99,7 @@
       </div>
   </div>
 
-  <!-- 4. ADIM: TELAFÝ TARÝHÝ VE SAATÝ -->
+  <!-- 4. ADIM: TELAFÄ° TARÄ°HÄ° VE SAATÄ° -->
       <div class="card mb-4" id="telafiSaatCard" style="display:none;">
       <div class="card-header bg-warning text-dark">
       <h5><i class="bi bi-4-circle"></i> Telafi Tarihi ve Saati</h5>
@@ -112,12 +112,12 @@
     </div>
      </div>
 
-          <!-- BAÞLANGIÇ SAAT -->
+          <!-- BAÅžLANGIÃ‡ SAAT -->
        <div class="row g-3">
        <div class="col-md-6">
-     <label class="form-label"><strong>Baþlangýç Saati</strong> <span class="text-danger">*</span></label>
+     <label class="form-label"><strong>BaÅŸlangÄ±Ã§ Saati</strong> <span class="text-danger">*</span></label>
         <select name="baslangicSaat" id="baslangicSaatSelect" class="form-select" required>
-     <option value="">Seçiniz</option>
+     <option value="">SeÃ§iniz</option>
         <option value="1">1. DERS (09:00-09:40)</option>
             <option value="2">2. DERS (09:50-10:30)</option>
       <option value="3">3. DERS (10:40-11:20)</option>
@@ -129,9 +129,9 @@
        </select>
       </div>
       <div class="col-md-6">
-    <label class="form-label"><strong>Bitiþ Saati</strong> <span class="text-danger">*</span></label>
+    <label class="form-label"><strong>BitiÅŸ Saati</strong> <span class="text-danger">*</span></label>
    <select name="bitisSaat" id="bitisSaatSelect" class="form-select" required>
-       <option value="">Seçiniz</option>
+       <option value="">SeÃ§iniz</option>
       <option value="1">1. DERS (09:00-09:40)</option>
     <option value="2">2. DERS (09:50-10:30)</option>
            <option value="3">3. DERS (10:40-11:20)</option>
@@ -156,11 +156,11 @@
      <div class="col-md-6">
     <label class="form-label"><strong>Telafi Nedeni</strong> <span class="text-danger">*</span></label>
    <input type="text" name="telafiNedeni" class="form-control" 
-        placeholder="Örn: Ýzin, Hastalýk, Görev..." required />
+        placeholder="Ã–rn: Ä°zin, HastalÄ±k, GÃ¶rev..." required />
    </div>
     <div class="col-md-6">
-   <label class="form-label"><strong>Açýklama</strong></label>
-        <textarea name="aciklama" class="form-control" rows="3" placeholder="Ek açýklama (opsiyonel)"></textarea>
+   <label class="form-label"><strong>AÃ§Ä±klama</strong></label>
+        <textarea name="aciklama" class="form-control" rows="3" placeholder="Ek aÃ§Ä±klama (opsiyonel)"></textarea>
     </div>
               </div>
       </div>
@@ -168,7 +168,7 @@
 
      <div class="d-grid gap-2 d-md-flex justify-content-md-end">
               <a asp-action="Index" class="btn btn-secondary">
-       <i class="bi bi-x-circle"></i> Ýptal
+       <i class="bi bi-x-circle"></i> Ä°ptal
        </a>
       <button type="submit" class="btn btn-success btn-lg">
             <i class="bi bi-save"></i> Telafi Ekle
@@ -185,7 +185,7 @@
      let secilenDersId = 0;
   let secilenHocaId = 0;
 
-        // FAKÜLTE SEÇÝMÝ
+        // FAKÃœLTE SEÃ‡Ä°MÄ°
    $('#fakulteSelect').change(function () {
    fakulteId = $(this).val();
             if (fakulteId) {
@@ -253,16 +253,16 @@
    $('#hocaOneri').empty();
         }
 
- // DERS SAATLERÝNÝ GETÝR
+ // DERS SAATLERÄ°NÄ° GETÄ°R
  $('#saatleriGetirBtn').click(function () {
   let kisimlar = $('#kisimInput').val().trim();
 
       if (!fakulteId || !secilenHocaId || !kisimlar) {
-    alert('Lütfen tüm alanlarý doldurun!');
+    alert('LÃ¼tfen tÃ¼m alanlarÄ± doldurun!');
     return;
         }
 
-      // Ýlk kýsmý al (1-2-3 ise 1'i al)
+      // Ä°lk kÄ±smÄ± al (1-2-3 ise 1'i al)
        let kisimNo = kisimlar.split('-')[0].trim();
 
       $.ajax({
@@ -274,11 +274,11 @@
         },
       success: function (data) {
   if (data.length === 0) {
-  alert('Bu hoca için ders saati bulunamadý!');
+  alert('Bu hoca iÃ§in ders saati bulunamadÄ±!');
      return;
         }
 
-    // Tüm günleri göster
+    // TÃ¼m gÃ¼nleri gÃ¶ster
    let html = '';
   data.forEach(grup => {
  let saatStr = grup.saatler.join('-');
@@ -291,7 +291,7 @@
   $('#saatlerDiv').show();
     $('#telafiSaatCard, #detayCard').show();
 
-         // Saat butonlarýna týklama
+         // Saat butonlarÄ±na tÄ±klama
      $('.saatBtn').click(function () {
  $('.saatBtn').removeClass('active');
     $(this).addClass('active');

@@ -1,4 +1,4 @@
-using Etutlist.Models;
+ï»¿using Etutlist.Models;
 using Etutlist.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -103,7 +103,7 @@ namespace Etutlist.Controllers
                 var yedekHocaDersi = await _context.DersProgrami.AnyAsync(d =>
                     d.HocaId == yedekHocaId && d.DersGunu == dersGunu && d.DersSaati == dersSaati);
 
-                string telafiTuru = yedekHocaDersi ? "Birleştirme" : "İkame";
+                string telafiTuru = yedekHocaDersi ? "BirleÅŸtirme" : "Ä°kame";
                 var baslangicSaat = TelafiDersService.GetSaatTimeSpan(dersSaati);
                 var bitisSaat = TelafiDersService.GetSaatTimeSpan(dersSaati + kacSaat - 1).Add(new TimeSpan(0, 40, 0));
 
@@ -124,7 +124,7 @@ namespace Etutlist.Controllers
                 var result = await _telafiService.CreateTelafiDersAsync(telafi);
                 if (result.Success)
                 {
-                    TempData["Success"] = $"{telafiTuru} kaydı oluşturuldu.";
+                    TempData["Success"] = $"{telafiTuru} kaydÄ± oluÅŸturuldu.";
                     return RedirectToAction(nameof(Index), new { fakulteId });
                 }
 
@@ -189,7 +189,7 @@ namespace Etutlist.Controllers
                 var result = await _telafiService.CreateTelafiDersAsync(telafi);
                 if (result.Success)
                 {
-                    TempData["Success"] = "Telafi dersi oluşturuldu.";
+                    TempData["Success"] = "Telafi dersi oluÅŸturuldu.";
                     return RedirectToAction(nameof(Index), new { fakulteId });
                 }
 
@@ -208,7 +208,7 @@ namespace Etutlist.Controllers
             var query = _context.TelafiDersler
                 .Include(t => t.DersProgrami).ThenInclude(d => d.Hoca)
                 .Include(t => t.YedekHoca).Include(t => t.Fakulte)
-                .Where(t => (t.TelafiTuru == "İkame" || t.TelafiTuru == "Birleştirme") && !t.CiktiAlindi);
+                .Where(t => (t.TelafiTuru == "Ä°kame" || t.TelafiTuru == "BirleÅŸtirme") && !t.CiktiAlindi);
 
             if (fakulteId.HasValue)
                 query = query.Where(t => t.FakulteId == fakulteId.Value);
@@ -218,19 +218,19 @@ namespace Etutlist.Controllers
 
             if (!telafiler.Any())
             {
-                TempData["Error"] = "Çıktı alınacak İkame/Birleştirme kaydı bulunamadı.";
+                TempData["Error"] = "Ã‡Ä±ktÄ± alÄ±nacak Ä°kame/BirleÅŸtirme kaydÄ± bulunamadÄ±.";
                 return RedirectToAction(nameof(Index), new { fakulteId });
             }
 
             using var package = new ExcelPackage();
-            var ws = package.Workbook.Worksheets.Add("İkame-Birleştirme Listesi");
+            var ws = package.Workbook.Worksheets.Add("Ä°kame-BirleÅŸtirme Listesi");
 
             var headers = new[]
             {
-                "S. NU.", "DERS ADI", "SINIF", "BİRLEŞTİRİLEN KISIMLAR", "İKAME EDİLEN KISIM",
-                "DERS SAATİ", "TOPLAM İKAME/BİRLEŞTİRME YAPILAN SAAT", "DERS ÖĞRETMENİ",
-                "GÖREVLENDİRİLEN ÖĞRETMEN", "DERSİN NE ŞEKİLDE İŞLENECEĞİ",
-                "İKAME / BİRLEŞTİRME SEBEBİ", "DERSİN İŞLENECEĞİ YER", "DERSİN TARİHİ"
+                "S. NU.", "DERS ADI", "SINIF", "BÄ°RLEÅTÄ°RÄ°LEN KISIMLAR", "Ä°KAME EDÄ°LEN KISIM",
+                "DERS SAATÄ°", "TOPLAM Ä°KAME/BÄ°RLEÅTÄ°RME YAPILAN SAAT", "DERS Ã–ÄRETMENÄ°",
+                "GÃ–REVLENDÄ°RÄ°LEN Ã–ÄRETMEN", "DERSÄ°N NE ÅEKÄ°LDE Ä°ÅLENECEÄÄ°",
+                "Ä°KAME / BÄ°RLEÅTÄ°RME SEBEBÄ°", "DERSÄ°N Ä°ÅLENECEÄÄ° YER", "DERSÄ°N TARÄ°HÄ°"
             };
 
             ws.Row(1).Height = 100;
@@ -286,7 +286,7 @@ namespace Etutlist.Controllers
                 string ikameEdilenKisim = "";
                 string dersinYeri = "";
 
-                if (telafi.TelafiTuru == "Birleştirme")
+                if (telafi.TelafiTuru == "BirleÅŸtirme")
                 {
                     var yedekHocaKisim = await _context.DersProgrami
                         .Where(d => d.HocaId == telafi.YedekHocaId &&
@@ -333,13 +333,13 @@ namespace Etutlist.Controllers
                 }
 
                 var turCell = ws.Cells[row, 10];
-                if (telafi.TelafiTuru == "İkame")
+                if (telafi.TelafiTuru == "Ä°kame")
                 {
                     turCell.Style.Fill.PatternType = ExcelFillStyle.Solid;
                     turCell.Style.Fill.BackgroundColor.SetColor(ikameFill);
                     turCell.Style.Border.BorderAround(ExcelBorderStyle.Thin, ikameBorder);
                 }
-                else if (telafi.TelafiTuru == "Birleştirme")
+                else if (telafi.TelafiTuru == "BirleÅŸtirme")
                 {
                     turCell.Style.Fill.PatternType = ExcelFillStyle.Solid;
                     turCell.Style.Fill.BackgroundColor.SetColor(birlestirmeFill);
@@ -416,7 +416,7 @@ namespace Etutlist.Controllers
             }
 
             int toplamDers = bitisSaat - baslangicSaat + 1;
-            return $"({toplamDers}) DERS SAATİ";
+            return $"({toplamDers}) DERS SAATÄ°";
         }
 
         [HttpGet]
@@ -439,7 +439,7 @@ namespace Etutlist.Controllers
             var telafi = await _telafiService.GetTelafiDersAsync(id);
             if (telafi == null)
             {
-                TempData["Error"] = "Kayıt bulunamadı.";
+                TempData["Error"] = "KayÄ±t bulunamadÄ±.";
                 return RedirectToAction(nameof(Index));
             }
 
@@ -457,7 +457,7 @@ namespace Etutlist.Controllers
         {
             if (id != telafiDers.Id)
             {
-                TempData["Error"] = "Geçersiz istek.";
+                TempData["Error"] = "GeÃ§ersiz istek.";
                 return RedirectToAction(nameof(Index));
             }
 
@@ -489,13 +489,65 @@ namespace Etutlist.Controllers
             TempData[result.Success ? "Success" : "Error"] = result.Message;
             return RedirectToAction(nameof(Index));
         }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteAll(int? fakulteId, string? telafiTuru)
+        {
+            try
+            {
+                int silinecekSayi = 0;
+                string silmeAciklama = "";
 
-        // ? TOPLU TELAFİ METODLARI
+                // âœ… Query oluÅŸtur
+                var query = _context.TelafiDersler.AsQueryable();
+
+                // FakÃ¼lte filtresi
+                if (fakulteId.HasValue)
+                    query = query.Where(t => t.FakulteId == fakulteId.Value);
+
+                // âœ… Telafi TÃ¼rÃ¼ filtresi (Yeni!)
+                if (!string.IsNullOrEmpty(telafiTuru))
+                {
+                    var turler = telafiTuru.Split(',').Select(t => t.Trim()).ToList();
+                    query = query.Where(t => turler.Contains(t.TelafiTuru));
+                    
+                    if (turler.Contains("Telafi") && !turler.Contains("Ä°kame"))
+                        silmeAciklama = "Telafi kayÄ±tlarÄ±";
+                    else if (turler.Contains("Ä°kame") || turler.Contains("BirleÅŸtirme"))
+                        silmeAciklama = "Ä°kame ve BirleÅŸtirme kayÄ±tlarÄ±";
+                }
+                else
+                {
+                    silmeAciklama = "TÃ¼m kayÄ±tlar";
+                }
+
+                var telafiler = await query.ToListAsync();
+                silinecekSayi = telafiler.Count;
+
+                if (silinecekSayi == 0)
+                {
+                    TempData["Error"] = $"âŒ Silinecek {silmeAciklama.ToLower()} bulunamadÄ±!";
+                    return RedirectToAction(nameof(Index), new { fakulteId });
+                }
+
+                _context.TelafiDersler.RemoveRange(telafiler);
+                await _context.SaveChangesAsync();
+
+                TempData["Success"] = $"âœ… Toplu Silme TamamlandÄ±!\n\nğŸ“Š {silinecekSayi} adet {silmeAciklama.ToLower()} baÅŸarÄ±yla silindi.";
+                return RedirectToAction(nameof(Index), new { fakulteId });
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"âŒ Silme iÅŸlemi baÅŸarÄ±sÄ±z!\n\nHata: {ex.Message}";
+                return RedirectToAction(nameof(Index), new { fakulteId });
+            }
+        }
+        // ? TOPLU TELAFÄ° METODLARI
         [HttpGet]
-        public async Task<IActionResult> TopluTelafiOlustur()
+        public async Task<IActionResult> TopluTelafiOlustur(int? fakulteId)
         {
             ViewBag.Fakulteler = new SelectList(await _context.Fakulteler.ToListAsync(), "Id", "Ad");
-            ViewBag.Gunler = new List<string> { "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma" };
+            ViewBag.Gunler = new List<string> { "Pazartesi", "SalÄ±", "Ã‡arÅŸamba", "PerÅŸembe", "Cuma" };
             
             return View();
         }
@@ -503,29 +555,21 @@ namespace Etutlist.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> TopluTelafiOlustur(
-            int fakulteId,
-            string telafiYapilamayacakGun,
-            DateTime telafiTarihi,
-            string telafiNedeni)
+    DateTime telafiYapilacakTarih,
+    string telafiNedeni)
         {
             try
             {
-                var ayarlar = await _context.TaburTelafiAyarlari
-                    .Where(t => t.Tabur.FakulteId == fakulteId).FirstOrDefaultAsync();
-
-                if (ayarlar == null)
-                {
-                    TempData["Error"] = "Bu fakülte için telafi ayarları bulunamadı. Önce ayarları yapın.";
-                    return RedirectToAction(nameof(TopluTelafiOlustur));
-                }
-
-                var sonuc = await _telafiService.TopluTelafiOlusturAsync(ayarlar.TaburId, telafiYapilamayacakGun, telafiTarihi, telafiNedeni);
+                var sonuc = await _telafiService.TopluTelafiOlusturAsync(
+                    telafiYapilacakTarih,
+                    telafiNedeni);
 
                 if (sonuc.Success)
                 {
-                    TempData["Success"] = $"? Toplu telafi oluşturuldu!\n\n" +
-                        $"Başarılı: {sonuc.Basarili}\n" +
-                        $"Başarısız: {sonuc.Basarisiz}\n\n" +
+                    TempData["Success"] = $"âœ… AkÄ±llÄ± Toplu Telafi TamamlandÄ±!\n\n" +
+                        $"ğŸ“Š Ä°statistik:\n" +
+                        $"  â€¢ BaÅŸarÄ±lÄ±: {sonuc.Basarili}\n" +
+                        $"  â€¢ BaÅŸarÄ±sÄ±z: {sonuc.Basarisiz}\n\n" +
                         $"{sonuc.Message}";
                 }
                 else
@@ -533,7 +577,7 @@ namespace Etutlist.Controllers
                     TempData["Error"] = sonuc.Message;
                 }
 
-                return RedirectToAction(nameof(Index), new { fakulteId });
+                return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
@@ -541,5 +585,6 @@ namespace Etutlist.Controllers
                 return RedirectToAction(nameof(TopluTelafiOlustur));
             }
         }
+
     }
 }

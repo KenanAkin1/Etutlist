@@ -1,4 +1,4 @@
-namespace Etutlist.Models
+ï»¿namespace Etutlist.Models
 {
     public class Etut
     {
@@ -6,7 +6,7 @@ public int Id { get; set; }
         public int? PersonelId { get; set; } // ? Nullable (personel silinince NULL)
  public Personel? Personel { get; set; } // ? Nullable navigation
         
-        // ? YENÝ: Personel silinse bile ad/rütbe bilgisi korunsun
+        // ? YENÄ°: Personel silinse bile ad/rÃ¼tbe bilgisi korunsun
         public string? PersonelAd { get; set; }
         public string? PersonelRutbe { get; set; }
 

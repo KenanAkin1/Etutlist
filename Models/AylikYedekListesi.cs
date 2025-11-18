@@ -1,4 +1,4 @@
-namespace Etutlist.Models
+ï»¿namespace Etutlist.Models
 {
     public class AylikYedekListesi
   {
@@ -7,6 +7,6 @@ namespace Etutlist.Models
         public int Ay { get; set; }
    public int PersonelId { get; set; }
       public Personel Personel { get; set; }
-        public int Sira { get; set; } // Yedek listesindeki sırası (1-15)
+        public int Sira { get; set; } // Yedek listesindeki sÄ±rasÄ± (1-15)
   }
 }

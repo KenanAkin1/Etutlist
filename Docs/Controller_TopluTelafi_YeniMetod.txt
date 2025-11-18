@@ -1,0 +1,36 @@
+// Controllers/TelafiDersController.cs içindeki TopluTelafiOlustur metodunu
+// Bu kodla DEÐÝÞTÝRÝN:
+
+[HttpPost]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> TopluTelafiOlustur(
+    DateTime telafiYapilacakTarih,
+    string telafiNedeni)
+{
+    try
+    {
+        var sonuc = await _telafiService.TopluTelafiOlusturAsync(
+            telafiYapilacakTarih, 
+            telafiNedeni);
+
+        if (sonuc.Success)
+        {
+            TempData["Success"] = $"? Akýllý Toplu Telafi Tamamlandý!\n\n" +
+                $"?? Ýstatistik:\n" +
+                $"  • Baþarýlý: {sonuc.Basarili}\n" +
+                $"  • Baþarýsýz: {sonuc.Basarisiz}\n\n" +
+                $"{sonuc.Message}";
+        }
+        else
+        {
+            TempData["Error"] = sonuc.Message;
+        }
+
+        return RedirectToAction(nameof(Index));
+    }
+    catch (Exception ex)
+    {
+        TempData["Error"] = "Hata: " + ex.Message;
+        return RedirectToAction(nameof(TopluTelafiOlustur));
+    }
+}

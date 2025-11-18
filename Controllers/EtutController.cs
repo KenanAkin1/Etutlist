@@ -150,28 +150,38 @@ namespace Etutlist.Controllers
             var startDate = new DateTime(useYil, useAy, 1);
 
             var plan = await _svc.GetPlan(startDate);
-            var yedekler = await _svc.PeekMonthlyYedekList(startDate);
 
             using var wb = new XLWorkbook();
             var ws = wb.Worksheets.Add("EtutCizelgesi");
 
-            int r = 1;
+            // Varsayılan stilleri ayarla
+            ws.Style.Fill.BackgroundColor = XLColor.FromHtml("#FFFFFF"); // Beyaz
+            ws.Style.Font.Bold = true;
 
-            ws.Cell(r, 1).Value = $"{useYil} {System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(useAy).ToUpper()} AYI ETÜT ÇİZELGESİ";
-            ws.Range(r, 1, r, 6).Merge();
-            ws.Cell(r, 1).Style.Font.Bold = true;
+            int r = 1; // Başlangıç satırı
+
+            // 1. BAŞLIK
+            string ayAdi = System.Globalization.CultureInfo.GetCultureInfo("tr-TR").DateTimeFormat.GetMonthName(useAy).ToUpper();
+            ws.Cell(r, 1).Value = $"{ayAdi} AYI ETÜT KONTROL GÖREVLİSİ ÇİZELGESİ";
+            ws.Range(r, 1, r, 5).Merge();
+            ws.Cell(r, 1).Style.Font.FontSize = 14;
             ws.Cell(r, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-            r += 2;
+            ws.Cell(r, 1).Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+            ws.Cell(r, 1).Style.Fill.BackgroundColor = XLColor.FromHtml("#A6C785"); // Açık Yeşil
+            ws.Cell(r, 1).Style.Font.FontColor = XLColor.FromHtml("#000000"); // Siyah
+            r += 1; // Boş satır kaldırıldı
 
+            // 2. SÜTUN BAŞLIKLARI
+            int headerRow = r;
             ws.Cell(r, 1).Value = "S.NU.";
             ws.Cell(r, 2).Value = "RÜTBE";
             ws.Cell(r, 3).Value = "ADI SOYADI";
             ws.Cell(r, 4).Value = "GÖREVLİ OLDUĞU TARİH";
             ws.Cell(r, 5).Value = "GÖREVLİ OLDUĞU YER";
-            ws.Range(r, 1, r, 5).Style.Font.Bold = true;
-            ws.Range(r, 1, r, 5).Style.Fill.BackgroundColor = XLColor.LightGray;
+            ws.Range(r, 1, r, 5).Style.Fill.BackgroundColor = XLColor.FromHtml("#EA9F62"); // Turuncu
             r++;
 
+            // Görev Yeri için helper metod
             string GetGorevYeriForSinif(int? sinifNo) => sinifNo switch
             {
                 1 => "ASEM 10'uncu Öğr.Tb. K.lığı",
@@ -181,9 +191,11 @@ namespace Etutlist.Controllers
                 _ => ""
             };
 
+            // 3. VERİ SATIRLARI
             var orderedDates = plan.Keys.OrderBy(d => d).ToList();
             int seq = 1;
-            bool useOrange = true;
+            bool useRose = true;
+            int dataStartRow = r;
 
             foreach (var date in orderedDates)
             {
@@ -191,6 +203,9 @@ namespace Etutlist.Controllers
                 if (etutler.Count == 0) continue;
 
                 int startRowForDate = r;
+
+                ws.Cell(startRowForDate, 4).Value = date.ToString("dd.MM.yyyy dddd", new System.Globalization.CultureInfo("tr-TR"));
+
                 foreach (var e in etutler)
                 {
                     ws.Cell(r, 1).Value = seq++;
@@ -201,43 +216,122 @@ namespace Etutlist.Controllers
                 }
                 int endRowForDate = r - 1;
 
-                ws.Range(startRowForDate, 4, endRowForDate, 4).Merge();
-                ws.Cell(startRowForDate, 4).Value = date.ToString("dd.MM.yyyy dddd");
-                ws.Cell(startRowForDate, 4).Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
-                ws.Cell(startRowForDate, 4).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                if (endRowForDate >= startRowForDate)
+                {
+                    var dateRange = ws.Range(startRowForDate, 4, endRowForDate, 4);
+                    dateRange.Merge();
+                    dateRange.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+                    dateRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+                }
 
-                var bgColor = useOrange ? XLColor.FromHtml("#FFD8A6") : XLColor.White;
-                ws.Range(startRowForDate, 1, endRowForDate, 5).Style.Fill.BackgroundColor = bgColor;
+                // Gül (Rose) ve Beyaz arka plan (Sütun 1 hariç)
+                var bgColor = useRose ? XLColor.FromHtml("#E0A29E") : XLColor.FromHtml("#FFFFFF"); // Gül (Rose) veya Beyaz
+                ws.Range(startRowForDate, 2, endRowForDate, 5).Style.Fill.BackgroundColor = bgColor;
+                ws.Cell(startRowForDate, 4).Style.Fill.BackgroundColor = bgColor;
 
-                useOrange = !useOrange;
+                useRose = !useRose;
             }
 
-            r += 2;
-            ws.Cell(r, 1).Value = "Etüt Faaliyeti Yedek Personel Görevli İsim Listesi";
-            ws.Range(r, 1, r, 5).Merge();
-            ws.Cell(r, 1).Style.Font.Bold = true;
-            ws.Cell(r, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
-            r += 2;
+            int dataEndRow = r - 1;
 
-            ws.Cell(r, 1).Value = "S.No";
-            ws.Cell(r, 2).Value = "Rütbe";
-            ws.Cell(r, 3).Value = "Ad Soyad";
-            ws.Range(r, 1, r, 3).Style.Font.Bold = true;
-            ws.Range(r, 1, r, 3).Style.Fill.BackgroundColor = XLColor.LightGray;
+            // S.NU Sütunu (Veri Kısmı) ORTALI ve TURUNCU
+            if (dataEndRow >= dataStartRow)
+            {
+                var snuColRange = ws.Range(dataStartRow, 1, dataEndRow, 1);
+                snuColRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                snuColRange.Style.Fill.BackgroundColor = XLColor.FromHtml("#EA9F62"); // Turuncu
+            }
+
+            // Kenarlıklar (Başlık satırından verinin sonuna kadar)
+            if (dataEndRow >= dataStartRow)
+            {
+                var dataTableRange = ws.Range(headerRow, 1, dataEndRow, 5);
+                dataTableRange.Style.Border.SetTopBorder(XLBorderStyleValues.Thick);
+                dataTableRange.Style.Border.SetBottomBorder(XLBorderStyleValues.Thick);
+                dataTableRange.Style.Border.SetLeftBorder(XLBorderStyleValues.Thick);
+                dataTableRange.Style.Border.SetRightBorder(XLBorderStyleValues.Thick);
+                dataTableRange.Style.Border.SetInsideBorder(XLBorderStyleValues.Thick);
+            }
+
+            // 4. İMZA BLOĞU
+            r++;
+            ws.Cell(r, 5).Value = "Mehmet MAZLUM";
+            ws.Cell(r, 5).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            r++;
+            ws.Cell(r, 5).Value = "J.Asb.Kd.Bçvş.";
+            ws.Cell(r, 5).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            r++;
+            ws.Cell(r, 5).Value = "Öğt.Şb.Md.V.";
+            ws.Cell(r, 5).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
             r++;
 
-            int yseq = 1;
-            foreach (var p in yedekler)
-            {
-                ws.Cell(r, 1).Value = yseq++;
-                ws.Cell(r, 2).Value = p.Rutbe ?? "";
-                ws.Cell(r, 3).Value = p.Ad ?? "";
+            // 5. TALİMATLAR
+            r += 2;
+
+            // Talimat Başlığı
+            int talimatBaslikRow = r;
+            ws.Cell(r, 1).Value = "ETÜT KONTROL GÖREVLİSİ TALİMATI";
+            ws.Range(r, 1, r, 5).Merge();
+            ws.Cell(r, 1).Style.Font.FontSize = 28;
+            ws.Cell(r, 1).Style.Font.FontColor = XLColor.FromHtml("#000000"); // Siyah
+            ws.Cell(r, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            ws.Cell(r, 1).Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+            ws.Cell(r, 1).Style.Fill.BackgroundColor = XLColor.FromHtml("#FF0000"); // Kırmızı
+            ws.Row(r).Height = 73;
+            ws.Range(r, 1, r, 5).Style.Border.SetOutsideBorder(XLBorderStyleValues.Thick);
+            r++;
+
+            // Talimatları eklemek için yardımcı Action
+            Action<int, string> AddInstruction = (int num, string text) => {
+                int instructionStartRow = r;
+                ws.Cell(r, 1).Value = num;
+                ws.Cell(r, 2).Value = text;
+
+                ws.Cell(r, 1).Style.Font.FontSize = 16;
+                ws.Cell(r, 2).Style.Font.FontSize = 16;
+
+                ws.Range(r, 2, r, 5).Merge();
+                ws.Cell(r, 2).Style.Alignment.WrapText = true;
+                ws.Cell(r, 2).Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+                ws.Cell(r, 1).Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+                ws.Cell(r, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+                var instructionRange = ws.Range(r, 1, r, 5);
+                instructionRange.Style.Border.SetOutsideBorder(XLBorderStyleValues.Thick);
+                instructionRange.Style.Border.SetInsideBorder(XLBorderStyleValues.Thick);
+
+                ws.Row(r).Height = 150;
+
                 r++;
-            }
+            };
 
-            for (int c = 1; c <= 5; c++) ws.Column(c).AdjustToContents();
-            ws.Rows().AdjustToContents();
+            // Talimat metinleri
+            AddInstruction(1, "ETÜT KONTROL GÖREVLİSİ GÖREVİNİ, KANUN, YÖNETMELİK, YÖNERGE İLE EMİR VE TALİMATLARA UYGUN OLARAK YÜRÜTÜR.");
+            AddInstruction(2, "GÖREV GÜNLÜK ÇALIŞMA ÇİZELGESİNE GÖRE 1’İNCİ VE 2’NCİ ETÜT SAATLERİNDE(19:30-20:30) İCRA EDİLECEK, GÖREVLİ PERSONEL ETÜT SAATİNDEN EN GEÇ YARIM SAAT ÖNCESİNDE GÖREV MAHALLİNDE BULUNACAKTIR.");
+            AddInstruction(3, "ETÜT BAŞLANGICINDA SORMLU OLDUĞU KISIMLARI DOLAŞARAK DERS İLE İLGİLİ ÖĞRENCİLERİN SORULARINI YANITLAR. TB. NÖB. SB.LARI İLE KOORDİNELİ OLARAK ETÜT FAALİYETİNİN MUNTAZAM BİR ŞEKİLDE İCRASINI SAĞLAR, TESPİT ETTİĞİ DİSİPLİNSİZLİKLERİ NÖBETÇİ HEYETİNE BİLDİRİR.");
+            AddInstruction(4, "ETÜT ESNASINDA; EMİRLERE AYKIRI DAVRANDIĞI, DİĞER ÖĞRENCİLERİ RAHATSIZ ETTİĞİ VE ETÜT DÜZENİNİ BOZDUĞU TESPİT EDİLEN ÖĞRENCİLER İLE ETÜDE MAZERETSİZ OLARAK KATILMADIKLARI TESPİT EDİLEN ÖĞRENCİLERİ TABUR NÖBETÇİ SUBAYINA BİLDİRİR VE ÖĞRENCİ HAKKINDA GÖZLEM FORMU TANZİM EDEREK İLGİLİ BÖLÜK KOMUTANINA İLETİR.");
+            AddInstruction(5, "ÖĞRENCİLERDEN GELEN BİLDİRİMLERE İSTİNADEN AKSAKLIK OLAN DERSLER HAKKINDA İLGİLİ BÖLÜM BAŞKANLARINI BİLGİLENDİRİR.");
+            AddInstruction(6, "AY İÇERİSİNDE YAZILAN GÖREV KESİNLİKLE DEĞİŞTİRİLMEYECEK, ZORUNLU NEDENLER (ANİ HASTALIK, KURS, MAZERET İZNİ, İSTİRAHATLİ NÖBET VB.)’SEBEPERDEN DOLAYI GÖREVİ İCRA EDEMEYECEK DURUMDA OLAN PERSONEL ÖNCELİKLİ OLARAK SONRAKİ HAFTALARIN AYNI GÜNÜ İLE GÖREV DEĞİŞİMİNE GİDECEK, VE ETÜT NÖBETİ DEĞİİŞİKLİK FORMUNU DOLDURUP KOLLUK UYG. EĞT.MRK.K.LIĞINA (1. KAT 114 NOLU ODAYA) TESLİM EDECEKTİR.");
+            AddInstruction(7, "TEREDDÜTE DÜŞÜLEN KONULARDA GÖREVLİ OLDUKLARI BİRİMLERDEN SORMLU FAKÜLTE DEKANLIĞI/JAMYO MÜDURLÜĞÜ/KOLLUK UYG. EĞT.MRK.K.LIĞINA DANIŞILACAKTIR.");
+            AddInstruction(8, "ETÜT GÖREVLENDİRMELERİNİN TALİMATLARA UYGUN ŞEKİLDE İŞLETİLMESİ VE TAKİBİNDEN İLGİLİ FAKÜLTE DEKANLIĞI/JAMYO MÜDURLÜĞÜ/KOLLUK UYG. EĞT.MRK.K.LIĞI SORMLUDUR.");
+            AddInstruction(9, "ETÜT GÖREVİ İCRA EDEN TÜM PERSONEL BU TALİMAT ÇERÇEVESİNDE HAREKET EDECEKTİR.");
+            AddInstruction(10, "ETÜT GÖREVİ İCRA EDEN TÜM PERSONEL ETÜTÜN YAPILIP YAPILMAYACAĞI İLE İLGİ ÖĞRENCİ KITALAR KOMUTANLIĞI İLE İLETİŞİME GEÇEÇEKTİR.");
 
+
+            // 6. SÜTUN GENİŞLİKLERİ
+            ws.Column(1).Width = 6;
+            ws.Column(2).Width = 20;
+            ws.Column(3).Width = 25;
+            ws.Column(4).Width = 25;
+            ws.Column(5).Width = 30;
+
+            // 7. TÜM İÇERİĞE DIŞ KENARLIK (KALIN)
+            int lastUsedRow = r - 1;
+            var allRange = ws.Range(1, 1, lastUsedRow, 5);
+            allRange.Style.Border.SetOutsideBorder(XLBorderStyleValues.Thick);
+
+
+            // 8. DOSYAYI OLUŞTUR VE DÖNDÜR
             using var ms = new MemoryStream();
             wb.SaveAs(ms);
             ms.Seek(0, SeekOrigin.Begin);

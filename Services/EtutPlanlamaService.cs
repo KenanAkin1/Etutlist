@@ -1,4 +1,4 @@
-using Etutlist.Models;
+ï»¿using Etutlist.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Etutlist.Services
@@ -65,6 +65,12 @@ var rnd = new Random();
     var adaylar = people.Where(p => !HasMazeret(p, d)).ToList();
  bool gunTipiPazar = d.DayOfWeek == DayOfWeek.Sunday;
         bool gunTipiOzel = ozelGunSet.Contains(d.Date);
+
+        // ID 20 olan personeli Pazar gÃ¼nÃ¼ adaylardan Ã§Ä±kar
+        if (gunTipiPazar)
+        {
+            adaylar = adaylar.Where(p => p.Id != 20).ToList();
+        }
 
         if (!ozelDortluAtandi && hedefGunNullable.HasValue && d.Date == hedefGunNullable.Value.Date)
   {
@@ -372,14 +378,14 @@ int seed = yil * 100 + ay;
             try
     {
    var etut = await _db.Etutler.Include(e => e.Personel).FirstOrDefaultAsync(e => e.Id == etutId);
-      if (etut == null) throw new InvalidOperationException("Etut bulunamadý.");
+      if (etut == null) throw new InvalidOperationException("Etut bulunamadÄ±.");
 
       var eskiPersonel = etut.Personel;
  var yeniPersonel = await _db.Personeller.Include(p => p.Mazeretler).FirstOrDefaultAsync(p => p.Id == yedekPersonelId);
-    if (yeniPersonel == null) throw new InvalidOperationException("Yedek personel bulunamadý.");
+    if (yeniPersonel == null) throw new InvalidOperationException("Yedek personel bulunamadÄ±.");
 
        if (HasMazeret(yeniPersonel, etut.Tarih))
- throw new InvalidOperationException("Yedek personel o gün mazeretli.");
+ throw new InvalidOperationException("Yedek personel o gÃ¼n mazeretli.");
 
              DecrementPersonelDayCounter(eskiPersonel, etut.Tarih);
            etut.PersonelId = yeniPersonel.Id;
@@ -407,7 +413,7 @@ int seed = yil * 100 + ay;
         try
        {
           var etut = await _db.Etutler.Include(e => e.Personel).FirstOrDefaultAsync(e => e.Id == etutId);
-    if (etut == null) throw new InvalidOperationException("Etut bulunamadý.");
+    if (etut == null) throw new InvalidOperationException("Etut bulunamadÄ±.");
 
     var personel = etut.Personel;
    if (HasMazeret(personel, targetDate))
@@ -442,13 +448,13 @@ throw new InvalidOperationException("Personel hedef tarihte mazeretli.");
      {
          var etutA = await _db.Etutler.Include(e => e.Personel).FirstOrDefaultAsync(e => e.Id == etutAId);
      var etutB = await _db.Etutler.Include(e => e.Personel).FirstOrDefaultAsync(e => e.Id == etutBId);
-      if (etutA == null || etutB == null) throw new InvalidOperationException("Etut bulunamadý.");
+      if (etutA == null || etutB == null) throw new InvalidOperationException("Etut bulunamadÄ±.");
 
     var personA = etutA.Personel;
      var personB = etutB.Personel;
 
         if (HasMazeret(personA, etutB.Tarih) || HasMazeret(personB, etutA.Tarih))
-         throw new InvalidOperationException("Kiþilerden biri diðerinin gününde mazeretli.");
+         throw new InvalidOperationException("KiÅŸilerden biri diÄŸerinin gÃ¼nÃ¼nde mazeretli.");
 
      DecrementPersonelDayCounter(personA, etutA.Tarih);
   DecrementPersonelDayCounter(personB, etutB.Tarih);
@@ -511,14 +517,14 @@ else
      .FirstOrDefaultAsync(e => e.Id == id);
         }
 
-     // ? YENÝ: O AYIN YEDEK LÝSTESÝNDEN MÜSAÝT OLANLAR
+     // ? YENÄ°: O AYIN YEDEK LÄ°STESÄ°NDEN MÃœSAÄ°T OLANLAR
      public async Task<List<Personel>> GetAvailableYedeklerForDateAsync(DateTime date)
         {
    var tarih = date.Date;
             int yil = tarih.Year;
             int ay = tarih.Month;
 
-// ? 1. O AYIN YEDEK LÝSTESÝNÝ AL
+// ? 1. O AYIN YEDEK LÄ°STESÄ°NÄ° AL
             var ayinYedekleri = await _db.AylikYedekListeleri
       .Include(a => a.Personel)
         .ThenInclude(p => p.Mazeretler)
@@ -527,7 +533,7 @@ else
   .Select(a => a.Personel)
       .ToListAsync();
 
-// Eðer yedek listesi yoksa, YedekSayisi > 0 olanlarý göster (fallback)
+// EÄŸer yedek listesi yoksa, YedekSayisi > 0 olanlarÄ± gÃ¶ster (fallback)
             if (!ayinYedekleri.Any())
             {
        var people = await _db.Personeller
@@ -552,14 +558,14 @@ else
   .ToList();
             }
 
-   // ? 2. O GÜN ATANANLARI AL
+   // ? 2. O GÃœN ATANANLARI AL
    var atananIdsAy = await _db.Etutler
      .Where(e => e.Tarih.Date == tarih)
   .Select(e => e.PersonelId)
     .Distinct()
          .ToListAsync();
 
-// ? 3. YEDEK LÝSTESÝNDEN MÜSAÝT OLANLARI FÝLTRELE
+// ? 3. YEDEK LÄ°STESÄ°NDEN MÃœSAÄ°T OLANLARI FÄ°LTRELE
         var result = ayinYedekleri
 .Where(p =>
     p != null

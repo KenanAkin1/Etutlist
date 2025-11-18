@@ -1,4 +1,4 @@
-using Etutlist.Models;
+ï»¿using Etutlist.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -11,16 +11,16 @@ namespace Etutlist.Controllers
     {
         private readonly AppDbContext _context;
 
-    // ? SAAT AYARLARI - Deðiþtirilebilir
+    // ? SAAT AYARLARI - DeÄŸiÅŸtirilebilir
         private static readonly Dictionary<int, int[]> FakulteSaatAyarlari = new()
         {
-            // ASEM (FakulteId: 2): Pazartesi:7, Salý:7, Çarþamba:6, Perþembe:7, Cuma:4
+            // ASEM (FakulteId: 2): Pazartesi:7, SalÄ±:7, Ã‡arÅŸamba:6, PerÅŸembe:7, Cuma:4
             { 2, new[] { 7, 7, 6, 7, 4 } },
-    // SUEM (FakulteId: 1): Pazartesi:6, Salý:6, Çarþamba:6, Perþembe:7, Cuma:4
+    // SUEM (FakulteId: 1): Pazartesi:6, SalÄ±:6, Ã‡arÅŸamba:6, PerÅŸembe:7, Cuma:4
           { 1, new[] { 6, 6, 6, 7, 4 } }
         };
 
-  // CSV Sütun baþlangýç pozisyonlarý (1. sütun: S.NO, 2: DERS, 3: HOCA, 4: D/S)
+  // CSV SÃ¼tun baÅŸlangÄ±Ã§ pozisyonlarÄ± (1. sÃ¼tun: S.NO, 2: DERS, 3: HOCA, 4: D/S)
   private const int CSV_ILKSAAT_SUTUN = 4;
 
   public DersProgramiController(AppDbContext context)
@@ -28,7 +28,7 @@ namespace Etutlist.Controllers
             _context = context;
      }
 
-   // Haftalýk Ders Programý - TÜM DERSLER VE HOCALAR
+   // HaftalÄ±k Ders ProgramÄ± - TÃœM DERSLER VE HOCALAR
       public async Task<IActionResult> Index(int? fakulteId)
      {
           if (!fakulteId.HasValue)
@@ -82,18 +82,18 @@ namespace Etutlist.Controllers
         d.DersSaati == request.Saat);
 
       if (mevcutDers)
-      return Json(new { success = false, message = $"Kýsým {request.KisimNo} - {request.Gun} {request.Saat}. saat zaten dolu!" });
+      return Json(new { success = false, message = $"KÄ±sÄ±m {request.KisimNo} - {request.Gun} {request.Saat}. saat zaten dolu!" });
 
            var hoca = await _context.Hocalar.FindAsync(request.HocaId);
        if (hoca == null)
-        return Json(new { success = false, message = "Hoca bulunamadý!" });
+        return Json(new { success = false, message = "Hoca bulunamadÄ±!" });
 
  var hocaDers = await _context.HocaDersler
 .Include(hd => hd.Ders)
      .FirstOrDefaultAsync(hd => hd.HocaId == request.HocaId && hd.DersId == request.DersId);
 
         if (hocaDers == null)
-     return Json(new { success = false, message = "Hoca-Ders eþleþmesi bulunamadý!" });
+     return Json(new { success = false, message = "Hoca-Ders eÅŸleÅŸmesi bulunamadÄ±!" });
 
         var ders = new DersProgrami
   {
@@ -113,7 +113,7 @@ KisimNo = request.KisimNo,
           return Json(new
       {
    success = true,
-        message = "Ders baþarýyla eklendi!",
+        message = "Ders baÅŸarÄ±yla eklendi!",
     dersId = ders.Id,
              kisimNo = ders.KisimNo
      });
@@ -124,12 +124,12 @@ KisimNo = request.KisimNo,
             }
         }
 
-    // Toplu Ders Ekleme Sayfasý - GET
+    // Toplu Ders Ekleme SayfasÄ± - GET
         [HttpGet]
         public async Task<IActionResult> BulkAdd()
   {
             ViewBag.Fakulteler = new SelectList(await _context.Fakulteler.ToListAsync(), "Id", "Ad");
-      ViewBag.Gunler = new List<string> { "Pazartesi", "Salý", "Çarþamba", "Perþembe", "Cuma" };
+      ViewBag.Gunler = new List<string> { "Pazartesi", "SalÄ±", "Ã‡arÅŸamba", "PerÅŸembe", "Cuma" };
             return View();
         }
 
@@ -144,9 +144,9 @@ KisimNo = request.KisimNo,
 
      if (model.Dersler == null || !model.Dersler.Any())
             {
-           TempData["Error"] = "Hiç ders giriþi bulunamadý!";
+           TempData["Error"] = "HiÃ§ ders giriÅŸi bulunamadÄ±!";
  ViewBag.Fakulteler = new SelectList(await _context.Fakulteler.ToListAsync(), "Id", "Ad");
-                ViewBag.Gunler = new List<string> { "Pazartesi", "Salý", "Çarþamba", "Perþembe", "Cuma" };
+                ViewBag.Gunler = new List<string> { "Pazartesi", "SalÄ±", "Ã‡arÅŸamba", "PerÅŸembe", "Cuma" };
     return View(model);
        }
 
@@ -154,9 +154,9 @@ KisimNo = request.KisimNo,
 
   if (!selectedDersler.Any())
         {
-      TempData["Error"] = "Seçili ders bulunamadý!";
+      TempData["Error"] = "SeÃ§ili ders bulunamadÄ±!";
         ViewBag.Fakulteler = new SelectList(await _context.Fakulteler.ToListAsync(), "Id", "Ad");
-    ViewBag.Gunler = new List<string> { "Pazartesi", "Salý", "Çarþamba", "Perþembe", "Cuma" };
+    ViewBag.Gunler = new List<string> { "Pazartesi", "SalÄ±", "Ã‡arÅŸamba", "PerÅŸembe", "Cuma" };
           return View(model);
         }
 
@@ -174,7 +174,7 @@ KisimNo = request.KisimNo,
  if (mevcutDers)
         {
            skippedCount++;
-                errors.Add($"Kýsým {item.KisimNo} - {item.Gun} {item.Saat}. saat zaten dolu");
+                errors.Add($"KÄ±sÄ±m {item.KisimNo} - {item.Gun} {item.Saat}. saat zaten dolu");
     continue;
         }
 
@@ -204,23 +204,23 @@ KisimNo = request.KisimNo,
       if (addedCount > 0)
             {
        await _context.SaveChangesAsync();
-    TempData["Success"] = $"? {addedCount} ders baþarýyla eklendi!";
+    TempData["Success"] = $"? {addedCount} ders baÅŸarÄ±yla eklendi!";
      }
 
     if (skippedCount > 0)
 {
-     TempData["Warning"] = $"?? {skippedCount} ders atlandý: {string.Join(", ", errors)}";
+     TempData["Warning"] = $"?? {skippedCount} ders atlandÄ±: {string.Join(", ", errors)}";
   }
 
             if (errors.Any() && addedCount == 0)
          {
-   TempData["Error"] = $"? Hiç ders eklenemedi: {string.Join(", ", errors)}";
+   TempData["Error"] = $"? HiÃ§ ders eklenemedi: {string.Join(", ", errors)}";
             }
 
         return RedirectToAction(nameof(Index));
    }
 
-      // Excel/CSV Upload Sayfasý - GET
+      // Excel/CSV Upload SayfasÄ± - GET
         [HttpGet]
         public async Task<IActionResult> UploadExcel()
    {
@@ -235,7 +235,7 @@ KisimNo = request.KisimNo,
  {
        if (file == null || file.Length == 0)
           {
-     TempData["Error"] = "Lütfen bir dosya seçin!";
+     TempData["Error"] = "LÃ¼tfen bir dosya seÃ§in!";
           ViewBag.Fakulteler = new SelectList(await _context.Fakulteler.ToListAsync(), "Id", "Ad");
        return View();
          }
@@ -247,10 +247,10 @@ KisimNo = request.KisimNo,
       int hocaCount = 0;
         int dersCount = 0;
 
-    // Fakülteye özel saat ayarlarýný al
+    // FakÃ¼lteye Ã¶zel saat ayarlarÄ±nÄ± al
     var saatAyarlari = FakulteSaatAyarlari.ContainsKey(fakulteId)
        ? FakulteSaatAyarlari[fakulteId]
-             : new[] { 9, 9, 9, 9, 9 }; // Default: Her gün 9 saat
+             : new[] { 9, 9, 9, 9, 9 }; // Default: Her gÃ¼n 9 saat
 
           using (var reader = new StreamReader(file.OpenReadStream(), Encoding.UTF8))
         {
@@ -258,7 +258,7 @@ KisimNo = request.KisimNo,
   int lineNumber = 0;
              string currentDersAdi = "";
 
-    var gunler = new[] { "Pazartesi", "Salý", "Çarþamba", "Perþembe", "Cuma" };
+    var gunler = new[] { "Pazartesi", "SalÄ±", "Ã‡arÅŸamba", "PerÅŸembe", "Cuma" };
 
     while ((line = await reader.ReadLineAsync()) != null)
         {
@@ -310,7 +310,7 @@ if (!string.IsNullOrWhiteSpace(columns[1]))
       hocaCount++;
     }
 
-         // Dinamik sütun baþlangýç hesaplama
+         // Dinamik sÃ¼tun baÅŸlangÄ±Ã§ hesaplama
 int currentColumn = CSV_ILKSAAT_SUTUN;
 
            for (int gunIndex = 0; gunIndex < 5; gunIndex++)
@@ -327,12 +327,12 @@ int currentColumn = CSV_ILKSAAT_SUTUN;
 
                 if (string.IsNullOrWhiteSpace(kisimNo)) continue;
 
-   // ? DÜZELTME: Birden fazla kýsým desteði (1-2, 1-2-3 gibi)
+   // ? DÃœZELTME: Birden fazla kÄ±sÄ±m desteÄŸi (1-2, 1-2-3 gibi)
       var kisimlar = new List<int>();
 
  if (kisimNo.Contains('-'))
             {
- // "1-2" veya "1-2-3" formatý
+ // "1-2" veya "1-2-3" formatÄ±
   var parcalar = kisimNo.Split('-');
       foreach (var parca in parcalar)
   {
@@ -342,13 +342,13 @@ int currentColumn = CSV_ILKSAAT_SUTUN;
       }
        else if (int.TryParse(kisimNo, out int tekKisim))
   {
-      // Tek kýsým: "1", "2" gibi
+      // Tek kÄ±sÄ±m: "1", "2" gibi
           kisimlar.Add(tekKisim);
        }
 
        if (!kisimlar.Any()) continue;
 
-           // Her kýsým için ayrý ders programý kaydý oluþtur
+           // Her kÄ±sÄ±m iÃ§in ayrÄ± ders programÄ± kaydÄ± oluÅŸtur
         foreach (var kisim in kisimlar)
     {
             var mevcutDers = await _context.DersProgrami.AnyAsync(d =>
@@ -385,10 +385,10 @@ int currentColumn = CSV_ILKSAAT_SUTUN;
 
     await _context.SaveChangesAsync();
 
-         TempData["Success"] = $"? Baþarýlý! {addedCount} ders saati, {dersCount} ders ve {hocaCount} hoca-ders eþleþmesi eklendi!";
+         TempData["Success"] = $"? BaÅŸarÄ±lÄ±! {addedCount} ders saati, {dersCount} ders ve {hocaCount} hoca-ders eÅŸleÅŸmesi eklendi!";
                 if (skippedCount > 0)
     {
-        TempData["Warning"] = $"?? {skippedCount} çakýþan kayýt atlandý.";
+        TempData["Warning"] = $"?? {skippedCount} Ã§akÄ±ÅŸan kayÄ±t atlandÄ±.";
             }
 
                 return RedirectToAction(nameof(Index), new { fakulteId });
@@ -409,18 +409,18 @@ int currentColumn = CSV_ILKSAAT_SUTUN;
     var ders = await _context.DersProgrami.FindAsync(id);
           if (ders == null)
             {
-    TempData["Error"] = "Ders bulunamadý.";
+    TempData["Error"] = "Ders bulunamadÄ±.";
    return RedirectToAction(nameof(Index), new { fakulteId });
      }
 
             _context.DersProgrami.Remove(ders);
        await _context.SaveChangesAsync();
 
-            TempData["Success"] = "Ders baþarýyla silindi.";
+            TempData["Success"] = "Ders baÅŸarÄ±yla silindi.";
             return RedirectToAction(nameof(Index), new { fakulteId });
         }
 
-   // Ders adý autocomplete - AJAX
+   // Ders adÄ± autocomplete - AJAX
         [HttpGet]
         public IActionResult SearchDersler(string term)
   {
@@ -433,7 +433,7 @@ int currentColumn = CSV_ILKSAAT_SUTUN;
        return Json(dersler);
         }
 
-        // Hoca adý autocomplete - Ders bazlý filtreleme ile
+        // Hoca adÄ± autocomplete - Ders bazlÄ± filtreleme ile
         [HttpGet]
         public IActionResult SearchHocalar(int fakulteId, string term, int? dersId)
         {
@@ -461,13 +461,13 @@ int currentColumn = CSV_ILKSAAT_SUTUN;
  if (hoca != null)
        return hoca;
 
-    // Geliþmiþ Rütbe/Ýsim Ayýrma
-   // Örnek: "J.Kd.Bçvþ.Kenan Akýn" ? Rütbe: "J.Kd.Bçvþ.", Ýsim: "Kenan Akýn"
+    // GeliÅŸmiÅŸ RÃ¼tbe/Ä°sim AyÄ±rma
+   // Ã–rnek: "J.Kd.BÃ§vÅŸ.Kenan AkÄ±n" ? RÃ¼tbe: "J.Kd.BÃ§vÅŸ.", Ä°sim: "Kenan AkÄ±n"
       string rutbe = "";
         string isim = adSoyad;
 
-            // Nokta içeren kýsaltmalarý bul (J.Kd.Bçvþ. gibi)
-            var match = Regex.Match(adSoyad, @"^([A-ZÇÐÝÖÞÜ][a-zçðýöþü]*\.)+");
+            // Nokta iÃ§eren kÄ±saltmalarÄ± bul (J.Kd.BÃ§vÅŸ. gibi)
+            var match = Regex.Match(adSoyad, @"^([A-ZÃ‡ÄžÄ°Ã–ÅžÃœ][a-zÃ§ÄŸÄ±Ã¶ÅŸÃ¼]*\.)+");
         if (match.Success)
    {
           rutbe = match.Value.TrimEnd();
@@ -475,7 +475,7 @@ int currentColumn = CSV_ILKSAAT_SUTUN;
             }
             else
             {
-                // Boþlukla ayrýlmýþsa ilk kelime rütbe
+                // BoÅŸlukla ayrÄ±lmÄ±ÅŸsa ilk kelime rÃ¼tbe
         var parts = adSoyad.Split(new[] { ' ' }, 2);
    if (parts.Length > 1)
   {

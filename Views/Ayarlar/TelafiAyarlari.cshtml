@@ -1,16 +1,20 @@
-@model List<Etutlist.Models.TaburTelafiAyarlari>
+ï»¿@model List<Etutlist.Models.TaburTelafiAyarlari>
 
 @{
-    ViewData["Title"] = "Telafi Ayarlarý";
+    ViewData["Title"] = "Tabur Telafi AyarlarÄ±";
+    var gunler = new[] { "Pazartesi", "SalÄ±", "Ã‡arÅŸamba", "PerÅŸembe", "Cuma" };
 }
 
 <div class="container-fluid mt-3">
-    <h2><i class="bi bi-gear-fill"></i> Tabur Telafi Ayarlarý</h2>
+    <h2><i class="bi bi-gear-fill"></i> Tabur Telafi AyarlarÄ±</h2>
 
     <div class="mb-3">
         <a asp-action="Index" class="btn btn-secondary">
             <i class="bi bi-arrow-left"></i> Geri
         </a>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addTaburModal">
+            <i class="bi bi-plus-circle"></i> Yeni Tabur Ekle
+        </button>
     </div>
 
     @if (TempData["Success"] != null)
@@ -30,226 +34,246 @@
 
     <!-- Bilgilendirme -->
     <div class="alert alert-info">
-        <h5><i class="bi bi-info-circle-fill"></i> Telafi Ayarlarý Nasýl Çalýþýr?</h5>
-        <ul class="mb-0">
-            <li><strong>Tabur:</strong> Hangi tabur için ayar yapýyorsunuz (ASEM 1. Tabur, ASEM 2. Tabur, vb.)</li>
-            <li><strong>Telafi Yapýlamayacak Gün:</strong> Hangi günün dersleri telafi edilecek (örn: Salý)</li>
-            <li><strong>Baþlama Saati:</strong> Telafiler kaçýncý dersten itibaren baþlayacak (örn: 7. ders)</li>
-            <li><strong>Telafi Yapýlmayacak Ders Saatleri:</strong> Hangi saatlerdeki dersler telafi edilmeyecek (örn: 1,2,3 = 1., 2. ve 3. saatler telafi edilmeyecek)</li>
-        </ul>
+        <h5><i class="bi bi-info-circle-fill"></i> NasÄ±l KullanÄ±lÄ±r?</h5>
+        <ol class="mb-0">
+            <li><strong>Yeni Tabur Ekle:</strong> FakÃ¼lte, tabur adÄ± ve kÄ±sÄ±m aralÄ±ÄŸÄ±nÄ± belirleyin</li>
+            <li><strong>Telafi AyarlarÄ±:</strong> Tabur seÃ§tikten sonra 5 iÅŸ gÃ¼nÃ¼ iÃ§in ayrÄ± ayrÄ± ayar yapÄ±n</li>
+            <li><strong>Her GÃ¼n Ä°Ã§in:</strong> BaÅŸlama saati seÃ§in veya "Bu gÃ¼n telafi yapÄ±lmaz" iÅŸaretleyin</li>
+        </ol>
     </div>
 
-    <!-- Yeni Ayar Ekle -->
-    <div class="card mb-4 shadow-sm">
-        <div class="card-header bg-primary text-white">
-            <h5 class="mb-0"><i class="bi bi-plus-circle"></i> Yeni Telafi Ayarý Ekle</h5>
-        </div>
-        <div class="card-body">
-            <form asp-action="TelafiAyariEkle" method="post">
-                @Html.AntiForgeryToken()
-                <div class="row g-3">
-                    <div class="col-md-3">
-                        <label class="form-label fw-bold">Tabur <span class="text-danger">*</span></label>
-                        <select name="TaburId" class="form-select" required>
-                            <option value="">-- Tabur Seçin --</option>
-                            @if (ViewBag.Taburlar != null)
-                            {
-                                @foreach (var tabur in ViewBag.Taburlar)
-                                {
-                                    <option value="@tabur.Id">@tabur.TaburAdi (@tabur.Fakulte.Ad)</option>
-                                }
-                            }
-                        </select>
-                        <small class="text-muted">Hangi tabur için ayar yapacaksýnýz?</small>
+    <!-- Taburlar ve Telafi AyarlarÄ± -->
+    @if (ViewBag.Taburlar != null && ((List<Etutlist.Models.Tabur>)ViewBag.Taburlar).Any())
+    {
+        foreach (var tabur in (List<Etutlist.Models.Tabur>)ViewBag.Taburlar)
+        {
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="mb-0">
+                            <i class="bi bi-building"></i> @tabur.TaburAdi - @tabur.Fakulte.Ad
+                            <small class="ms-2">(KÄ±sÄ±m @tabur.MinKisimNo-@tabur.MaxKisimNo)</small>
+                        </h5>
                     </div>
-                    <div class="col-md-3">
-                        <label class="form-label fw-bold">Telafi Yapýlamayacak Gün <span class="text-danger">*</span></label>
-                        <select name="TelafiYapilamayacakGun" class="form-select" required>
-                            <option value="">-- Gün Seçin --</option>
-                            @if (ViewBag.Gunler != null)
-                            {
-                                @foreach (var gun in ViewBag.Gunler)
-                                {
-                                    <option value="@gun">@gun</option>
-                                }
-                            }
-                        </select>
-                        <small class="text-muted">Bu günün dersleri telafi edilecek</small>
-                    </div>
-                    <div class="col-md-2">
-                        <label class="form-label fw-bold">Baþlama Saati <span class="text-danger">*</span></label>
-                        <select name="TelafiBaslamaSaati" class="form-select" required>
-                            @if (ViewBag.Saatler != null)
-                            {
-                                @foreach (var saat in ViewBag.Saatler)
-                                {
-                                    <option value="@saat">@saat. Ders</option>
-                                }
-                            }
-                        </select>
-                        <small class="text-muted">Telafi kaçýncý dersten baþlasýn?</small>
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label fw-bold">Telafi Yapýlmayacak Ders Saatleri</label>
-                        <input type="text" name="TelafiYapilamayacakDersSaatleri" class="form-control" 
-                               placeholder="1,2,3 veya boþ býrakýn" />
-                        <small class="text-muted">Örn: 1,2,3 = 1., 2. ve 3. saatler telafi edilmez. Boþ = Tüm dersler telafi edilir</small>
+                    <div>
+                        <form asp-action="TaburSil" method="post" style="display:inline;"
+                              onsubmit="return confirm('Bu taburu silmek istediÄŸinize emin misiniz?');">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@tabur.Id" />
+                            <button type="submit" class="btn btn-sm btn-danger">
+                                <i class="bi bi-trash-fill"></i> Taburu Sil
+                            </button>
+                        </form>
                     </div>
                 </div>
-                <div class="mt-3">
-                    <button type="submit" class="btn btn-success">
-                        <i class="bi bi-check-circle"></i> Ayar Ekle
+                <div class="card-body">
+                    <form asp-action="TelafiAyarlariKaydet" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="TaburId" value="@tabur.Id" />
+                        
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th style="width: 150px;">GÃ¼n</th>
+                                        <th style="width: 200px;">BaÅŸlama Saati</th>
+                                        <th>Atlanacak Saatler (Checkbox)</th>
+                                        <th style="width: 150px;">Bu GÃ¼n Telafi YapÄ±lmaz</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (int i = 0; i < gunler.Length; i++)
+                                    {
+                                        var gun = gunler[i];
+                                        var mevcutAyar = Model.FirstOrDefault(a => a.TaburId == tabur.Id && a.TelafiYapilacakGun == gun);
+                                        var ayarId = mevcutAyar?.Id ?? 0;
+                                        var baslamaSaati = mevcutAyar?.TelafiBaslamaSaati ?? 7;
+                                        var atlanacakSaatler = mevcutAyar?.TelafiYapilamayacakDersSaatleri ?? "";
+                                        var telafiYapilmaz = mevcutAyar != null && mevcutAyar.TelafiBaslamaSaati == 0;
+                                        
+                                        <tr>
+                                            <td class="align-middle">
+                                                <strong>@gun</strong>
+                                                <input type="hidden" name="Gunler[@i].Gun" value="@gun" />
+                                                <input type="hidden" name="Gunler[@i].AyarId" value="@ayarId" />
+                                            </td>
+                                            <td>
+                                                <select name="Gunler[@i].BaslamaSaati" class="form-select baslama-saati" data-gun="@gun" @(telafiYapilmaz ? "disabled" : "")>
+                                                    @for (int saat = 1; saat <= 9; saat++)
+                                                    {
+                                                        <option value="@saat" selected="@(baslamaSaati == saat)">@saat. Ders</option>
+                                                    }
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex flex-wrap gap-2">
+                                                    @for (int saat = 1; saat <= 9; saat++)
+                                                    {
+                                                        var isChecked = !string.IsNullOrEmpty(atlanacakSaatler) && atlanacakSaatler.Split(',').Contains(saat.ToString());
+                                                        <div class="form-check form-check-inline">
+                                                            <input class="form-check-input atlanacak-saat-@gun" 
+                                                                   type="checkbox" 
+                                                                   value="@saat" 
+                                                                   id="@gun-saat@saat"
+                                                                   @(isChecked ? "checked" : "")
+                                                                   @(telafiYapilmaz ? "disabled" : "")>
+                                                            <label class="form-check-label" for="@gun-saat@saat">@saat</label>
+                                                        </div>
+                                                    }
+                                                </div>
+                                                <input type="hidden" name="Gunler[@i].AtlanacakSaatler" class="atlanacak-saatler-input" data-gun="@gun" value="@atlanacakSaatler" />
+                                            </td>
+                                            <td class="text-center align-middle">
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input telafi-yapilmaz-switch" 
+                                                           type="checkbox" 
+                                                           name="Gunler[@i].TelafiYapilmaz" 
+                                                           data-gun="@gun"
+                                                           @(telafiYapilmaz ? "checked" : "")
+                                                           value="true">
+                                                    <label class="form-check-label">YapÄ±lmaz</label>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="mt-3">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="bi bi-check-circle"></i> AyarlarÄ± Kaydet
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="alert alert-warning">
+            <i class="bi bi-exclamation-triangle"></i> HenÃ¼z tabur eklenmemiÅŸ. "Yeni Tabur Ekle" butonuna tÄ±klayÄ±n.
+        </div>
+    }
+</div>
+
+<!-- Tabur Ekleme ModalÄ± -->
+<div class="modal fade" id="addTaburModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="TaburEkle" method="post" id="addTaburForm">
+                @Html.AntiForgeryToken()
+                
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title"><i class="bi bi-plus-circle"></i> Yeni Tabur Ekle</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">FakÃ¼lte <span class="text-danger">*</span></label>
+                        <select name="FakulteId" class="form-select" required>
+                            <option value="">-- FakÃ¼lte SeÃ§in --</option>
+                            @if (ViewBag.Fakulteler != null)
+                            {
+                                foreach (var fakulte in ViewBag.Fakulteler)
+                                {
+                                    <option value="@fakulte.Id">@fakulte.Ad</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Tabur AdÄ± <span class="text-danger">*</span></label>
+                        <input type="text" name="TaburAdi" class="form-control" 
+                               placeholder="Ã–rn: 1. Tabur, 2. Tabur" required />
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Min KÄ±sÄ±m No <span class="text-danger">*</span></label>
+                                <input type="number" name="MinKisimNo" class="form-control" 
+                                       min="1" max="99" placeholder="1" required />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Max KÄ±sÄ±m No <span class="text-danger">*</span></label>
+                                <input type="number" name="MaxKisimNo" class="form-control" 
+                                       min="1" max="99" placeholder="16" required />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Ä°ptal</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-circle"></i> Tabur Ekle
                     </button>
                 </div>
             </form>
         </div>
     </div>
-
-    <!-- Mevcut Ayarlar -->
-    <div class="card shadow-sm">
-        <div class="card-header bg-info text-white">
-            <h5 class="mb-0"><i class="bi bi-list-ul"></i> Mevcut Telafi Ayarlarý (@Model.Count)</h5>
-        </div>
-        <div class="card-body">
-            @if (Model.Any())
-            {
-                <div class="table-responsive">
-                    <table class="table table-hover table-bordered align-middle">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Tabur</th>
-                                <th>Fakülte</th>
-                                <th>Kýsým Aralýðý</th>
-                                <th>Telafi Yapýlamayacak Gün</th>
-                                <th>Baþlama Saati</th>
-                                <th>Telafi Yapýlmayacak Saatler</th>
-                                <th style="width: 200px;">Ýþlemler</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var ayar in Model)
-                            {
-                                <tr>
-                                    <td><strong>@ayar.Tabur.TaburAdi</strong></td>
-                                    <td><span class="badge bg-secondary">@ayar.Tabur.Fakulte.Ad</span></td>
-                                    <td>@ayar.Tabur.MinKisimNo - @ayar.Tabur.MaxKisimNo</td>
-                                    <td><span class="badge bg-warning text-dark">@ayar.TelafiYapilamayacakGun</span></td>
-                                    <td>@ayar.TelafiBaslamaSaati. Ders</td>
-                                    <td>
-                                        @if (string.IsNullOrWhiteSpace(ayar.TelafiYapilamayacakDersSaatleri))
-                                        {
-                                            <span class="text-muted">Tümü telafi edilir</span>
-                                        }
-                                        else
-                                        {
-                                            <span class="badge bg-danger">@ayar.TelafiYapilamayacakDersSaatleri</span>
-                                        }
-                                    </td>
-                                    <td>
-                                        <button type="button" class="btn btn-sm btn-warning" 
-                                                data-bs-toggle="modal" 
-                                                data-bs-target="#editModal@(ayar.Id)">
-                                            <i class="bi bi-pencil-fill"></i> Düzenle
-                                        </button>
-                                        <form asp-action="TelafiAyariSil" method="post" style="display:inline;"
-                                              onsubmit="return confirm('Bu ayarý silmek istediðinize emin misiniz?');">
-                                            @Html.AntiForgeryToken()
-                                            <input type="hidden" name="id" value="@ayar.Id" />
-                                            <button type="submit" class="btn btn-sm btn-danger">
-                                                <i class="bi bi-trash-fill"></i> Sil
-                                            </button>
-                                        </form>
-                                    </td>
-                                </tr>
-
-                                <!-- Düzenleme Modal -->
-                                <div class="modal fade" id="editModal@(ayar.Id)" tabindex="-1">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <form asp-action="TelafiAyariDuzenle" method="post">
-                                                @Html.AntiForgeryToken()
-                                                <input type="hidden" name="Id" value="@ayar.Id" />
-                                                <input type="hidden" name="TaburId" value="@ayar.TaburId" />
-                                                
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title">Telafi Ayarý Düzenle - @ayar.Tabur.TaburAdi</h5>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <div class="mb-3">
-                                                        <label class="form-label">Telafi Yapýlamayacak Gün</label>
-                                                        <select name="TelafiYapilamayacakGun" class="form-select" required>
-                                                            @if (ViewBag.Gunler != null)
-                                                            {
-                                                                @foreach (var gun in ViewBag.Gunler)
-                                                                {
-                                                                    <option value="@gun" selected="@(gun == ayar.TelafiYapilamayacakGun)">
-                                                                        @gun
-                                                                    </option>
-                                                                }
-                                                            }
-                                                        </select>
-                                                    </div>
-                                                    <div class="mb-3">
-                                                        <label class="form-label">Baþlama Saati</label>
-                                                        <select name="TelafiBaslamaSaati" class="form-select" required>
-                                                            @if (ViewBag.Saatler != null)
-                                                            {
-                                                                @foreach (var saat in ViewBag.Saatler)
-                                                                {
-                                                                    <option value="@saat" selected="@(saat == ayar.TelafiBaslamaSaati)">
-                                                                        @saat. Ders
-                                                                    </option>
-                                                                }
-                                                            }
-                                                        </select>
-                                                    </div>
-                                                    <div class="mb-3">
-                                                        <label class="form-label">Telafi Yapýlmayacak Ders Saatleri</label>
-                                                        <input type="text" name="TelafiYapilamayacakDersSaatleri" 
-                                                               value="@ayar.TelafiYapilamayacakDersSaatleri" 
-                                                               class="form-control" placeholder="1,2,3 veya boþ" />
-                                                        <small class="text-muted">Boþ=Tüm dersler telafi edilir</small>
-                                                    </div>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Ýptal</button>
-                                                    <button type="submit" class="btn btn-primary">
-                                                        <i class="bi bi-check-circle"></i> Kaydet
-                                                    </button>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            }
-            else
-            {
-                <div class="alert alert-warning">
-                    <i class="bi bi-exclamation-triangle"></i> Henüz telafi ayarý eklenmemiþ.
-                </div>
-            }
-        </div>
-    </div>
-
-    <!-- Örnek Kullaným -->
-    <div class="card mt-3 shadow-sm">
-        <div class="card-header bg-success text-white">
-            <h6 class="mb-0"><i class="bi bi-lightbulb"></i> Örnek Kullaným</h6>
-        </div>
-        <div class="card-body">
-            <p><strong>Senaryo:</strong> ASEM 1. Tabur için Salý günü dersleri telafi edilecek</p>
-            <ul class="mb-2">
-                <li><strong>Tabur:</strong> ASEM 1. Tabur (Kýsým 1-7)</li>
-                <li><strong>Telafi Yapýlamayacak Gün:</strong> Salý</li>
-                <li><strong>Baþlama Saati:</strong> 7 (Telafiler 7. dersten baþlar)</li>
-                <li><strong>Telafi Yapýlmayacak Saatler:</strong> 1,2 (1. ve 2. saatler atlanýr)</li>
-            </ul>
-            <p class="mb-0 text-muted"><small>Bu ayar ile Salý günü 3., 4., 5., 6., 7., 8. saatlerdeki dersler telafi edilecek. 1. ve 2. saatler atlanacak.</small></p>
-        </div>
-    </div>
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const gunler = @Html.Raw(Json.Serialize(gunler));
+            
+            gunler.forEach(gun => {
+                const checkboxes = document.querySelectorAll(`.atlanacak-saat-${gun}`);
+                const hiddenInput = document.querySelector(`.atlanacak-saatler-input[data-gun="${gun}"]`);
+                
+                checkboxes.forEach(cb => {
+                    cb.addEventListener('change', function() {
+                        const seciliSaatler = Array.from(checkboxes)
+                            .filter(c => c.checked)
+                            .map(c => c.value)
+                            .sort((a, b) => parseInt(a) - parseInt(b))
+                            .join(',');
+                        hiddenInput.value = seciliSaatler;
+                    });
+                });
+                
+                const telafiSwitch = document.querySelector(`.telafi-yapilmaz-switch[data-gun="${gun}"]`);
+                const baslamaSaatiSelect = document.querySelector(`.baslama-saati[data-gun="${gun}"]`);
+                
+                if (telafiSwitch && baslamaSaatiSelect) {
+                    telafiSwitch.addEventListener('change', function() {
+                        const yapilmaz = telafiSwitch.checked;
+                        baslamaSaatiSelect.disabled = yapilmaz;
+                        checkboxes.forEach(cb => cb.disabled = yapilmaz);
+                        
+                        if (yapilmaz) {
+                            baslamaSaatiSelect.value = '0';
+                            checkboxes.forEach(cb => cb.checked = false);
+                            hiddenInput.value = '';
+                        } else {
+                            baslamaSaatiSelect.value = '7';
+                        }
+                    });
+                }
+            });
+
+            const addTaburForm = document.getElementById('addTaburForm');
+            if (addTaburForm) {
+                addTaburForm.addEventListener('submit', function(e) {
+                    const minKisim = parseInt(document.querySelector('input[name="MinKisimNo"]').value);
+                    const maxKisim = parseInt(document.querySelector('input[name="MaxKisimNo"]').value);
+                    
+                    if (minKisim > maxKisim) {
+                        e.preventDefault();
+                        alert('Min KÄ±sÄ±m No, Max KÄ±sÄ±m No\'dan bÃ¼yÃ¼k olamaz!');
+                        return false;
+                    }
+                });
+            }
+        });
+    </script>
+}
+

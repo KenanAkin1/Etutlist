@@ -1,13 +1,13 @@
-@{
-    ViewData["Title"] = "Excel/CSV Yükle";
+ï»¿@{
+    ViewData["Title"] = "Excel/CSV YÃ¼kle";
     var fakulteler = ViewBag.Fakulteler as Microsoft.AspNetCore.Mvc.Rendering.SelectList;
 }
 
 <div class="container mt-4">
     <div class="row mb-3">
         <div class="col-md-12">
-     <h2><i class="bi bi-file-earmark-excel"></i> Ders Programý Excel/CSV Yükle</h2>
-    <p class="text-muted">CSV formatýndaki ders programýný toplu olarak sisteme yükleyin</p>
+     <h2><i class="bi bi-file-earmark-excel"></i> Ders ProgramÄ± Excel/CSV YÃ¼kle</h2>
+    <p class="text-muted">CSV formatÄ±ndaki ders programÄ±nÄ± toplu olarak sisteme yÃ¼kleyin</p>
         </div>
     </div>
 
@@ -39,16 +39,16 @@
         <div class="col-md-8">
        <div class="card">
     <div class="card-header bg-primary text-white">
-               <h5 class="mb-0"><i class="bi bi-upload"></i> Dosya Yükle</h5>
+               <h5 class="mb-0"><i class="bi bi-upload"></i> Dosya YÃ¼kle</h5>
       </div>
       <div class="card-body">
         <form asp-action="UploadExcel" method="post" enctype="multipart/form-data">
     @Html.AntiForgeryToken()
    
             <div class="mb-3">
-         <label for="fakulteId" class="form-label"><strong>Fakülte <span class="text-danger">*</span></strong></label>
+         <label for="fakulteId" class="form-label"><strong>FakÃ¼lte <span class="text-danger">*</span></strong></label>
              <select name="fakulteId" id="fakulteId" class="form-select" required>
-     <option value="">Seçiniz...</option>
+     <option value="">SeÃ§iniz...</option>
              @if (fakulteler != null)
  {
              foreach (var item in fakulteler)
@@ -60,20 +60,20 @@
       </div>
 
               <div class="mb-3">
-      <label for="file" class="form-label"><strong>CSV Dosyasý <span class="text-danger">*</span></strong></label>
+      <label for="file" class="form-label"><strong>CSV DosyasÄ± <span class="text-danger">*</span></strong></label>
              <input type="file" class="form-control" id="file" name="file" accept=".csv,.txt" required>
         <div class="form-text">
-          <i class="bi bi-info-circle"></i> Sadece CSV formatýnda dosya yükleyebilirsiniz. 
-       Excel dosyasýný CSV olarak kaydedin.
+          <i class="bi bi-info-circle"></i> Sadece CSV formatÄ±nda dosya yÃ¼kleyebilirsiniz. 
+       Excel dosyasÄ±nÄ± CSV olarak kaydedin.
        </div>
            </div>
 
     <div class="d-grid gap-2">
           <button type="submit" class="btn btn-primary btn-lg">
-           <i class="bi bi-upload"></i> Yükle ve Ýþle
+           <i class="bi bi-upload"></i> YÃ¼kle ve Ä°ÅŸle
       </button>
      <a asp-action="Index" class="btn btn-secondary">
-          <i class="bi bi-arrow-left"></i> Geri Dön
+          <i class="bi bi-arrow-left"></i> Geri DÃ¶n
        </a>
        </div>
         </form>
@@ -84,45 +84,45 @@
         <div class="col-md-4">
             <div class="card">
            <div class="card-header bg-info text-white">
-  <h6 class="mb-0"><i class="bi bi-lightbulb"></i> Dosya Formatý</h6>
+  <h6 class="mb-0"><i class="bi bi-lightbulb"></i> Dosya FormatÄ±</h6>
      </div>
    <div class="card-body">
-        <h6><strong>CSV Dosya Yapýsý:</strong></h6>
+        <h6><strong>CSV Dosya YapÄ±sÄ±:</strong></h6>
      <ul class="small">
-        <li>1. Satýr: S.NO;DERS;RÜTBE/ÜNVAN/ADI SOYADI;D/S...</li>
-          <li>2. Satýr: Saat baþlýklarý (-1, -2, -3...)</li>
-    <li>3+ Satýrlar: Veri satýrlarý</li>
+        <li>1. SatÄ±r: S.NO;DERS;RÃœTBE/ÃœNVAN/ADI SOYADI;D/S...</li>
+          <li>2. SatÄ±r: Saat baÅŸlÄ±klarÄ± (-1, -2, -3...)</li>
+    <li>3+ SatÄ±rlar: Veri satÄ±rlarÄ±</li>
            </ul>
 
-   <h6 class="mt-3"><strong>Sütun Sýralamasý:</strong></h6>
+   <h6 class="mt-3"><strong>SÃ¼tun SÄ±ralamasÄ±:</strong></h6>
         <ul class="small">
-  <li>Sütun 1: S.NO</li>
-   <li>Sütun 2: DERS ADI</li>
-               <li>Sütun 3: HOCA BÝLGÝSÝ</li>
-                 <li>Sütun 4: D/S (Atlanýr)</li>
-         <li>Sütun 5-12: Pazartesi (1-8. saatler)</li>
-            <li>Sütun 13-20: Salý (1-8. saatler)</li>
-        <li>Sütun 21-28: Çarþamba (1-8. saatler)</li>
-             <li>Sütun 29-36: Perþembe (1-8. saatler)</li>
-    <li>Sütun 37-44: Cuma (1-8. saatler)</li>
+  <li>SÃ¼tun 1: S.NO</li>
+   <li>SÃ¼tun 2: DERS ADI</li>
+               <li>SÃ¼tun 3: HOCA BÄ°LGÄ°SÄ°</li>
+                 <li>SÃ¼tun 4: D/S (AtlanÄ±r)</li>
+         <li>SÃ¼tun 5-12: Pazartesi (1-8. saatler)</li>
+            <li>SÃ¼tun 13-20: SalÄ± (1-8. saatler)</li>
+        <li>SÃ¼tun 21-28: Ã‡arÅŸamba (1-8. saatler)</li>
+             <li>SÃ¼tun 29-36: PerÅŸembe (1-8. saatler)</li>
+    <li>SÃ¼tun 37-44: Cuma (1-8. saatler)</li>
              </ul>
 
-      <h6 class="mt-3"><strong>Kýsým Numaralarý:</strong></h6>
+      <h6 class="mt-3"><strong>KÄ±sÄ±m NumaralarÄ±:</strong></h6>
       <p class="small">
-            Hücrelerde sadece kýsým numaralarý (1, 2, 3...) olmalýdýr.
-    Boþ hücreler otomatik atlanýr.
+            HÃ¼crelerde sadece kÄ±sÄ±m numaralarÄ± (1, 2, 3...) olmalÄ±dÄ±r.
+    BoÅŸ hÃ¼creler otomatik atlanÄ±r.
   </p>
 
      <div class="alert alert-warning mt-3">
            <small>
    <i class="bi bi-exclamation-triangle"></i> 
-  <strong>Dikkat:</strong> Sisteme yüklenen dosya:
+  <strong>Dikkat:</strong> Sisteme yÃ¼klenen dosya:
  </small>
      <ul class="small mb-0">
-    <li>Otomatik olarak Ders kayýtlarý oluþturur</li>
-    <li>Hoca kayýtlarý oluþturur (yoksa)</li>
-     <li>HocaDers eþleþmeleri oluþturur</li>
-          <li>DersProgrami kayýtlarý oluþturur</li>
+    <li>Otomatik olarak Ders kayÄ±tlarÄ± oluÅŸturur</li>
+    <li>Hoca kayÄ±tlarÄ± oluÅŸturur (yoksa)</li>
+     <li>HocaDers eÅŸleÅŸmeleri oluÅŸturur</li>
+          <li>DersProgrami kayÄ±tlarÄ± oluÅŸturur</li>
  </ul>
         </div>
    </div>
@@ -130,15 +130,15 @@
 
             <div class="card mt-3">
          <div class="card-header bg-success text-white">
-     <h6 class="mb-0"><i class="bi bi-check2-square"></i> Yapýlacaklar</h6>
+     <h6 class="mb-0"><i class="bi bi-check2-square"></i> YapÄ±lacaklar</h6>
              </div>
        <div class="card-body">
             <ol class="small">
-             <li>Excel dosyasýný CSV olarak kaydet</li>
-            <li>Fakülte seç (ASEM/SUEM)</li>
-    <li>CSV dosyasýný seç</li>
-              <li>"Yükle ve Ýþle" butonuna týkla</li>
-           <li>Sonuçlarý kontrol et</li>
+             <li>Excel dosyasÄ±nÄ± CSV olarak kaydet</li>
+            <li>FakÃ¼lte seÃ§ (ASEM/SUEM)</li>
+    <li>CSV dosyasÄ±nÄ± seÃ§</li>
+              <li>"YÃ¼kle ve Ä°ÅŸle" butonuna tÄ±kla</li>
+           <li>SonuÃ§larÄ± kontrol et</li>
          </ol>
         </div>
             </div>
@@ -149,14 +149,14 @@
      <div class="col-md-12">
           <div class="card">
             <div class="card-header bg-secondary text-white">
-     <h6 class="mb-0"><i class="bi bi-table"></i> Örnek CSV Yapýsý</h6>
+     <h6 class="mb-0"><i class="bi bi-table"></i> Ã–rnek CSV YapÄ±sÄ±</h6>
 </div>
           <div class="card-body">
-           <pre class="bg-light p-3 rounded"><code>S.NO;DERS;RÜTBE/ÜNVAN/ADI SOYADI;D/S;Pazartesi;;;;;;;Salý;;;;;;;Çarþamba...
+           <pre class="bg-light p-3 rounded"><code>S.NO;DERS;RÃœTBE/ÃœNVAN/ADI SOYADI;D/S;Pazartesi;;;;;;;SalÄ±;;;;;;;Ã‡arÅŸamba...
 ;;;;-1;-2;-3;-4;-5;-6;-7;-1;-2;-3;-4;-5;-6;-7...
-1;Kriminoloji;J.Kd.Üçvþ. Halid ÖZDEN;6;1;1;;;;;;;;;;;;;...
-2;;J.Üçvþ. Merve ÇAKMAK;6;;;;65;65;;;;;;63;63;;;;;...
-3;;J.Asb.Kd.Bçvþ. Þakir KÝPER;8;;;;;;;;4;4;;;;;;;;...</code></pre>
+1;Kriminoloji;J.Kd.ÃœÃ§vÅŸ. Halid Ã–ZDEN;6;1;1;;;;;;;;;;;;;...
+2;;J.ÃœÃ§vÅŸ. Merve Ã‡AKMAK;6;;;;65;65;;;;;;63;63;;;;;...
+3;;J.Asb.Kd.BÃ§vÅŸ. Åžakir KÄ°PER;8;;;;;;;;4;4;;;;;;;;...</code></pre>
  </div>
             </div>
         </div>
@@ -170,20 +170,20 @@
                 var file = $('#file').val();
          if (!file) {
     e.preventDefault();
-               alert('Lütfen bir dosya seçin!');
+               alert('LÃ¼tfen bir dosya seÃ§in!');
                 return false;
          }
 
            var fakulteId = $('#fakulteId').val();
          if (!fakulteId) {
  e.preventDefault();
-             alert('Lütfen bir fakülte seçin!');
+             alert('LÃ¼tfen bir fakÃ¼lte seÃ§in!');
           return false;
                 }
 
-       // Loading göster
+       // Loading gÃ¶ster
     $('button[type="submit"]').prop('disabled', true)
-          .html('<span class="spinner-border spinner-border-sm"></span> Yükleniyor...');
+          .html('<span class="spinner-border spinner-border-sm"></span> YÃ¼kleniyor...');
             });
 });
     </script>

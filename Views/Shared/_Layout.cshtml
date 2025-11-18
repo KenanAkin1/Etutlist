@@ -1,83 +1,102 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Etut Planlama Sistemi</title>
+    <title>@ViewData["Title"] - Yönetim Araçları</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Etutlist.styles.css" asp-append-version="true" />
- @await RenderSectionAsync("Styles", required: false)
+    @await RenderSectionAsync("Styles", required: false)
 </head>
 <body>
- <header>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-      <div class="container-fluid">
-    <a class="navbar-brand" asp-controller="Home" asp-action="Index">
-  <i class="bi bi-calendar-check"></i> Etut Planlama
-      </a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-    <span class="navbar-toggler-icon"></span>
- </button>
-       <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav me-auto">
-     <li class="nav-item">
-      <a class="nav-link" asp-controller="Home" asp-action="Index">
-   <i class="bi bi-house"></i> Ana Sayfa
-    </a>
-  </li>
-   <li class="nav-item">
-      <a class="nav-link" asp-controller="Personel" asp-action="Index">
-     <i class="bi bi-people"></i> Personel
-          </a>
-         </li>
-<li class="nav-item">
-       <a class="nav-link" asp-controller="Etut" asp-action="Index">
-        <i class="bi bi-calendar-event"></i> Et�t Plan�
-     </a>
-      </li>
-       <li class="nav-item">
-      <a class="nav-link" asp-controller="DersProgrami" asp-action="Index">
-    <i class="bi bi-calendar3"></i> Ders Program�
-         </a>
-        </li>
-       <li class="nav-item">
-    <a class="nav-link" asp-controller="TelafiDers" asp-action="Index">
-     <i class="bi bi-calendar-plus"></i> Telafi Dersleri
-           </a>
-    </li>
-       <li class="nav-item">
-    <a class="nav-link" asp-controller="Ayarlar" asp-action="Index">
-                <i class="bi bi-gear"></i> Sistem Ayarlar�
-        </a>
-             </li>
-      <li class="nav-item">
-  <a class="nav-link" asp-controller="Mazeret" asp-action="Index">
-    <i class="bi bi-file-medical"></i> Mazeretler
-  </a>
-  </li>
-       <li class="nav-item">
-       <a class="nav-link" asp-controller="OzelGun" asp-action="Index">
-      <i class="bi bi-star"></i> �zel G�nler
-      </a>
-       </li>
-         </ul>
-     </div>
-      </div>
-  </nav>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+            <div class="container-fluid">
+                <a class="navbar-brand text-primary fw-bold" asp-controller="Home" asp-action="Index">
+                    <i class="bi bi-calendar-check"></i> Yönetim Araçları
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Home" asp-action="Index">
+                                <i class="bi bi-house"></i> Ana Sayfa
+                            </a>
+                        </li>
+
+                        <!-- Etüt Planlama Araçları -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-dark" href="#" role="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-calendar-event"></i> Etüt Planlama Araçları
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a class="dropdown-item" asp-controller="Personel" asp-action="Index">
+                                        <i class="bi bi-people"></i> Personel Yönetimi
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-controller="Etut" asp-action="Index">
+                                        <i class="bi bi-calendar-week"></i> Etüt Planı
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-controller="Mazeret" asp-action="Index">
+                                        <i class="bi bi-file-medical"></i> Mazeretler
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-controller="OzelGun" asp-action="Index">
+                                        <i class="bi bi-star"></i> Özel Günler
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <!-- İkame/Birleştirme/Telafi Araçları -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-dark" href="#" role="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-calendar-plus"></i> İkame/Birleştirme/Telafi Araçları
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a class="dropdown-item" asp-controller="TelafiDers" asp-action="Index">
+                                        <i class="bi bi-calendar-check"></i> İkame/Birleştirme/Telafi
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-controller="DersProgrami" asp-action="Index">
+                                        <i class="bi bi-calendar3"></i> Ders Programı
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Ayarlar" asp-action="Index">
+                                <i class="bi bi-gear"></i> Sistem Ayarları
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
     </header>
 
     <div class="container-fluid mt-3">
         <main role="main" class="pb-3">
-@RenderBody()
- </main>
+            @RenderBody()
+        </main>
     </div>
 
     <footer class="border-top footer text-muted mt-5 py-3">
-  <div class="container text-center">
-&copy; 2025 - Etut Planlama Sistemi
-    </div>
+        <div class="container text-center">
+            &copy; 2025 - Kolluk Uygulamarı Öğretim Şube
+        </div>
     </footer>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

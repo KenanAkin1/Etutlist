@@ -1,7 +1,7 @@
-@model Etutlist.Models.Hoca
+ï»¿@model Etutlist.Models.Hoca
 
 @{
-    ViewData["Title"] = "Hoca Düzenle - " + Model.AdSoyad;
+    ViewData["Title"] = "Hoca DÃ¼zenle - " + Model.AdSoyad;
 }
 
 <div class="container mt-4">
@@ -9,7 +9,7 @@
         <div class="col-md-12">
        <div class="card shadow-lg">
  <div class="card-header bg-warning text-dark">
-         <h4><i class="bi bi-person-gear"></i> Hoca Düzenle: @Model.Rutbe @Model.AdSoyad</h4>
+         <h4><i class="bi bi-person-gear"></i> Hoca DÃ¼zenle: @Model.Rutbe @Model.AdSoyad</h4>
          </div>
           <div class="card-body">
       @if (TempData["Success"] != null)
@@ -33,16 +33,16 @@
           <div class="card-body">
     <div class="row">
      <div class="col-md-3">
-        <p><strong>Fakülte:</strong> @Model.Fakulte.Ad</p>
+        <p><strong>FakÃ¼lte:</strong> @Model.Fakulte.Ad</p>
          </div>
   <div class="col-md-3">
-    <p><strong>Rütbe:</strong> @Model.Rutbe</p>
+    <p><strong>RÃ¼tbe:</strong> @Model.Rutbe</p>
    </div>
      <div class="col-md-3">
      <p><strong>Ad Soyad:</strong> @Model.AdSoyad</p>
       </div>
       <div class="col-md-3">
-       <p><strong>Ders Yükü:</strong> 
+       <p><strong>Ders YÃ¼kÃ¼:</strong> 
           <span class="badge bg-primary fs-5">@Model.DersYuku saat</span>
     </p>
         </div>
@@ -50,10 +50,10 @@
          </div>
        </div>
 
-    <!-- Hocanýn Dersleri -->
+    <!-- HocanÄ±n Dersleri -->
   <div class="card">
    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-      <h5 class="mb-0"><i class="bi bi-calendar-week"></i> Haftalýk Ders Programý</h5>
+      <h5 class="mb-0"><i class="bi bi-calendar-week"></i> HaftalÄ±k Ders ProgramÄ±</h5>
      <span class="badge bg-light text-dark">Toplam: @(Model.Dersler?.Count ?? 0) ders</span>
   </div>
  <div class="card-body">
@@ -63,11 +63,11 @@
         <table class="table table-bordered table-hover">
         <thead class="table-dark">
           <tr>
-       <th>Ders Adý</th>
-       <th style="width: 120px;">Kýsým</th>
-      <th style="width: 120px;">Gün</th>
+       <th>Ders AdÄ±</th>
+       <th style="width: 120px;">KÄ±sÄ±m</th>
+      <th style="width: 120px;">GÃ¼n</th>
         <th style="width: 100px;">Saat</th>
-         <th style="width: 100px;">Ýþlemler</th>
+         <th style="width: 100px;">Ä°ÅŸlemler</th>
        </tr>
       </thead>
        <tbody>
@@ -76,16 +76,16 @@
          <tr>
          <td><strong>@ders.DersAdi</strong></td>
        <td class="text-center">
-         <span class="badge bg-secondary">@ders.KisimNo. Kýsým</span>
+         <span class="badge bg-secondary">@ders.KisimNo. KÄ±sÄ±m</span>
    </td>
      <td>
        @{
   var gunClass = ders.DersGunu switch
     {
       "Pazartesi" => "badge bg-primary",
-     "Salý" => "badge bg-success",
-  "Çarþamba" => "badge bg-info",
-   "Perþembe" => "badge bg-warning text-dark",
+     "SalÄ±" => "badge bg-success",
+  "Ã‡arÅŸamba" => "badge bg-info",
+   "PerÅŸembe" => "badge bg-warning text-dark",
            "Cuma" => "badge bg-danger",
          _ => "badge bg-secondary"
    };
@@ -100,7 +100,7 @@
         asp-route-hocaId="@Model.Id" asp-route-dersId="@ders.Id" method="post">
        @Html.AntiForgeryToken()
        <button type="submit" class="btn btn-sm btn-danger"
-        onclick="return confirm('Bu dersi silmek istediðinize emin misiniz?')">
+        onclick="return confirm('Bu dersi silmek istediÄŸinize emin misiniz?')">
           <i class="bi bi-trash"></i> Sil
         </button>
        </form>
@@ -114,23 +114,23 @@
           else
      {
        <div class="alert alert-warning">
-         <i class="bi bi-exclamation-triangle"></i> Bu hocanýn henüz atanmýþ dersi bulunmuyor.
+         <i class="bi bi-exclamation-triangle"></i> Bu hocanÄ±n henÃ¼z atanmÄ±ÅŸ dersi bulunmuyor.
        </div>
      }
       </div>
             </div>
 
-<!-- Haftalýk Özet -->
+<!-- HaftalÄ±k Ã–zet -->
         @if (Model.Dersler?.Any() == true)
  {
          <div class="card mt-4">
      <div class="card-header bg-info text-white">
-          <h5><i class="bi bi-bar-chart"></i> Haftalýk Özet</h5>
+          <h5><i class="bi bi-bar-chart"></i> HaftalÄ±k Ã–zet</h5>
 </div>
         <div class="card-body">
        <div class="row">
    @{
-        var gunler = new[] { "Pazartesi", "Salý", "Çarþamba", "Perþembe", "Cuma" };
+        var gunler = new[] { "Pazartesi", "SalÄ±", "Ã‡arÅŸamba", "PerÅŸembe", "Cuma" };
     foreach (var gun in gunler)
         {
        var dersSayisi = Model.Dersler.Count(d => d.DersGunu == gun);
@@ -156,7 +156,7 @@
        <i class="bi bi-plus-circle"></i> Yeni Ders Ekle
        </a>
        <a asp-controller="Ayarlar" asp-action="Index" class="btn btn-secondary btn-lg">
-      <i class="bi bi-arrow-left"></i> Ayarlara Dön
+      <i class="bi bi-arrow-left"></i> Ayarlara DÃ¶n
     </a>
             </div>
         </div>

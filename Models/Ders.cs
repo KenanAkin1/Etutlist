@@ -1,4 +1,4 @@
-namespace Etutlist.Models
+﻿namespace Etutlist.Models
 {
     public class Ders
   {
@@ -8,7 +8,7 @@ namespace Etutlist.Models
 // Navigation
      public ICollection<DersProgrami> DersProgramlari { get; set; }
       
-        // Hoca-Ders ili�kisi (bu dersi verebilecek hocalar)
+        // Hoca-Ders ilişkisi (bu dersi verebilecek hocalar)
         public ICollection<HocaDers> DersHocalari { get; set; }
     }
 }

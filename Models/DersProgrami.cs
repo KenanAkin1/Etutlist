@@ -1,15 +1,15 @@
-namespace Etutlist.Models
+ï»¿namespace Etutlist.Models
 {
     public class DersProgrami
   {
         public int Id { get; set; }
    public int FakulteId { get; set; }
-     public int KisimNo { get; set; }  // Derslik yerine sadece Kısım No (1, 2, 3...)
+     public int KisimNo { get; set; }  // Derslik yerine sadece KÄ±sÄ±m No (1, 2, 3...)
       public int? DersId { get; set; }  // Ders (opsiyonel)
         public int HocaId { get; set; }
         public string DersAdi { get; set; }
         public string DersKodu { get; set; }
-        public string DersGunu { get; set; }  // Pazartesi, Salı, vb.
+        public string DersGunu { get; set; }  // Pazartesi, SalÄ±, vb.
       public int DersSaati { get; set; }  // 1, 2, 3, ..., 8
 
   // Navigation Properties
@@ -39,9 +39,9 @@ namespace Etutlist.Models
    public static readonly List<string> HaftaGunleri = new List<string>
   {
         "Pazartesi",
-       "Salı",
-   "Çarşamba",
-  "Perşembe",
+       "SalÄ±",
+   "Ã‡arÅŸamba",
+  "PerÅŸembe",
  "Cuma"
  };
   }

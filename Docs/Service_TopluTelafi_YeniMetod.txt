@@ -1,0 +1,212 @@
+// Services/TelafiDersService.cs içindeki TopluTelafiOlusturAsync metodunu
+// Bu kodla DEÐÝÞTÝRÝN (eski metodu tamamen silin):
+
+public async Task<(bool Success, string Message, int Basarili, int Basarisiz)> TopluTelafiOlusturAsync(
+    DateTime telafiEdilecekTarih,
+    string telafiNedeni)
+{
+    int basarili = 0;
+    int basarisiz = 0;
+    var hatalar = new List<string>();
+
+    // 1. Seçilen tarihin gününü al
+    var gun = GetGunAdi(telafiEdilecekTarih);
+    
+    if (string.IsNullOrEmpty(gun))
+        return (false, "Seçilen tarih hafta içi bir gün olmalýdýr (Pzt-Cum).", 0, 0);
+
+    // 2. Bu günün tüm derslerini al
+    var dersler = await _context.DersProgrami
+        .Include(d => d.Hoca)
+        .Include(d => d.Fakulte)
+        .Include(d => d.Ders)
+        .Where(d => d.DersGunu == gun)
+        .OrderBy(d => d.FakulteId)
+        .ThenBy(d => d.KisimNo)
+        .ThenBy(d => d.DersSaati)
+        .ToListAsync();
+
+    if (!dersler.Any())
+        return (false, $"{telafiEdilecekTarih:dd.MM.yyyy} ({gun}) günü için ders bulunamadý.", 0, 0);
+
+    // 3. Telafi takvimi oluþtur
+    var telafiTakvimi = await GetTelafiTakvimiAsync(telafiEdilecekTarih);
+    
+    if (!telafiTakvimi.Any())
+        return (false, "Telafi için uygun gün/saat ayarý bulunamadý. Lütfen Tabur Telafi Ayarlarýný kontrol edin.", 0, 0);
+
+    // 4. Her ders için telafi atamasý yap
+    foreach (var ders in dersler)
+    {
+        try
+        {
+            var uygunSlot = await FindUygunSlotAsync(telafiTakvimi, ders, telafiEdilecekTarih);
+
+            if (uygunSlot == null)
+            {
+                hatalar.Add($"{ders.DersAdi} (Kýsým {ders.KisimNo}): Uygun slot bulunamadý");
+                basarisiz++;
+                continue;
+            }
+
+            bool hocaMusait = await IsHocaMusaitAsync(ders.HocaId, uygunSlot.Tarih, uygunSlot.BaslangicSaat, uygunSlot.BitisSaat);
+            
+            int yedekHocaId;
+            string telafiTuru;
+
+            if (hocaMusait)
+            {
+                yedekHocaId = ders.HocaId;
+                telafiTuru = "Telafi";
+            }
+            else
+            {
+                var musaitHocalar = await GetMusaitHocalarAsync(
+                    ders.FakulteId, ders.HocaId, uygunSlot.Tarih, uygunSlot.BaslangicSaat, uygunSlot.BitisSaat, ders.DersId);
+
+                if (!musaitHocalar.Any())
+                {
+                    hatalar.Add($"{ders.DersAdi} (Kýsým {ders.KisimNo}): Müsait hoca bulunamadý");
+                    basarisiz++;
+                    continue;
+                }
+
+                yedekHocaId = musaitHocalar.First().Id;
+                telafiTuru = "Ýkame";
+            }
+
+            var telafi = new TelafiDers
+            {
+                DersProgramiId = ders.Id,
+                YedekHocaId = yedekHocaId,
+                FakulteId = ders.FakulteId,
+                TelafiTarihi = uygunSlot.Tarih,
+                BaslangicSaat = uygunSlot.BaslangicSaat,
+                BitisSaat = uygunSlot.BitisSaat,
+                TelafiTuru = telafiTuru,
+                TelafiNedeni = telafiNedeni,
+                Aciklama = $"{telafiEdilecekTarih:dd.MM.yyyy} {gun} günü yerine",
+                KisimNo = ders.KisimNo,
+                Onaylandi = false,
+                CiktiAlindi = false
+            };
+
+            _context.TelafiDersler.Add(telafi);
+            uygunSlot.Kullanildi = true;
+            basarili++;
+        }
+        catch (Exception ex)
+        {
+            hatalar.Add($"{ders.DersAdi} (Kýsým {ders.KisimNo}): {ex.Message}");
+            basarisiz++;
+        }
+    }
+
+    await _context.SaveChangesAsync();
+
+    var mesaj = $"? Baþarýlý: {basarili}, ? Baþarýsýz: {basarisiz}";
+    if (hatalar.Any())
+        mesaj += "\n\n?? Hatalar:\n" + string.Join("\n", hatalar);
+
+    return (true, mesaj, basarili, basarisiz);
+}
+
+// Bu yeni metodlarý da TelafiDersService.cs sonuna EKLEYÝN:
+
+private async Task<List<TelafiSlot>> GetTelafiTakvimiAsync(DateTime baslangicTarihi)
+{
+    var takvim = new List<TelafiSlot>();
+    var taburlar = await _context.Taburlar
+        .Include(t => t.TelafiAyarlari)
+        .ToListAsync();
+
+    for (int i = 1; i <= 30; i++)
+    {
+        var tarih = baslangicTarihi.AddDays(i);
+        var gunAdi = GetGunAdi(tarih);
+
+        if (string.IsNullOrEmpty(gunAdi))
+            continue;
+
+        foreach (var tabur in taburlar)
+        {
+            foreach (var ayar in tabur.TelafiAyarlari.Where(a => a.TelafiYapilacakGun == gunAdi))
+            {
+                for (int saat = ayar.TelafiBaslamaSaati; saat <= ayar.TelafiMaxBitisSaati; saat++)
+                {
+                    if (!string.IsNullOrEmpty(ayar.TelafiYapilamayacakDersSaatleri))
+                    {
+                        var atlanacaklar = ayar.TelafiYapilamayacakDersSaatleri
+                            .Split(',')
+                            .Select(s => int.TryParse(s.Trim(), out int val) ? val : 0)
+                            .Where(v => v > 0)
+                            .ToList();
+
+                        if (atlanacaklar.Contains(saat))
+                            continue;
+                    }
+
+                    var baslangicSaat = GetSaatTimeSpan(saat);
+                    var bitisSaat = baslangicSaat.Add(new TimeSpan(0, 40, 0));
+
+                    takvim.Add(new TelafiSlot
+                    {
+                        Tarih = tarih,
+                        BaslangicSaat = baslangicSaat,
+                        BitisSaat = bitisSaat,
+                        SaatIndex = saat,
+                        TaburId = tabur.Id,
+                        MinKisim = tabur.MinKisimNo,
+                        MaxKisim = tabur.MaxKisimNo,
+                        FakulteId = tabur.FakulteId,
+                        Kullanildi = false
+                    });
+                }
+            }
+        }
+    }
+
+    return takvim.OrderBy(t => t.Tarih).ThenBy(t => t.SaatIndex).ToList();
+}
+
+private async Task<TelafiSlot?> FindUygunSlotAsync(List<TelafiSlot> takvim, DersProgrami ders, DateTime telafiEdilecekTarih)
+{
+    foreach (var slot in takvim.Where(s => !s.Kullanildi && s.FakulteId == ders.FakulteId))
+    {
+        if (ders.KisimNo < slot.MinKisim || ders.KisimNo > slot.MaxKisim)
+            continue;
+
+        var mevcutTelafi = await _context.TelafiDersler.AnyAsync(t =>
+            t.TelafiTarihi.Date == slot.Tarih.Date &&
+            t.BaslangicSaat == slot.BaslangicSaat &&
+            t.KisimNo == ders.KisimNo);
+
+        if (mevcutTelafi)
+            continue;
+
+        var normalDers = await _context.DersProgrami.AnyAsync(d =>
+            d.DersGunu == GetGunAdi(slot.Tarih) &&
+            d.DersSaati == slot.SaatIndex &&
+            d.KisimNo == ders.KisimNo);
+
+        if (normalDers)
+            continue;
+
+        return slot;
+    }
+
+    return null;
+}
+
+public class TelafiSlot
+{
+    public DateTime Tarih { get; set; }
+    public TimeSpan BaslangicSaat { get; set; }
+    public TimeSpan BitisSaat { get; set; }
+    public int SaatIndex { get; set; }
+    public int TaburId { get; set; }
+    public int MinKisim { get; set; }
+    public int MaxKisim { get; set; }
+    public int FakulteId { get; set; }
+    public bool Kullanildi { get; set; }
+}

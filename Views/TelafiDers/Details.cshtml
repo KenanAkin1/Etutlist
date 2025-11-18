@@ -1,13 +1,13 @@
-@model Etutlist.Models.TelafiDers
+ï»¿@model Etutlist.Models.TelafiDers
 @{
-    ViewData["Title"] = "Telafi Dersi Detaylarý";
+    ViewData["Title"] = "Telafi Dersi DetaylarÄ±";
 }
 
 <div class="container mt-4">
     <div class="row">
     <div class="col-md-12">
    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h2><i class="bi bi-file-text"></i> Telafi Dersi Detaylarý</h2>
+      <h2><i class="bi bi-file-text"></i> Telafi Dersi DetaylarÄ±</h2>
          <div>
      <a asp-action="Index" asp-route-fakulteId="@Model.FakulteId" class="btn btn-secondary">
       <i class="bi bi-arrow-left"></i> Geri
@@ -24,7 +24,7 @@
   <h5 class="mb-1">
     @if (Model.Onaylandi)
         {
-    <text>Telafi Dersi Onaylandý</text>
+    <text>Telafi Dersi OnaylandÄ±</text>
      }
         else
   {
@@ -32,16 +32,16 @@
        }
           </h5>
        <p class="mb-0">
-         @(Model.TelafiTuru) türünde bir telafi dersi. @(Model.Onaylandi ? "Ýþlem tamamlandý." : "Onay bekleniyor.")
+         @(Model.TelafiTuru) tÃ¼rÃ¼nde bir telafi dersi. @(Model.Onaylandi ? "Ä°ÅŸlem tamamlandÄ±." : "Onay bekleniyor.")
     </p>
          </div>
     </div>
             </div>
   </div>
 
-    <!-- DETAY BÝLGÝLERÝ -->
+    <!-- DETAY BÄ°LGÄ°LERÄ° -->
     <div class="row">
-   <!-- DERS BÝLGÝLERÝ -->
+   <!-- DERS BÄ°LGÄ°LERÄ° -->
     <div class="col-md-6 mb-4">
     <div class="card h-100">
    <div class="card-header bg-primary text-white">
@@ -50,7 +50,7 @@
      <div class="card-body">
        <table class="table table-borderless">
   <tr>
-        <th style="width: 40%;">Fakülte:</th>
+        <th style="width: 40%;">FakÃ¼lte:</th>
    <td><strong>@Model.Fakulte?.Ad</strong></td>
     </tr>
          <tr>
@@ -62,11 +62,11 @@
      <td>@Model.DersProgrami?.DersKodu</td>
      </tr>
            <tr>
-     <th>Kýsým No:</th>
+     <th>KÄ±sÄ±m No:</th>
          <td>@Model.DersProgrami?.KisimNo</td>
    </tr>
     <tr>
-    <th>Normal Gün:</th>
+    <th>Normal GÃ¼n:</th>
            <td>@Model.DersProgrami?.DersGunu</td>
        </tr>
          <tr>
@@ -78,7 +78,7 @@
   </div>
       </div>
 
-  <!-- TELAFÝ BÝLGÝLERÝ -->
+  <!-- TELAFÄ° BÄ°LGÄ°LERÄ° -->
    <div class="col-md-6 mb-4">
     <div class="card h-100">
   <div class="card-header bg-success text-white">
@@ -94,16 +94,16 @@
      </td>
             </tr>
    <tr>
-<th>Saat Aralýðý:</th>
+<th>Saat AralÄ±ÄŸÄ±:</th>
             <td>
        <i class="bi bi-clock"></i> 
            @Model.BaslangicSaat.ToString(@"hh\:mm") - @Model.BitisSaat.ToString(@"hh\:mm")
       </td>
       </tr>
        <tr>
-         <th>Telafi Türü:</th>
+         <th>Telafi TÃ¼rÃ¼:</th>
            <td>
-  <span class="badge bg-@(Model.TelafiTuru == "Telafi" ? "success" : Model.TelafiTuru == "Ýkame" ? "warning text-dark" : "info")">
+  <span class="badge bg-@(Model.TelafiTuru == "Telafi" ? "success" : Model.TelafiTuru == "Ä°kame" ? "warning text-dark" : "info")">
   @Model.TelafiTuru
         </span>
       </td>
@@ -115,15 +115,15 @@
         @if (!string.IsNullOrWhiteSpace(Model.Aciklama))
     {
         <tr>
-   <th>Açýklama:</th>
+   <th>AÃ§Ä±klama:</th>
     <td>@Model.Aciklama</td>
   </tr>
     }
 @if (Model.KisimNo.HasValue)
      {
        <tr>
-    <th>Birleþtirildiði Kýsým:</th>
-         <td>Kýsým @Model.KisimNo</td>
+    <th>BirleÅŸtirildiÄŸi KÄ±sÄ±m:</th>
+         <td>KÄ±sÄ±m @Model.KisimNo</td>
     </tr>
          }
      </table>
@@ -131,7 +131,7 @@
     </div>
        </div>
 
-              <!-- HOCA BÝLGÝLERÝ -->
+              <!-- HOCA BÄ°LGÄ°LERÄ° -->
         <div class="col-md-12 mb-4">
   <div class="card">
    <div class="card-header bg-warning text-dark">
@@ -140,7 +140,7 @@
     <div class="card-body">
    <div class="row">
 <div class="col-md-6">
-       <h6 class="text-muted">Asýl Hoca (Normal Program)</h6>
+       <h6 class="text-muted">AsÄ±l Hoca (Normal Program)</h6>
   <div class="d-flex align-items-center mb-2">
                  <div class="me-3">
      <i class="bi bi-person-circle" style="font-size: 3rem; color: #6c757d;"></i>
@@ -154,7 +154,7 @@
       </div>
        </div>
         <div class="col-md-6">
-           <h6 class="text-muted">Görevli Hoca (Telafi)</h6>
+           <h6 class="text-muted">GÃ¶revli Hoca (Telafi)</h6>
     <div class="d-flex align-items-center mb-2">
          <div class="me-3">
           <i class="bi bi-person-check-fill" style="font-size: 3rem; color: #0d6efd;"></i>
@@ -173,17 +173,17 @@
    </div>
      </div>
 
-       <!-- ÝÞLEMLER -->
+       <!-- Ä°ÅžLEMLER -->
       <div class="card">
       <div class="card-header bg-dark text-white">
-       <h5><i class="bi bi-gear"></i> Ýþlemler</h5>
+       <h5><i class="bi bi-gear"></i> Ä°ÅŸlemler</h5>
     </div>
         <div class="card-body">
      <div class="d-flex gap-2">
      @if (!Model.Onaylandi)
       {
  <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">
- <i class="bi bi-pencil"></i> Düzenle
+ <i class="bi bi-pencil"></i> DÃ¼zenle
     </a>
     
       <form asp-action="Onayla" asp-route-id="@Model.Id" method="post" class="d-inline">
@@ -195,7 +195,7 @@
   }
            
     <form asp-action="Delete" asp-route-id="@Model.Id" method="post" class="d-inline"
- onsubmit="return confirm('Bu telafi dersini silmek istediðinize emin misiniz?')">
+ onsubmit="return confirm('Bu telafi dersini silmek istediÄŸinize emin misiniz?')">
      @Html.AntiForgeryToken()
   <button type="submit" class="btn btn-danger">
       <i class="bi bi-trash"></i> Sil
@@ -203,7 +203,7 @@
       </form>
 
      <a asp-action="Index" asp-route-fakulteId="@Model.FakulteId" class="btn btn-outline-secondary">
-    <i class="bi bi-arrow-left"></i> Listeye Dön
+    <i class="bi bi-arrow-left"></i> Listeye DÃ¶n
           </a>
        </div>
     </div>

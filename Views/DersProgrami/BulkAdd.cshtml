@@ -1,4 +1,4 @@
-@model Etutlist.Controllers.BulkAddViewModel
+ï»¿@model Etutlist.Controllers.BulkAddViewModel
 
 @{
     ViewData["Title"] = "Toplu Ders Ekleme";
@@ -9,7 +9,7 @@
         <div class="col-md-12">
             <div class="card shadow-sm">
    <div class="card-header bg-primary text-white">
-     <h4><i class="bi bi-table"></i> Toplu Ders Programý Ekleme</h4>
+     <h4><i class="bi bi-table"></i> Toplu Ders ProgramÄ± Ekleme</h4>
   </div>
       <div class="card-body">
           @if (TempData["Success"] != null)
@@ -46,9 +46,9 @@
         <div class="row">
       <div class="col-md-4">
        <div class="form-group mb-3">
-               <label class="form-label"><strong>Fakülte</strong> <span class="text-danger">*</span></label>
+               <label class="form-label"><strong>FakÃ¼lte</strong> <span class="text-danger">*</span></label>
      <select asp-for="FakulteId" class="form-select" id="fakulteSelect" required>
-            <option value="">-- Fakülte Seçiniz --</option>
+            <option value="">-- FakÃ¼lte SeÃ§iniz --</option>
     @foreach (var f in ViewBag.Fakulteler as SelectList)
    {
     <option value="@f.Value">@f.Text</option>
@@ -61,15 +61,15 @@
          <div class="form-group mb-3">
    <label class="form-label"><strong>Ders</strong> <span class="text-danger">*</span></label>
      <select asp-for="DersId" class="form-select" id="dersSelect" required>
-        <option value="">-- Ders Seçiniz --</option>
+        <option value="">-- Ders SeÃ§iniz --</option>
            </select>
          </div>
      </div>
 
    <div class="col-md-4">
         <div class="form-group mb-3">
-        <label class="form-label"><strong>Öðretim Elemaný</strong> <span class="text-danger">*</span></label>
-                 <input type="text" class="form-control" id="hocaInput" placeholder="Hoca adý yazýn..." autocomplete="off" />
+        <label class="form-label"><strong>Ã–ÄŸretim ElemanÄ±</strong> <span class="text-danger">*</span></label>
+                 <input type="text" class="form-control" id="hocaInput" placeholder="Hoca adÄ± yazÄ±n..." autocomplete="off" />
            <input type="hidden" id="selectedHocaAdi" />
        <small class="text-success" id="hocaStatus"></small>
           </div>
@@ -78,18 +78,18 @@
       </div>
      </div>
 
-               <!-- HIZLI GÝRÝÞ TABLOSU -->
+               <!-- HIZLI GÄ°RÄ°Åž TABLOSU -->
           <div class="card mb-3">
          <div class="card-header bg-success text-white">
-             <h5><i class="bi bi-lightning-fill"></i> 2. Hýzlý Ders Giriþi</h5>
-          <small>Gün/Saat hücrelerine kýsým numarasý girin (1, 2, 3...). Birden fazla kýsým için virgülle ayýrýn (1,2,3)</small>
+             <h5><i class="bi bi-lightning-fill"></i> 2. HÄ±zlÄ± Ders GiriÅŸi</h5>
+          <small>GÃ¼n/Saat hÃ¼crelerine kÄ±sÄ±m numarasÄ± girin (1, 2, 3...). Birden fazla kÄ±sÄ±m iÃ§in virgÃ¼lle ayÄ±rÄ±n (1,2,3)</small>
      </div>
     <div class="card-body">
       <div class="table-responsive">
    <table class="table table-bordered table-sm" id="quickEntryTable">
        <thead class="table-dark text-center">
        <tr>
-     <th style="width: 120px;">GÜN</th>
+     <th style="width: 120px;">GÃœN</th>
             @for (int saat = 1; saat <= 8; saat++)
      {
     <th style="width: 80px;">@saat. Saat</th>
@@ -118,20 +118,20 @@
          </table>
    </div>
      <div class="alert alert-info mt-2">
-             <i class="bi bi-info-circle"></i> <strong>Kullaným:</strong>
-        Hücreye <code>1</code> ? 1. Kýsým | <code>1,2,3</code> ? 1., 2. ve 3. Kýsýmlar
+             <i class="bi bi-info-circle"></i> <strong>KullanÄ±m:</strong>
+        HÃ¼creye <code>1</code> ? 1. KÄ±sÄ±m | <code>1,2,3</code> ? 1., 2. ve 3. KÄ±sÄ±mlar
        </div>
 </div>
          </div>
 
-      <!-- Önizleme -->
+      <!-- Ã–nizleme -->
        <div class="card mb-3">
        <div class="card-header bg-warning text-dark">
-                  <h5><i class="bi bi-eye"></i> 3. Önizleme</h5>
+                  <h5><i class="bi bi-eye"></i> 3. Ã–nizleme</h5>
      </div>
       <div class="card-body">
   <div id="previewContainer">
-   <p class="text-muted">Yukarýdaki tabloya ders girdiðinizde burada önizleme görünecek.</p>
+   <p class="text-muted">YukarÄ±daki tabloya ders girdiÄŸinizde burada Ã¶nizleme gÃ¶rÃ¼necek.</p>
           </div>
    </div>
     </div>
@@ -144,7 +144,7 @@
            <i class="bi bi-check-circle"></i> Kaydet
      </button>
           <a asp-action="Index" class="btn btn-secondary btn-lg">
-           <i class="bi bi-arrow-left"></i> Geri Dön
+           <i class="bi bi-arrow-left"></i> Geri DÃ¶n
           </a>
                </div>
           </form>
@@ -164,10 +164,10 @@
        let selectedDersId = 0;
      let selectedHocaAdi = '';
 
-     // Fakülte deðiþince
+     // FakÃ¼lte deÄŸiÅŸince
             $('#fakulteSelect').change(function() {
           fakulteId = $(this).val();
-        $('#dersSelect').empty().append('<option value="">-- Ders Seçiniz --</option>');
+        $('#dersSelect').empty().append('<option value="">-- Ders SeÃ§iniz --</option>');
   selectedDersId = 0;
 
        if (fakulteId) {
@@ -183,7 +183,7 @@
        }
             });
 
-         // Ders seçilince
+         // Ders seÃ§ilince
             $('#dersSelect').change(function() {
          selectedDersId = $(this).val();
         updatePreview();
@@ -193,11 +193,11 @@
           $('#hocaInput').autocomplete({
            source: function(request, response) {
      if (!fakulteId) {
-         alert('Önce fakülte seçiniz!');
+         alert('Ã–nce fakÃ¼lte seÃ§iniz!');
            return;
          }
        if (!selectedDersId) {
-alert('Önce ders seçiniz!');
+alert('Ã–nce ders seÃ§iniz!');
   return;
        }
 
@@ -210,7 +210,7 @@ alert('Önce ders seçiniz!');
       },
  success: function(data) {
          if (data.length === 0) {
-     response([{ label: 'Bu dersi veren hoca bulunamadý', value: '' }]);
+     response([{ label: 'Bu dersi veren hoca bulunamadÄ±', value: '' }]);
        } else {
            response(data.map(h => ({
    label: `${h.rutbe} ${h.adSoyad}`,
@@ -223,13 +223,13 @@ alert('Önce ders seçiniz!');
        select: function(event, ui) {
    selectedHocaAdi = ui.item.value;
        $('#selectedHocaAdi').val(selectedHocaAdi);
-        $('#hocaStatus').text('? ' + selectedHocaAdi + ' seçildi').addClass('text-success');
+        $('#hocaStatus').text('? ' + selectedHocaAdi + ' seÃ§ildi').addClass('text-success');
               updatePreview();
         },
          minLength: 2
        });
 
-    // Manuel hoca giriþi için
+    // Manuel hoca giriÅŸi iÃ§in
             $('#hocaInput').on('blur', function() {
      const manualInput = $(this).val().trim();
          if (manualInput && !selectedHocaAdi) {
@@ -240,12 +240,12 @@ alert('Önce ders seçiniz!');
        }
             });
 
- // Hýzlý giriþ
+ // HÄ±zlÄ± giriÅŸ
             $('.quick-input').on('input', function() {
      updatePreview();
    });
 
-       // Önizleme güncelle
+       // Ã–nizleme gÃ¼ncelle
             function updatePreview() {
           const entries = [];
      let index = 0;
@@ -269,29 +269,29 @@ alert('Önce ders seçiniz!');
   }
           });
 
-           // Önizleme HTML
+           // Ã–nizleme HTML
        let previewHtml = '';
      if (entries.length > 0) {
-          previewHtml = '<table class="table table-sm table-bordered"><thead class="table-dark"><tr><th>#</th><th>Gün</th><th>Saat</th><th>Kýsým</th></tr></thead><tbody>';
+          previewHtml = '<table class="table table-sm table-bordered"><thead class="table-dark"><tr><th>#</th><th>GÃ¼n</th><th>Saat</th><th>KÄ±sÄ±m</th></tr></thead><tbody>';
   entries.forEach((entry, idx) => {
   previewHtml += `<tr>
    <td>${idx + 1}</td>
            <td>${entry.gun}</td>
         <td>${entry.saat}. Saat</td>
-       <td>Kýsým ${entry.kisim}</td>
+       <td>KÄ±sÄ±m ${entry.kisim}</td>
      </tr>`;
           });
              previewHtml += '</tbody></table>';
         previewHtml += `<p class="text-success fw-bold">? Toplam: ${entries.length} ders eklenecek</p>`;
           } else {
-             previewHtml = '<p class="text-muted">Henüz ders girilmedi.</p>';
+             previewHtml = '<p class="text-muted">HenÃ¼z ders girilmedi.</p>';
      }
 
    $('#previewContainer').html(previewHtml);
                 createHiddenInputs(entries);
        }
 
-     // Hidden input'lar oluþtur
+     // Hidden input'lar oluÅŸtur
   function createHiddenInputs(entries) {
           $('#hiddenInputsContainer').empty();
 
@@ -309,21 +309,21 @@ alert('Önce ders seçiniz!');
    });
 
   // DEBUG
-   console.log('Hidden inputs oluþturuldu:', entries.length);
-              console.log('Hoca Adý:', selectedHocaAdi);
+   console.log('Hidden inputs oluÅŸturuldu:', entries.length);
+              console.log('Hoca AdÄ±:', selectedHocaAdi);
             }
 
             // Form submit
             $('#bulkAddForm').submit(function(e) {
                 if (!fakulteId || !selectedDersId) {
     e.preventDefault();
-                    alert('? Lütfen Fakülte ve Ders seçiniz!');
+                    alert('? LÃ¼tfen FakÃ¼lte ve Ders seÃ§iniz!');
         return false;
  }
 
        if (!selectedHocaAdi) {
       e.preventDefault();
-            alert('? Lütfen Hoca seçiniz veya yazýnýz!');
+            alert('? LÃ¼tfen Hoca seÃ§iniz veya yazÄ±nÄ±z!');
         return false;
             }
 
@@ -333,11 +333,11 @@ alert('Önce ders seçiniz!');
 
         if (!hasEntries) {
              e.preventDefault();
-      alert('? Lütfen en az bir ders giriþi yapýnýz!');
+      alert('? LÃ¼tfen en az bir ders giriÅŸi yapÄ±nÄ±z!');
      return false;
         }
 
-   console.log('Form gönderiliyor...');
+   console.log('Form gÃ¶nderiliyor...');
        return true;
         });
         });

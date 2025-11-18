@@ -1,4 +1,4 @@
-namespace Etutlist.Models
+﻿namespace Etutlist.Models
 {
     public class ErrorViewModel
     {

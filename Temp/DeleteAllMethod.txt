@@ -1,0 +1,37 @@
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteAll(int? fakulteId)
+        {
+            try
+            {
+                int silinecekSayi = 0;
+                
+                if (fakulteId.HasValue)
+                {
+                    // Sadece seçili fakültenin telafi kayýtlarýný sil
+                    var telafiler = await _context.TelafiDersler
+                        .Where(t => t.FakulteId == fakulteId.Value)
+                        .ToListAsync();
+                    
+                    silinecekSayi = telafiler.Count;
+                    _context.TelafiDersler.RemoveRange(telafiler);
+                }
+                else
+                {
+                    // Tüm telafi kayýtlarýný sil
+                    var tumTelafiler = await _context.TelafiDersler.ToListAsync();
+                    silinecekSayi = tumTelafiler.Count;
+                    _context.TelafiDersler.RemoveRange(tumTelafiler);
+                }
+                
+                await _context.SaveChangesAsync();
+                
+                TempData["Success"] = $"? Toplu Silme Tamamlandý!\n\n{silinecekSayi} telafi kaydý baþarýyla silindi.";
+                return RedirectToAction(nameof(Index), new { fakulteId });
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"? Silme iþlemi baþarýsýz!\n\nHata: {ex.Message}";
+                return RedirectToAction(nameof(Index), new { fakulteId });
+            }
+        }

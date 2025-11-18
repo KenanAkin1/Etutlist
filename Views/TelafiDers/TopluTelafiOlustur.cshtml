@@ -1,10 +1,10 @@
 @{
-    ViewData["Title"] = "Toplu Telafi Oluþtur";
+    ViewData["Title"] = "Akýllý Toplu Telafi";
 }
 
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2><i class="bi bi-lightning-charge-fill"></i> Toplu Telafi Oluþtur</h2>
+        <h2><i class="bi bi-lightning-charge-fill"></i> Akýllý Toplu Telafi Sistemi</h2>
         <a asp-action="Index" class="btn btn-secondary">
             <i class="bi bi-arrow-left"></i> Geri
         </a>
@@ -13,7 +13,7 @@
     @if (TempData["Success"] != null)
     {
         <div class="alert alert-success alert-dismissible fade show">
-            <pre style="margin: 0; white-space: pre-wrap;">@TempData["Success"]</pre>
+            <pre style="margin: 0; white-space: pre-wrap; font-family: monospace;">@TempData["Success"]</pre>
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     }
@@ -27,128 +27,150 @@
 
     <div class="card shadow-sm">
         <div class="card-header bg-primary text-white">
-            <h5 class="mb-0"><i class="bi bi-lightning-fill"></i> Toplu Telafi Parametreleri</h5>
+            <h5 class="mb-0"><i class="bi bi-calendar-x"></i> Hangi Günün Dersleri Telafi Edilecek?</h5>
         </div>
         <div class="card-body">
             <div class="alert alert-info">
-                <i class="bi bi-info-circle-fill"></i> <strong>Nasýl Çalýþýr?</strong>
-                <ul class="mt-2 mb-0">
-                    <li>Seçilen <strong>fakülte</strong> ve <strong>gün</strong> için tüm dersler bulunur</li>
-                    <li>Her ders için <strong>telafi tarihi</strong> ve <strong>saatinde</strong> uygun hoca aranýr</li>
-                    <li>Eðer asýl hoca müsait ise <strong>Telafi</strong>, deðilse <strong>Ýkame</strong> kaydý oluþturulur</li>
-                    <li>Hiç uygun hoca yoksa o ders atlanýr</li>
-                </ul>
+                <i class="bi bi-info-circle-fill"></i> <strong>Sistem Nasýl Çalýþýr?</strong>
+                <ol class="mt-2 mb-0">
+                    <li><strong>Tarih</strong> seçin (örn: 17.11.2025 Pazartesi)</li>
+                    <li>O günkü <strong>tüm derslerini</strong> sistem otomatik bulacak</li>
+                    <li>Her ders için <strong>çakýþma kontrolü yaparak</strong> uygun slot arayacak</li>
+                    <li>Uygun hocanýn <strong>müsait olduðu saatlere</strong> otomatik atacak</li>
+                    <li>Sonuçlarý <strong>detaylý rapor</strong> olarak sunacak</li>
+                </ol>
             </div>
 
             <form asp-action="TopluTelafiOlustur" method="post">
                 @Html.AntiForgeryToken()
 
                 <div class="row g-3">
-                    <div class="col-md-4">
-                        <label class="form-label fw-bold">Fakülte <span class="text-danger">*</span></label>
-                        <select name="fakulteId" class="form-select" required>
-                            <option value="">-- Fakülte Seçin --</option>
-                            @if (ViewBag.Fakulteler != null)
-                            {
-                                @foreach (var item in ViewBag.Fakulteler)
-                                {
-                                    <option value="@item.Value">@item.Text</option>
-                                }
-                            }
-                        </select>
-                        <small class="text-muted">Hangi fakültenin derslerini telafi edeceksiniz?</small>
-                    </div>
-
-                    <div class="col-md-4">
-                        <label class="form-label fw-bold">Telafi Yapýlamayacak Gün <span class="text-danger">*</span></label>
-                        <select name="telafiYapilamayacakGun" class="form-select" required>
-                            <option value="">-- Gün Seçin --</option>
-                            @if (ViewBag.Gunler != null)
-                            {
-                                @foreach (var gun in ViewBag.Gunler)
-                                {
-                                    <option value="@gun">@gun</option>
-                                }
-                            }
-                        </select>
-                        <small class="text-muted">Bu günün dersleri telafi edilecek (ör: Salý)</small>
-                    </div>
-
-                    <div class="col-md-4">
-                        <label class="form-label fw-bold">Telafi Tarihi <span class="text-danger">*</span></label>
-                        <input type="date" name="telafiTarihi" class="form-control" 
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">
+                            <i class="bi bi-calendar-x"></i> Telafi Edilecek Tarih <span class="text-danger">*</span>
+                        </label>
+                        <input type="date" name="telafiYapilacakTarih" class="form-control form-control-lg" 
                                value="@DateTime.Today.ToString("yyyy-MM-dd")" required />
-                        <small class="text-muted">Dersler hangi tarihte yapýlacak?</small>
+                        <small class="text-muted d-block mt-1">
+                            <strong>Örnek:</strong> 17.11.2025 Pazartesi seçerseniz, o günün tüm dersleri telafi edilecek
+                        </small>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">
+                            <i class="bi bi-chat-left-text"></i> Telafi Nedeni <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" name="telafiNedeni" class="form-control form-control-lg" 
+                               placeholder="Örn: Resmi tatil, Toplantý, vb." required />
+                        <small class="text-muted d-block mt-1">
+                            Telafi nedenini açýklayýn
+                        </small>
                     </div>
                 </div>
 
-                <div class="row g-3 mt-2">
-                    <div class="col-md-12">
-                        <label class="form-label fw-bold">Telafi Nedeni <span class="text-danger">*</span></label>
-                        <textarea name="telafiNedeni" class="form-control" rows="2" 
-                                  placeholder="Örn: Resmi tatil, Toplantý, vb." required></textarea>
-                    </div>
-                </div>
-
-                <div class="alert alert-warning mt-3">
-                    <i class="bi bi-exclamation-triangle-fill"></i> <strong>Dikkat!</strong>
-                    <ul class="mb-0 mt-2">
-                        <li>Bu iþlem <strong>geri alýnamaz</strong></li>
-                        <li>Seçilen günün <strong>tüm dersleri</strong> için telafi kaydý oluþturulacak</li>
-                        <li>Telafi saati ve kýsým aralýðý <strong>ayarlar</strong>dan okunur</li>
+                <div class="alert alert-warning mt-4">
+                    <h6><i class="bi bi-exclamation-triangle-fill"></i> <strong>Akýllý Planlama Kurallarý:</strong></h6>
+                    <ul class="mb-0">
+                        <li>? <strong>Ayný kýsýma</strong> ayný gün/saatte baþka telafi atanmaz</li>
+                        <li>? <strong>Ayný hocaya</strong> ayný gün/saatte baþka ders atanmaz</li>
+                        <li>? <strong>Tabur ayarlarý</strong> dikkate alýnýr (baþlama saati, atlanacak saatler)</li>
+                        <li>? <strong>Çakýþma yoksa</strong> otomatik olarak uygun slota atar</li>
+                        <li>?? Uygun slot bulunamazsa o ders <strong>atlanýr</strong></li>
                     </ul>
                 </div>
 
                 <div class="mt-4 d-flex gap-2 justify-content-end">
-                    <a asp-action="Index" class="btn btn-secondary">
+                    <a asp-action="Index" class="btn btn-secondary btn-lg">
                         <i class="bi bi-x-circle"></i> Ýptal
                     </a>
-                    <button type="submit" class="btn btn-success" 
-                            onclick="return confirm('? Toplu telafi oluþturulacak. Emin misiniz?');">
-                        <i class="bi bi-lightning-fill"></i> Toplu Telafi Oluþtur
+                    <button type="submit" class="btn btn-success btn-lg" 
+                            onclick="return confirm('?? Akýllý toplu telafi baþlatýlacak. Sistem otomatik olarak uygun slotlarý bulacak. Emin misiniz?');">
+                        <i class="bi bi-lightning-fill"></i> Baþlat
                     </button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Ayarlar Hatýrlatmasý -->
+    <!-- Örnek Senaryo -->
     <div class="card mt-3 shadow-sm">
-        <div class="card-header bg-secondary text-white">
-            <h6 class="mb-0"><i class="bi bi-gear-fill"></i> Ayarlar Hatýrlatmasý</h6>
+        <div class="card-header bg-success text-white">
+            <h6 class="mb-0"><i class="bi bi-bookmark-check"></i> Örnek Kullaným Senaryosu</h6>
         </div>
         <div class="card-body">
-            <p class="mb-2">Bu özelliðin çalýþmasý için <strong>Telafi Ayarlarý</strong> yapýlmýþ olmalýdýr:</p>
-            <ul class="mb-3">
-                <li><strong>Tabur Seçimi:</strong> ASEM 1. Tabur, ASEM 2. Tabur, SUEM 1. Tabur</li>
-                <li><strong>Kýsým Aralýðý:</strong> Hangi kýsýmlar (ör: 1-7, 8-13)</li>
-                <li><strong>Baþlama Saati:</strong> Telafiler kaçýncý dersten baþlayacak (ör: 7. ders)</li>
-                <li><strong>Max Bitiþ Saati:</strong> En fazla kaçýncý derse kadar (ör: 9. ders)</li>
-            </ul>
-            <a asp-controller="Ayarlar" asp-action="TelafiAyarlari" class="btn btn-sm btn-outline-secondary">
-                <i class="bi bi-gear-fill"></i> Ayarlara Git
-            </a>
+            <div class="row">
+                <div class="col-md-6">
+                    <h6 class="text-primary"><i class="bi bi-1-circle-fill"></i> Giriþ Verileri:</h6>
+                    <ul>
+                        <li><strong>Tarih:</strong> 17.11.2025 (Pazartesi)</li>
+                        <li><strong>Neden:</strong> Resmi Tatil</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h6 class="text-success"><i class="bi bi-2-circle-fill"></i> Sistem Ýþlemleri:</h6>
+                    <ol>
+                        <li>Pazartesi derslerini bulur (örn: 25 ders)</li>
+                        <li>Her tabur için telafi takvimi oluþturur</li>
+                        <li>Çakýþma olmayan slotlara atar</li>
+                        <li>Rapor: ? 22 baþarýlý, ? 3 baþarýsýz</li>
+                    </ol>
+                </div>
+            </div>
+            
+            <div class="alert alert-light mt-3 mb-0">
+                <h6 class="text-info"><i class="bi bi-graph-up"></i> Örnek Rapor:</h6>
+                <pre class="mb-0" style="font-family: monospace; font-size: 0.9em;">? Akýllý Toplu Telafi Tamamlandý!
+
+?? Ýstatistik:
+  • Baþarýlý: 22
+  • Baþarýsýz: 3
+
+?? Hatalar:
+- Fizik (Kýsým 5): Uygun slot bulunamadý
+- Kimya (Kýsým 12): Müsait hoca bulunamadý
+- Matematik (Kýsým 8): Max ders saati (9) aþýldý</pre>
+            </div>
         </div>
     </div>
 
-    <!-- Kullaným Örnekleri -->
-    <div class="card mt-3 shadow-sm">
-        <div class="card-header bg-info text-white">
-            <h6 class="mb-0"><i class="bi bi-book"></i> Kullaným Örneði</h6>
+    <!-- Bilgilendirme ve Ayarlar -->
+    <div class="row mt-3">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-info text-white">
+                    <h6 class="mb-0"><i class="bi bi-info-circle"></i> Ön Gereksinimler</h6>
+                </div>
+                <div class="card-body">
+                    <p class="mb-2">Sistem çalýþmasý için þunlar gerekli:</p>
+                    <ul class="mb-0">
+                        <li><strong>Tabur:</strong> Fakülte için en az 1 tabur tanýmlý olmalý</li>
+                        <li><strong>Telafi Ayarlarý:</strong> Tabur için telafi ayarlarý yapýlmýþ olmalý</li>
+                        <li><strong>Ders Programý:</strong> Normal ders programý girilmiþ olmalý</li>
+                        <li><strong>Hocalar:</strong> Aktif hocalar ve ders yetkileri tanýmlý olmalý</li>
+                    </ul>
+                </div>
+            </div>
         </div>
-        <div class="card-body">
-            <p class="mb-2"><strong>Senaryo:</strong> Salý günü resmi tatil, tüm dersler Cuma günü telafi edilecek</p>
-            <ol class="mb-0">
-                <li>Fakülte: <code>ASEM</code></li>
-                <li>Telafi Yapýlamayacak Gün: <code>Salý</code></li>
-                <li>Telafi Tarihi: <code>Cuma günü tarihi seçin</code></li>
-                <li>Telafi Nedeni: <code>Resmi Tatil</code></li>
-            </ol>
-            <div class="alert alert-light mt-2 mb-0">
-                <small>
-                    <i class="bi bi-lightbulb"></i> <strong>Sonuç:</strong> 
-                    Sistem Salý günü olan tüm ASEM derslerini bulacak ve her birini Cuma günü için telafi/ikame kaydý oluþturacak.
-                </small>
+        
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-secondary text-white">
+                    <h6 class="mb-0"><i class="bi bi-gear"></i> Hýzlý Ayarlar</h6>
+                </div>
+                <div class="card-body">
+                    <p class="mb-3">Telafi sistemini yapýlandýrýn:</p>
+                    <div class="d-grid gap-2">
+                        <a asp-controller="Ayarlar" asp-action="TelafiAyarlari" class="btn btn-outline-primary">
+                            <i class="bi bi-gear-fill"></i> Tabur ve Telafi Ayarlarý
+                        </a>
+                        <a asp-controller="DersProgrami" asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="bi bi-calendar3"></i> Ders Programý
+                        </a>
+                        <a asp-controller="Ayarlar" asp-action="Index" class="btn btn-outline-success">
+                            <i class="bi bi-person-badge"></i> Hoca ve Fakülte Ayarlarý
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

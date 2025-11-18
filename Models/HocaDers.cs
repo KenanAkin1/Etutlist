@@ -1,6 +1,6 @@
-namespace Etutlist.Models
+ï»¿namespace Etutlist.Models
 {
-    // Hoca-Ders many-to-many ilişkisi için ara tablo
+    // Hoca-Ders many-to-many iliÅŸkisi iÃ§in ara tablo
     public class HocaDers
     {
    public int HocaId { get; set; }

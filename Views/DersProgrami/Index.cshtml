@@ -1,22 +1,22 @@
-@model List<Etutlist.Controllers.DersGrupViewModel>
+ï»¿@model List<Etutlist.Controllers.DersGrupViewModel>
 
 @{
-    ViewData["Title"] = "Haftalýk Ders Programý";
-    var gunler = new[] { "Pazartesi", "Salý", "Çarþamba", "Perþembe", "Cuma" };
+    ViewData["Title"] = "HaftalÄ±k Ders ProgramÄ±";
+    var gunler = new[] { "Pazartesi", "SalÄ±", "Ã‡arÅŸamba", "PerÅŸembe", "Cuma" };
 var fakulteler = ViewBag.Fakulteler as List<Etutlist.Models.Fakulte>;
     var selectedFakulteId = ViewBag.SelectedFakulteId;
-    const int MaxSaat = 9; // 9 saate çýkarýldý
+    const int MaxSaat = 9; // 9 saate Ã§Ä±karÄ±ldÄ±
 }
 
 <div class="container-fluid mt-4">
-    <!-- Üst Baþlýk ve Fakülte Switch -->
+    <!-- Ãœst BaÅŸlÄ±k ve FakÃ¼lte Switch -->
     <div class="row mb-3">
   <div class="col-md-6">
-        <h2><i class="bi bi-calendar-week"></i> Haftalýk Ders Programý</h2>
-    <p class="text-muted">HocaDers tablosundan otomatik doldurulur - Boþ saatlere týklayarak kýsým ekleyin</p>
+        <h2><i class="bi bi-calendar-week"></i> HaftalÄ±k Ders ProgramÄ±</h2>
+    <p class="text-muted">HocaDers tablosundan otomatik doldurulur - BoÅŸ saatlere tÄ±klayarak kÄ±sÄ±m ekleyin</p>
   </div>
      <div class="col-md-6 text-end">
-   <!-- Fakülte Switch -->
+   <!-- FakÃ¼lte Switch -->
    <div class="btn-group btn-group-lg" role="group">
    @foreach (var fakulte in fakulteler)
      {
@@ -38,14 +38,14 @@ var fakulteler = ViewBag.Fakulteler as List<Etutlist.Models.Fakulte>;
         </div>
     }
 
-    <!-- Aksiyon Butonlarý -->
+    <!-- Aksiyon ButonlarÄ± -->
     <div class="row mb-3">
         <div class="col-md-12 text-end">
     <a asp-action="UploadExcel" class="btn btn-success btn-lg">
-             <i class="bi bi-file-earmark-excel"></i> Excel/CSV Yükle
+             <i class="bi bi-file-earmark-excel"></i> Excel/CSV YÃ¼kle
  </a>
     <a asp-controller="TelafiDers" asp-action="Index" class="btn btn-info">
-        <i class="bi bi-arrow-repeat"></i> Ýkame/Telafi
+        <i class="bi bi-arrow-repeat"></i> Ä°kame/Telafi
   </a>
         <a asp-controller="Ayarlar" asp-action="Index" class="btn btn-secondary">
       <i class="bi bi-gear"></i> Ayarlar
@@ -60,7 +60,7 @@ var fakulteler = ViewBag.Fakulteler as List<Etutlist.Models.Fakulte>;
     <tr class="text-center">
           <th rowspan="2" style="width: 40px;">S.NO</th>
      <th rowspan="2" style="width: 150px;">DERS</th>
-      <th rowspan="2" style="width: 180px;">ÖÐRETÝM ELEMANI</th>
+      <th rowspan="2" style="width: 180px;">Ã–ÄžRETÄ°M ELEMANI</th>
       <th rowspan="2" style="width: 50px;">D/S</th>
    @foreach (var gun in gunler)
           {
@@ -111,7 +111,7 @@ var fakulteler = ViewBag.Fakulteler as List<Etutlist.Models.Fakulte>;
   {
       <div class="badge bg-info text-dark position-relative d-inline-block" 
  style="font-size: 0.75rem;"
-        title="Kýsým @ders.KisimNo - @ders.DersGunu @ders.DersSaati. Saat">
+        title="KÄ±sÄ±m @ders.KisimNo - @ders.DersGunu @ders.DersSaati. Saat">
    @ders.KisimNo
            <form asp-action="DersSil" asp-route-id="@ders.Id" asp-route-fakulteId="@selectedFakulteId" method="post" 
        style="display:inline; position: absolute; top: -5px; right: -5px;">
@@ -119,9 +119,9 @@ var fakulteler = ViewBag.Fakulteler as List<Etutlist.Models.Fakulte>;
 <button type="submit" 
              class="btn btn-sm p-0 text-danger" 
       style="font-size: 10px; width: 15px; height: 15px; line-height: 1; border: none; background: white; border-radius: 50%;"
-      onclick="return confirm('Kýsým @ders.KisimNo - @ders.DersGunu @ders.DersSaati. Saat dersini silmek istediðinize emin misiniz?')"
+      onclick="return confirm('KÄ±sÄ±m @ders.KisimNo - @ders.DersGunu @ders.DersSaati. Saat dersini silmek istediÄŸinize emin misiniz?')"
        title="Sil">
-        ×
+        Ã—
              </button>
  </form>
    </div>
@@ -145,7 +145,7 @@ var fakulteler = ViewBag.Fakulteler as List<Etutlist.Models.Fakulte>;
    <td colspan="@(4 + (gunler.Length * MaxSaat))" class="text-center text-muted py-5">
     <i class="bi bi-inbox" style="font-size: 3rem;"></i>
           <br/>
-  Henüz HocaDers kaydý yok. Önce Ayarlar'dan Hoca-Ders eþleþtirmesi yapýn.
+  HenÃ¼z HocaDers kaydÄ± yok. Ã–nce Ayarlar'dan Hoca-Ders eÅŸleÅŸtirmesi yapÄ±n.
    </td>
      </tr>
       }
@@ -153,7 +153,7 @@ var fakulteler = ViewBag.Fakulteler as List<Etutlist.Models.Fakulte>;
    </table>
     </div>
 
-    <!-- SAAT BÝLGÝLERÝ -->
+    <!-- SAAT BÄ°LGÄ°LERÄ° -->
     <div class="row mt-4">
  <div class="col-md-12">
    <div class="card">
@@ -177,22 +177,22 @@ var fakulteler = ViewBag.Fakulteler as List<Etutlist.Models.Fakulte>;
   </div>
     </div>
 
-    <!-- ÝSTATÝSTÝKLER -->
+    <!-- Ä°STATÄ°STÄ°KLER -->
     <div class="row mt-3">
    <div class="col-md-12">
    <div class="card">
    <div class="card-header bg-info text-white">
-       <h6 class="mb-0"><i class="bi bi-graph-up"></i> Ýstatistikler</h6>
+       <h6 class="mb-0"><i class="bi bi-graph-up"></i> Ä°statistikler</h6>
    </div>
 <div class="card-body">
    <div class="row text-center">
      <div class="col-md-3">
        <h3 class="text-primary">@Model.Sum(d => d.Hocalar.Count)</h3>
-  <p class="text-muted">Öðretim Elemaný</p>
+  <p class="text-muted">Ã–ÄŸretim ElemanÄ±</p>
        </div>
     <div class="col-md-3">
          <h3 class="text-success">@Model.Count</h3>
-   <p class="text-muted">Farklý Ders</p>
+   <p class="text-muted">FarklÄ± Ders</p>
   </div>
 <div class="col-md-3">
      <h3 class="text-warning">@Model.Sum(d => d.Hocalar.Sum(h => h.DersSaatleri.Count))</h3>
@@ -200,7 +200,7 @@ var fakulteler = ViewBag.Fakulteler as List<Etutlist.Models.Fakulte>;
    </div>
    <div class="col-md-3">
       <h3 class="text-danger">@Model.SelectMany(d => d.Hocalar).SelectMany(h => h.DersSaatleri).Select(d => d.KisimNo).Distinct().Count()</h3>
-   <p class="text-muted">Farklý Kýsým</p>
+   <p class="text-muted">FarklÄ± KÄ±sÄ±m</p>
   </div>
           </div>
     </div>
@@ -227,16 +227,16 @@ var fakulteler = ViewBag.Fakulteler as List<Etutlist.Models.Fakulte>;
   <p id="modalHocaAdi" class="text-muted"></p>
       </div>
      <div class="mb-3">
-    <label class="form-label"><strong>Gün & Saat:</strong></label>
+    <label class="form-label"><strong>GÃ¼n & Saat:</strong></label>
     <p id="modalGunSaat" class="text-muted"></p>
        </div>
   <div class="mb-3">
-        <label for="kisimNoInput" class="form-label"><strong>Kýsým No <span class="text-danger">*</span></strong></label>
- <input type="number" class="form-control" id="kisimNoInput" min="1" placeholder="Örn: 1, 2, 3..." required>
+        <label for="kisimNoInput" class="form-label"><strong>KÄ±sÄ±m No <span class="text-danger">*</span></strong></label>
+ <input type="number" class="form-control" id="kisimNoInput" min="1" placeholder="Ã–rn: 1, 2, 3..." required>
    </div>
      </div>
   <div class="modal-footer">
-           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Ýptal</button>
+           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Ä°ptal</button>
     <button type="button" class="btn btn-primary" id="btnDersEkle">
    <i class="bi bi-save"></i> Kaydet
     </button>
@@ -254,7 +254,7 @@ var fakulteler = ViewBag.Fakulteler as List<Etutlist.Models.Fakulte>;
     let fakulteId = @selectedFakulteId;
 
   $(document).ready(function() {
-    // Boþ saatlere týklanýnca modal aç
+    // BoÅŸ saatlere tÄ±klanÄ±nca modal aÃ§
    $('.saat-cell').on('click', function(e) {
     if ($(e.target).closest('button').length > 0) return;
  if ($(this).find('.badge').length > 0) return;
@@ -280,7 +280,7 @@ var fakulteler = ViewBag.Fakulteler as List<Etutlist.Models.Fakulte>;
       var kisimNo = $('#kisimNoInput').val();
 
        if (!kisimNo || kisimNo < 1) {
-        alert('Lütfen geçerli bir kýsým numarasý girin!');
+        alert('LÃ¼tfen geÃ§erli bir kÄ±sÄ±m numarasÄ± girin!');
            return;
     }
 
@@ -307,13 +307,13 @@ if (response.success) {
             }
   },
    error: function() {
-    alert('Bir hata oluþtu!');
+    alert('Bir hata oluÅŸtu!');
     $('#btnDersEkle').prop('disabled', false).html('<i class="bi bi-save"></i> Kaydet');
    }
         });
   });
 
-           // Enter tuþu ile kaydet
+           // Enter tuÅŸu ile kaydet
         $('#kisimNoInput').on('keypress', function(e) {
      if (e.which === 13) {
         $('#btnDersEkle').click();

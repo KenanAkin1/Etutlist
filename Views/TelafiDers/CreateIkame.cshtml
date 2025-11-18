@@ -1,12 +1,12 @@
-@{
-ViewData["Title"] = "İkame / Birleştirme Ekle";
+ï»¿@{
+ViewData["Title"] = "Ä°kame / BirleÅŸtirme Ekle";
 }
 
 <div class="container mt-4">
     <div class="row">
         <div class="col-md-12">
    <div class="d-flex justify-content-between align-items-center mb-4">
-  <h2><i class="bi bi-arrow-repeat"></i> İkame / Birleştirme Ekle</h2>
+  <h2><i class="bi bi-arrow-repeat"></i> Ä°kame / BirleÅŸtirme Ekle</h2>
     <a asp-action="Index" class="btn btn-secondary">
      <i class="bi bi-arrow-left"></i> Geri
               </a>
@@ -21,11 +21,11 @@ ViewData["Title"] = "İkame / Birleştirme Ekle";
             }
 
  <div class="alert alert-info">
-        <h5><i class="bi bi-info-circle"></i> Nasıl Çalışır?</h5>
+        <h5><i class="bi bi-info-circle"></i> NasÄ±l Ã‡alÄ±ÅŸÄ±r?</h5>
        <ul class="mb-0">
-          <li>? <strong>Blok seçimi:</strong> Tüm saatleri seçmek için ana bloğa tıklayın</li>
-           <li>? <strong>Tek tek seçim:</strong> Sadece belirli saatleri seçmek için alt butonları kullanın</li>
-      <li>?? Sistem otomatik olarak İkame veya Birleştirme tipini belirleyecektir</li>
+          <li>? <strong>Blok seÃ§imi:</strong> TÃ¼m saatleri seÃ§mek iÃ§in ana bloÄŸa tÄ±klayÄ±n</li>
+           <li>? <strong>Tek tek seÃ§im:</strong> Sadece belirli saatleri seÃ§mek iÃ§in alt butonlarÄ± kullanÄ±n</li>
+      <li>?? Sistem otomatik olarak Ä°kame veya BirleÅŸtirme tipini belirleyecektir</li>
                 </ul>
  </div>
 
@@ -35,11 +35,11 @@ ViewData["Title"] = "İkame / Birleştirme Ekle";
 
                 <div class="card mb-4">
              <div class="card-header bg-primary text-white">
-     <h5><i class="bi bi-1-circle"></i> Fakülte Seçin</h5>
+     <h5><i class="bi bi-1-circle"></i> FakÃ¼lte SeÃ§in</h5>
        </div>
     <div class="card-body">
    <select name="FakulteId" id="fakulteSelect" class="form-select" required>
-            <option value="">-- Fakülte Seçiniz --</option>
+            <option value="">-- FakÃ¼lte SeÃ§iniz --</option>
         @foreach (var fakulte in ViewBag.Fakulteler as SelectList)
       {
        <option value="@fakulte.Value">@fakulte.Text</option>
@@ -55,20 +55,20 @@ ViewData["Title"] = "İkame / Birleştirme Ekle";
        <div class="card-body">
        <div class="row g-3">
        <div class="col-md-4">
-      <label class="form-label"><strong>Ders Adı</strong> <span class="text-danger">*</span></label>
+      <label class="form-label"><strong>Ders AdÄ±</strong> <span class="text-danger">*</span></label>
 <input type="text" name="DersAdi" id="dersAdiInput" class="form-control" 
-         placeholder="Örn: Kriminoloji" required autocomplete="off" />
+         placeholder="Ã–rn: Kriminoloji" required autocomplete="off" />
     <div id="dersOneri" class="list-group mt-1" style="position: absolute; z-index: 1000; width: 30%;"></div>
               </div>
            <div class="col-md-4">
-              <label class="form-label"><strong>Asıl Hoca</strong> <span class="text-danger">*</span></label>
+              <label class="form-label"><strong>AsÄ±l Hoca</strong> <span class="text-danger">*</span></label>
           <input type="text" id="asilHocaInput" class="form-control" 
-      placeholder="Hoca adı" required autocomplete="off" />
+      placeholder="Hoca adÄ±" required autocomplete="off" />
        <input type="hidden" name="AsilHocaId" id="asilHocaId" />
   <div id="asilHocaOneri" class="list-group mt-1" style="position: absolute; z-index: 1000; width: 30%;"></div>
              </div>
       <div class="col-md-4">
-     <label class="form-label"><strong>Kısım No</strong> <span class="text-danger">*</span></label>
+     <label class="form-label"><strong>KÄ±sÄ±m No</strong> <span class="text-danger">*</span></label>
      <input type="number" name="KisimNo" id="kisimNoInput" class="form-control" 
       placeholder="1, 2, 3..." min="1" required />
   </div>
@@ -78,7 +78,7 @@ ViewData["Title"] = "İkame / Birleştirme Ekle";
 
         <div class="card mb-4" id="dersSaatCard" style="display:none;">
        <div class="card-header bg-info text-white">
-   <h5><i class="bi bi-3-circle"></i> Hangi Ders Saatleri? (Blok veya Tek Seçim)</h5>
+   <h5><i class="bi bi-3-circle"></i> Hangi Ders Saatleri? (Blok veya Tek SeÃ§im)</h5>
    </div>
      <div class="card-body">
  <div id="dersSaatSecenekleri"></div>
@@ -87,7 +87,7 @@ ViewData["Title"] = "İkame / Birleştirme Ekle";
           <p class="mt-2">Ders saatleri getiriliyor...</p>
           </div>
         <div id="dersSaatYok" class="alert alert-warning" style="display:none;">
-   <i class="bi bi-exclamation-triangle"></i> Bu kısım için ders saati bulunamadı.
+   <i class="bi bi-exclamation-triangle"></i> Bu kÄ±sÄ±m iÃ§in ders saati bulunamadÄ±.
                 </div>
        </div>
     </div>
@@ -111,7 +111,7 @@ ViewData["Title"] = "İkame / Birleştirme Ekle";
           <div class="card-body">
         <div class="row g-3 mb-3">
     <div class="col-md-12">
-        <label class="form-label"><strong>İkame/Birleştirme Tarihi</strong> <span class="text-danger">*</span></label>
+        <label class="form-label"><strong>Ä°kame/BirleÅŸtirme Tarihi</strong> <span class="text-danger">*</span></label>
           <input type="date" id="telafiTarihiInput" class="form-control" required />
        <small class="text-muted" id="tarihAciklama">Otomatik hesaplanan tarih</small>
       </div>
@@ -120,11 +120,11 @@ ViewData["Title"] = "İkame / Birleştirme Ekle";
          <div class="col-md-6">
    <label class="form-label"><strong>Neden</strong> <span class="text-danger">*</span></label>
    <input type="text" name="TelafiNedeni" class="form-control" 
-       placeholder="Örn: İzin, Hastalık, Görev..." required />
+       placeholder="Ã–rn: Ä°zin, HastalÄ±k, GÃ¶rev..." required />
         </div>
       <div class="col-md-6">
-             <label class="form-label"><strong>Açıklama</strong></label>
-        <textarea name="Aciklama" class="form-control" rows="3" placeholder="Ek açıklama (opsiyonel)"></textarea>
+             <label class="form-label"><strong>AÃ§Ä±klama</strong></label>
+        <textarea name="Aciklama" class="form-control" rows="3" placeholder="Ek aÃ§Ä±klama (opsiyonel)"></textarea>
        </div>
    </div>
        </div>
@@ -132,7 +132,7 @@ ViewData["Title"] = "İkame / Birleştirme Ekle";
 
       <div class="d-grid gap-2 d-md-flex justify-content-md-end">
          <a asp-action="Index" class="btn btn-secondary">
-        <i class="bi bi-x-circle"></i> İptal
+        <i class="bi bi-x-circle"></i> Ä°ptal
                     </a>
            <button type="submit" class="btn btn-primary btn-lg">
        <i class="bi bi-save"></i> Kaydet
@@ -253,7 +253,7 @@ function kisimSecildi() {
            data-saatler='${JSON.stringify(item.saatler)}'>
           <label class="form-check-label fw-bold" for="blok${blokIndex}">
 <span class="${gunBadge} me-2">${item.gun}</span>
-        <strong>TÜMÜ (${item.saatler.join('-')}. Saatler)</strong>
+        <strong>TÃœMÃœ (${item.saatler.join('-')}. Saatler)</strong>
    </label>
                    </div>
         </div>
@@ -330,9 +330,9 @@ function hesaplaTarih(gun) {
     
     let gunMap = {
         'Pazartesi': 1,
-        'Salı': 2,
-   'Çarşamba': 3,
-        'Perşembe': 4,
+        'SalÄ±': 2,
+   'Ã‡arÅŸamba': 3,
+        'PerÅŸembe': 4,
         'Cuma': 5
     };
     
@@ -358,16 +358,16 @@ function hesaplaTarih(gun) {
         $('#telafiTarihiHidden').val($(this).val());
     });
     
-    let gunAdi = ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'][hedefTarih.getDay()];
-    $('#tarihAciklama').text(`${gunAdi}, ${hedefTarih.toLocaleDateString('tr-TR')} - Değiştirebilirsiniz`);
+    let gunAdi = ['Pazar', 'Pazartesi', 'SalÄ±', 'Ã‡arÅŸamba', 'PerÅŸembe', 'Cuma', 'Cumartesi'][hedefTarih.getDay()];
+    $('#tarihAciklama').text(`${gunAdi}, ${hedefTarih.toLocaleDateString('tr-TR')} - DeÄŸiÅŸtirebilirsiniz`);
 }
 
 function getGunBadge(gun) {
     switch(gun) {
    case 'Pazartesi': return 'badge bg-primary';
-        case 'Salı': return 'badge bg-success';
-    case 'Çarşamba': return 'badge bg-info';
-        case 'Perşembe': return 'badge bg-warning text-dark';
+        case 'SalÄ±': return 'badge bg-success';
+    case 'Ã‡arÅŸamba': return 'badge bg-info';
+        case 'PerÅŸembe': return 'badge bg-warning text-dark';
         case 'Cuma': return 'badge bg-danger';
       default: return 'badge bg-secondary';
     }
@@ -376,7 +376,7 @@ function getGunBadge(gun) {
 $('#ikameForm').on('submit', function(e) {
     if (!secilenGun || secilenSaatler.length === 0) {
         e.preventDefault();
-        alert('Lütfen ders saati seçin!');
+        alert('LÃ¼tfen ders saati seÃ§in!');
         return false;
     }
     

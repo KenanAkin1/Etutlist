@@ -1,6 +1,6 @@
-@model Etutlist.Services.TelafiOneriViewModel
+ï»¿@model Etutlist.Services.TelafiOneriViewModel
 @{
-    ViewData["Title"] = "Telafi Dersi Düzenle";
+    ViewData["Title"] = "Telafi Dersi DÃ¼zenle";
     var mevcutTelafi = ViewBag.MevcutTelafi as Etutlist.Models.TelafiDers;
 }
 
@@ -8,9 +8,9 @@
     <div class="row">
      <div class="col-md-12">
       <div class="d-flex justify-content-between align-items-center mb-3">
-     <h2><i class="bi bi-pencil-square"></i> Telafi Dersi Düzenle</h2>
+     <h2><i class="bi bi-pencil-square"></i> Telafi Dersi DÃ¼zenle</h2>
      <a asp-action="Details" asp-route-id="@ViewBag.TelafiId" class="btn btn-secondary">
-           <i class="bi bi-arrow-left"></i> Detaylara Dön
+           <i class="bi bi-arrow-left"></i> Detaylara DÃ¶n
      </a>
    </div>
 
@@ -22,7 +22,7 @@
   </div>
  }
 
-<!-- DERS BÝLGÝLERÝ -->
+<!-- DERS BÄ°LGÄ°LERÄ° -->
  <div class="card mb-4">
        <div class="card-header bg-primary text-white">
     <h5><i class="bi bi-info-circle"></i> Ders Bilgileri</h5>
@@ -30,25 +30,25 @@
 <div class="card-body">
   <div class="row">
  <div class="col-md-4">
- <p><strong>Fakülte:</strong> @Model.DersProgrami.Fakulte.Ad</p>
+ <p><strong>FakÃ¼lte:</strong> @Model.DersProgrami.Fakulte.Ad</p>
   </div>
         <div class="col-md-4">
   <p><strong>Ders:</strong> @Model.DersProgrami.DersAdi</p>
     </div>
       <div class="col-md-4">
-  <p><strong>Asýl Hoca:</strong> @Model.DersProgrami.Hoca.AdSoyad</p>
+  <p><strong>AsÄ±l Hoca:</strong> @Model.DersProgrami.Hoca.AdSoyad</p>
   </div>
     </div>
  </div>
     </div>
 
-        <!-- ÖNERÝ -->
-  <div class="alert alert-@(Model.OnerilenTur == "Telafi" ? "success" : Model.OnerilenTur == "Ýkame" ? "warning" : "info")">
-        <h5><i class="bi bi-lightbulb"></i> Öneri: <strong>@Model.OnerilenTur</strong></h5>
+        <!-- Ã–NERÄ° -->
+  <div class="alert alert-@(Model.OnerilenTur == "Telafi" ? "success" : Model.OnerilenTur == "Ä°kame" ? "warning" : "info")">
+        <h5><i class="bi bi-lightbulb"></i> Ã–neri: <strong>@Model.OnerilenTur</strong></h5>
   <p>@Model.Aciklama</p>
             </div>
 
-  <!-- DÜZENLEME FORMU -->
+  <!-- DÃœZENLEME FORMU -->
           <form asp-action="Edit" asp-route-id="@ViewBag.TelafiId" method="post">
      @Html.AntiForgeryToken()
    <input type="hidden" name="Id" value="@mevcutTelafi.Id" />
@@ -67,12 +67,12 @@
    value="@mevcutTelafi.TelafiTarihi.ToString("yyyy-MM-dd")" required />
        </div>
       <div class="col-md-4">
-      <label class="form-label"><strong>Baþlangýç Saati</strong></label>
+      <label class="form-label"><strong>BaÅŸlangÄ±Ã§ Saati</strong></label>
        <input type="time" name="BaslangicSaat" class="form-control" 
    value="@mevcutTelafi.BaslangicSaat.ToString(@"hh\:mm")" required />
      </div>
        <div class="col-md-4">
-     <label class="form-label"><strong>Bitiþ Saati</strong></label>
+     <label class="form-label"><strong>BitiÅŸ Saati</strong></label>
        <input type="time" name="BitisSaat" class="form-control" 
       value="@mevcutTelafi.BitisSaat.ToString(@"hh\:mm")" required />
      </div>
@@ -80,27 +80,27 @@
 
   <div class="row g-3 mt-2">
       <div class="col-md-6">
-           <label class="form-label"><strong>Telafi Türü</strong></label>
+           <label class="form-label"><strong>Telafi TÃ¼rÃ¼</strong></label>
         <select name="TelafiTuru" class="form-select" required>
   <option value="Telafi" selected="@(mevcutTelafi.TelafiTuru == "Telafi")">Telafi</option>
-    <option value="Ýkame" selected="@(mevcutTelafi.TelafiTuru == "Ýkame")">Ýkame</option>
-      <option value="Birleþtirme" selected="@(mevcutTelafi.TelafiTuru == "Birleþtirme")">Birleþtirme</option>
+    <option value="Ä°kame" selected="@(mevcutTelafi.TelafiTuru == "Ä°kame")">Ä°kame</option>
+      <option value="BirleÅŸtirme" selected="@(mevcutTelafi.TelafiTuru == "BirleÅŸtirme")">BirleÅŸtirme</option>
       </select>
         </div>
       <div class="col-md-6">
      <label class="form-label"><strong>Telafi Nedeni</strong></label>
        <select name="TelafiNedeni" class="form-select" required>
-        <option value="Ýzin" selected="@(mevcutTelafi.TelafiNedeni == "Ýzin")">Ýzin</option>
-     <option value="Hastalýk" selected="@(mevcutTelafi.TelafiNedeni == "Hastalýk")">Hastalýk</option>
-      <option value="Görev" selected="@(mevcutTelafi.TelafiNedeni == "Görev")">Görev</option>
+        <option value="Ä°zin" selected="@(mevcutTelafi.TelafiNedeni == "Ä°zin")">Ä°zin</option>
+     <option value="HastalÄ±k" selected="@(mevcutTelafi.TelafiNedeni == "HastalÄ±k")">HastalÄ±k</option>
+      <option value="GÃ¶rev" selected="@(mevcutTelafi.TelafiNedeni == "GÃ¶rev")">GÃ¶rev</option>
  <option value="Resmi Tatil" selected="@(mevcutTelafi.TelafiNedeni == "Resmi Tatil")">Resmi Tatil</option>
-  <option value="Diðer" selected="@(mevcutTelafi.TelafiNedeni == "Diðer")">Diðer</option>
+  <option value="DiÄŸer" selected="@(mevcutTelafi.TelafiNedeni == "DiÄŸer")">DiÄŸer</option>
    </select>
             </div>
      </div>
 
 <div class="mt-3">
-   <label class="form-label"><strong>Görevli Hoca</strong></label>
+   <label class="form-label"><strong>GÃ¶revli Hoca</strong></label>
        <select name="YedekHocaId" class="form-select" required>
    @if (Model.MusaitYedekHocalar.Any())
          {
@@ -110,7 +110,7 @@
       @hoca.Rutbe @hoca.AdSoyad
     @if (hoca.Id == Model.DersProgrami.HocaId)
      {
-          <text>(Asýl Hoca)</text>
+          <text>(AsÄ±l Hoca)</text>
     }
     </option>
      }
@@ -123,12 +123,12 @@
      </div>
 
       <div class="mt-3">
-  <label class="form-label"><strong>Kýsým No (Birleþtirme için)</strong></label>
+  <label class="form-label"><strong>KÄ±sÄ±m No (BirleÅŸtirme iÃ§in)</strong></label>
             <input type="number" name="KisimNo" class="form-control" value="@mevcutTelafi.KisimNo" />
        </div>
 
     <div class="mt-3">
-     <label class="form-label"><strong>Açýklama</strong></label>
+     <label class="form-label"><strong>AÃ§Ä±klama</strong></label>
   <textarea name="Aciklama" class="form-control" rows="3">@mevcutTelafi.Aciklama</textarea>
       </div>
    </div>
@@ -136,10 +136,10 @@
 
  <div class="d-grid gap-2 d-md-flex justify-content-md-end">
      <a asp-action="Details" asp-route-id="@ViewBag.TelafiId" class="btn btn-secondary">
-<i class="bi bi-x-circle"></i> Ýptal
+<i class="bi bi-x-circle"></i> Ä°ptal
     </a>
          <button type="submit" class="btn btn-primary">
-   <i class="bi bi-save"></i> Deðiþiklikleri Kaydet
+   <i class="bi bi-save"></i> DeÄŸiÅŸiklikleri Kaydet
  </button>
       </div>
  </form>

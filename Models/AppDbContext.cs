@@ -1,4 +1,4 @@
-using Etutlist.Configurations;
+﻿using Etutlist.Configurations;
 using Microsoft.EntityFrameworkCore;
 
 namespace Etutlist.Models

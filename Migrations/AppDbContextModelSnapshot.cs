@@ -348,11 +348,11 @@ namespace Etutlist.Migrations
                     b.Property<int>("TelafiMaxBitisSaati")
                         .HasColumnType("int");
 
-                    b.Property<string>("TelafiYapilamayacakDersSaatleri")
+                    b.Property<string>("TelafiYapilacakGun")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("TelafiYapilamayacakGun")
-                        .IsRequired()
+                    b.Property<string>("TelafiYapilamayacakDersSaatleri")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");

@@ -1,15 +1,15 @@
-@model Etutlist.Controllers.DersDetayAyarlarViewModel
+ï»¿@model Etutlist.Controllers.DersDetayAyarlarViewModel
 @{
-    ViewData["Title"] = "Ders Detaylarý";
+    ViewData["Title"] = "Ders DetaylarÄ±";
 }
 
 <div class="container mt-4">
     <div class="row">
 <div class="col-md-12">
    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2><i class="bi bi-book-fill"></i> Ders Detaylarý</h2>
+        <h2><i class="bi bi-book-fill"></i> Ders DetaylarÄ±</h2>
    <a asp-action="Index" class="btn btn-secondary">
-     <i class="bi bi-arrow-left"></i> Ayarlara Dön
+     <i class="bi bi-arrow-left"></i> Ayarlara DÃ¶n
   </a>
  </div>
 
@@ -21,7 +21,7 @@
      </div>
        }
 
-    <!-- DERS BÝLGÝSÝ -->
+    <!-- DERS BÄ°LGÄ°SÄ° -->
     <div class="card mb-4">
        <div class="card-header bg-info text-white">
      <h5><i class="bi bi-info-circle"></i> Ders Bilgisi</h5>
@@ -47,11 +47,11 @@
      </div>
  </div>
 
-    <!-- BU DERSÝ VEREN HOCALAR -->
+    <!-- BU DERSÄ° VEREN HOCALAR -->
     <div class="card mb-4">
      <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
    <h5 class="mb-0"><i class="bi bi-people-fill"></i> Bu Dersi Verebilen Hocalar</h5>
-        <span class="badge bg-dark">@Model.DersHocalari.Count kiþi</span>
+        <span class="badge bg-dark">@Model.DersHocalari.Count kiÅŸi</span>
   </div>
 <div class="card-body">
       @if (Model.DersHocalari.Any())
@@ -79,17 +79,17 @@
        <hr/>
        <div class="d-flex justify-content-between align-items-center">
       <div>
-       <small class="text-muted">Fakülte:</small><br/>
+       <small class="text-muted">FakÃ¼lte:</small><br/>
    <strong>@hoca.Fakulte.Ad</strong>
         </div>
 <div class="text-end">
-       <small class="text-muted">Ders Yükü:</small><br/>
+       <small class="text-muted">Ders YÃ¼kÃ¼:</small><br/>
   <span class="badge bg-primary">@hoca.DersYuku saat</span>
   </div>
        </div>
     <div class="mt-2">
       <a asp-action="HocaEdit" asp-route-id="@hoca.Id" class="btn btn-sm btn-outline-primary w-100">
-      <i class="bi bi-eye"></i> Detaylarý Gör
+      <i class="bi bi-eye"></i> DetaylarÄ± GÃ¶r
    </a>
   </div>
        </div>
@@ -101,7 +101,7 @@
     else
  {
             <div class="alert alert-info">
-    <i class="bi bi-info-circle"></i> Bu dersi verebilen hoca henüz tanýmlanmamýþ.
+    <i class="bi bi-info-circle"></i> Bu dersi verebilen hoca henÃ¼z tanÄ±mlanmamÄ±ÅŸ.
    </div>
         }
     </div>
@@ -110,8 +110,8 @@
 <!-- DERS PROGRAMLARI -->
   <div class="card mb-4">
      <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-    <h5 class="mb-0"><i class="bi bi-calendar-week"></i> Ders Programlarý (@Model.Ders.DersAdi)</h5>
-   <span class="badge bg-light text-dark">@Model.DersProgramlari.Count kayýt</span>
+    <h5 class="mb-0"><i class="bi bi-calendar-week"></i> Ders ProgramlarÄ± (@Model.Ders.DersAdi)</h5>
+   <span class="badge bg-light text-dark">@Model.DersProgramlari.Count kayÄ±t</span>
   </div>
  <div class="card-body">
         @if (Model.DersProgramlari.Any())
@@ -120,12 +120,12 @@
  <table class="table table-hover table-bordered">
     <thead class="table-dark">
      <tr>
- <th>Fakülte</th>
+ <th>FakÃ¼lte</th>
        <th>Hoca</th>
-          <th style="width: 100px;">Kýsým</th>
- <th style="width: 120px;">Gün</th>
+          <th style="width: 100px;">KÄ±sÄ±m</th>
+ <th style="width: 120px;">GÃ¼n</th>
 <th style="width: 100px;">Saat</th>
-         <th style="width: 120px;">Ýþlemler</th>
+         <th style="width: 120px;">Ä°ÅŸlemler</th>
       </tr>
  </thead>
        <tbody>
@@ -138,16 +138,16 @@
    <strong>@program.Hoca.AdSoyad</strong>
    </td>
   <td class="text-center">
-     <span class="badge bg-info">@program.KisimNo. Kýsým</span>
+     <span class="badge bg-info">@program.KisimNo. KÄ±sÄ±m</span>
     </td>
    <td>
       @{
     var gunBadge = program.DersGunu switch
      {
           "Pazartesi" => "badge bg-primary",
-      "Salý" => "badge bg-success",
-        "Çarþamba" => "badge bg-info",
-     "Perþembe" => "badge bg-warning text-dark",
+      "SalÄ±" => "badge bg-success",
+        "Ã‡arÅŸamba" => "badge bg-info",
+     "PerÅŸembe" => "badge bg-warning text-dark",
          "Cuma" => "badge bg-danger",
  _ => "badge bg-secondary"
       };
@@ -158,10 +158,10 @@
    <span class="badge bg-dark">@program.DersSaati. Saat</span>
   </td>
            <td class="text-center">
-  <a asp-controller="DersProgrami" asp-action="Details" asp-route-id="@program.Id" class="btn btn-sm btn-outline-info" title="Program Detayý">
+  <a asp-controller="DersProgrami" asp-action="Details" asp-route-id="@program.Id" class="btn btn-sm btn-outline-info" title="Program DetayÄ±">
    <i class="bi bi-eye"></i>
    </a>
-       <a asp-action="HocaEdit" asp-route-id="@program.HocaId" class="btn btn-sm btn-outline-primary" title="Hoca Detayý">
+       <a asp-action="HocaEdit" asp-route-id="@program.HocaId" class="btn btn-sm btn-outline-primary" title="Hoca DetayÄ±">
   <i class="bi bi-person"></i>
          </a>
      </td>
@@ -171,7 +171,7 @@
    </table>
       </div>
 
-        <!-- ÝSTATÝSTÝKLER -->
+        <!-- Ä°STATÄ°STÄ°KLER -->
  <div class="row mt-3">
             @{
        var gunler = Model.DersProgramlari.GroupBy(p => p.DersGunu);
@@ -195,7 +195,7 @@
   else
         {
       <div class="alert alert-warning">
-   <i class="bi bi-exclamation-triangle"></i> Bu ders için henüz program oluþturulmamýþ.
+   <i class="bi bi-exclamation-triangle"></i> Bu ders iÃ§in henÃ¼z program oluÅŸturulmamÄ±ÅŸ.
       <a asp-controller="DersProgrami" asp-action="BulkAdd" class="btn btn-sm btn-primary ms-2">
     <i class="bi bi-plus-circle"></i> Hemen Ekle
   </a>
@@ -204,10 +204,10 @@
         </div>
     </div>
 
-    <!-- ÝÞLEMLER -->
+    <!-- Ä°ÅžLEMLER -->
     <div class="card">
         <div class="card-header bg-dark text-white">
-<h5 class="mb-0"><i class="bi bi-gear"></i> Ýþlemler</h5>
+<h5 class="mb-0"><i class="bi bi-gear"></i> Ä°ÅŸlemler</h5>
  </div>
   <div class="card-body">
       <div class="d-flex gap-2">
@@ -216,7 +216,7 @@
       </a>
    
    <form asp-action="DersSil" asp-route-id="@Model.Ders.Id" method="post" class="d-inline"
-  onsubmit="return confirm('Bu dersi silmek istediðinize emin misiniz? Ýliþkili tüm programlar da silinecektir!')">
+  onsubmit="return confirm('Bu dersi silmek istediÄŸinize emin misiniz? Ä°liÅŸkili tÃ¼m programlar da silinecektir!')">
  @Html.AntiForgeryToken()
    <button type="submit" class="btn btn-danger">
      <i class="bi bi-trash"></i> Dersi Sil
@@ -224,7 +224,7 @@
         </form>
 
     <a asp-action="Index" class="btn btn-outline-secondary">
-   <i class="bi bi-arrow-left"></i> Ayarlara Dön
+   <i class="bi bi-arrow-left"></i> Ayarlara DÃ¶n
         </a>
        </div>
     </div>

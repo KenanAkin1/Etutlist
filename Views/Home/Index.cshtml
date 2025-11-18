@@ -1,132 +1,153 @@
-@{
- ViewData["Title"] = "Ana Sayfa";
+ï»¿@{
+    ViewData["Title"] = "Ana Sayfa";
 }
 
-<div class="container mt-4">
-    <div class="row justify-content-center">
-        <div class="col-md-10">
-    <div class="text-center mb-5">
-       <h1 class="display-4"><i class="bi bi-calendar-check"></i> Etüt ve Ders Planlama Sistemi</h1>
-  <p class="lead">Personel, etüt ve ders programý yönetim sistemi</p>
+<div class="container-fluid py-5" style="background: linear-gradient(90deg, #0b1af3 0%, /*#6dd5ed 30%*/ #a11010 100%); min-height: 85vh;">
+    <div class="container">
+        <div class="text-center text-white mb-5">
+            <h1 class="display-3 fw-bold mb-3">
+                <i class="bi bi-calendar-check-fill"></i> 
+                EtÃ¼t ve Ders Planlama Sistemi
+            </h1>
+            <p class="lead fs-4">Modern ve kapsamlÄ± personel, etÃ¼t ve ders programÄ± yÃ¶netim sistemi</p>
         </div>
 
-   <div class="row g-4">
-    <!-- Personel Yönetimi -->
-       <div class="col-md-4">
-        <div class="card h-100 shadow-sm">
-    <div class="card-body text-center">
-       <i class="bi bi-people display-1 text-primary mb-3"></i>
-   <h5 class="card-title">Personel Yönetimi</h5>
-      <p class="card-text">Personel ekleme, düzenleme ve mazeret yönetimi</p>
-   <a asp-controller="Personel" asp-action="Index" class="btn btn-primary">
-  <i class="bi bi-arrow-right-circle"></i> Personel Listesi
-   </a>
-      </div>
-   </div>
-  </div>
+        <!-- EtÃ¼t Planlama AraÃ§larÄ± -->
+        <div class="mb-5">
+            <h2 class="text-white mb-4 text-center">
+                <i class="bi bi-calendar-event"></i> EtÃ¼t Planlama AraÃ§larÄ±
+            </h2>
+            <div class="row g-4">
+                <!-- Personel YÃ¶netimi -->
+                <div class="col-md-3">
+                    <div class="card h-100 shadow-lg hover-card">
+                        <div class="card-body text-center p-4">
+                            <div class="mb-3">
+                                <i class="bi bi-people-fill display-1 text-primary"></i>
+                            </div>
+                            <h5 class="card-title fw-bold mb-3">Personel YÃ¶netimi</h5>
+                            <p class="card-text text-muted">Personel ekleme, dÃ¼zenleme ve mazeret yÃ¶netimi</p>
+                            <a asp-controller="Personel" asp-action="Index" class="btn btn-primary btn-lg w-100 mt-3">
+                                <i class="bi bi-arrow-right-circle"></i> Git
+                            </a>
+                        </div>
+                    </div>
+                </div>
 
-      <!-- Etüt Planý -->
-   <div class="col-md-4">
-   <div class="card h-100 shadow-sm">
-    <div class="card-body text-center">
-       <i class="bi bi-calendar-event display-1 text-success mb-3"></i>
-<h5 class="card-title">Etüt Planý</h5>
-        <p class="card-text">Aylýk etüt planlamasý ve yedek atama</p>
-  <a asp-controller="Etut" asp-action="Index" class="btn btn-success">
-   <i class="bi bi-arrow-right-circle"></i> Etüt Planý
-   </a>
- </div>
-  </div>
-   </div>
+                <!-- EtÃ¼t PlanÄ± -->
+                <div class="col-md-3">
+                    <div class="card h-100 shadow-lg hover-card">
+                        <div class="card-body text-center p-4">
+                            <div class="mb-3">
+                                <i class="bi bi-calendar-week-fill display-1 text-success"></i>
+                            </div>
+                            <h5 class="card-title fw-bold mb-3">EtÃ¼t PlanÄ±</h5>
+                            <p class="card-text text-muted">AylÄ±k etÃ¼t planlamasÄ± ve yedek atama iÅŸlemleri</p>
+                            <a asp-controller="Etut" asp-action="Index" class="btn btn-success btn-lg w-100 mt-3">
+                                <i class="bi bi-arrow-right-circle"></i> Git
+                            </a>
+                        </div>
+                    </div>
+                </div>
 
-      <!-- Ders Programý -->
-    <div class="col-md-4">
- <div class="card h-100 shadow-sm">
-  <div class="card-body text-center">
-   <i class="bi bi-calendar3 display-1 text-info mb-3"></i>
-   <h5 class="card-title">Ders Programý</h5>
- <p class="card-text">Haftalýk ders programý ve yönetimi</p>
-     <a asp-controller="DersProgrami" asp-action="Index" class="btn btn-info">
-    <i class="bi bi-arrow-right-circle"></i> Ders Programý
-   </a>
-       </div>
-     </div>
-   </div>
+                <!-- Mazeretler -->
+                <div class="col-md-3">
+                    <div class="card h-100 shadow-lg hover-card">
+                        <div class="card-body text-center p-4">
+                            <div class="mb-3">
+                                <i class="bi bi-file-medical-fill display-1 text-danger"></i>
+                            </div>
+                            <h5 class="card-title fw-bold mb-3">Mazeretler</h5>
+                            <p class="card-text text-muted">Personel mazeret kayÄ±tlarÄ± ve takibi</p><br>
+                            <a asp-controller="Mazeret" asp-action="Index" class="btn btn-danger btn-lg w-100 mt-3">
+                                <i class="bi bi-arrow-right-circle"></i>  Git
+                            </a>
+                        </div>
+                    </div>
+                </div>
 
-    <!-- Telafi Dersleri -->
-    <div class="col-md-4">
-   <div class="card h-100 shadow-sm">
-       <div class="card-body text-center">
-    <i class="bi bi-calendar-plus display-1 text-warning mb-3"></i>
-          <h5 class="card-title">Telafi Dersleri</h5>
-      <p class="card-text">Telafi, ikame ve birleþtirme dersleri</p>
-  <a asp-controller="TelafiDers" asp-action="Index" class="btn btn-warning">
-         <i class="bi bi-arrow-right-circle"></i> Telafi Dersleri
-   </a>
- </div>
-   </div>
-      </div>
-
-      <!-- Mazeretler -->
-   <div class="col-md-4">
-   <div class="card h-100 shadow-sm">
-  <div class="card-body text-center">
-   <i class="bi bi-file-medical display-1 text-danger mb-3"></i>
-   <h5 class="card-title">Mazeretler</h5>
-  <p class="card-text">Personel mazeret kayýtlarý</p>
-        <a asp-controller="Mazeret" asp-action="Index" class="btn btn-danger">
-         <i class="bi bi-arrow-right-circle"></i> Mazeretler
-      </a>
-    </div>
-   </div>
-     </div>
-
-<!-- Özel Günler -->
-    <div class="col-md-4">
-  <div class="card h-100 shadow-sm">
-      <div class="card-body text-center">
-   <i class="bi bi-star display-1 text-secondary mb-3"></i>
-   <h5 class="card-title">Özel Günler</h5>
-    <p class="card-text">Resmi tatil ve özel günler</p>
-  <a asp-controller="OzelGun" asp-action="Index" class="btn btn-secondary">
-    <i class="bi bi-arrow-right-circle"></i> Özel Günler
-   </a>
-       </div>
-  </div>
+                <!-- Ã–zel GÃ¼nler -->
+                <div class="col-md-3">
+                    <div class="card h-100 shadow-lg hover-card">
+                        <div class="card-body text-center p-4">
+                            <div class="mb-3">
+                                <i class="bi bi-star-fill display-1 text-warning"></i>
+                            </div>
+                            <h5 class="card-title fw-bold mb-3">Ã–zel GÃ¼nler</h5>
+                            <p class="card-text text-muted">Resmi tatiller ve Ã¶zel gÃ¼nlerin yÃ¶netimi</p>
+                            <a asp-controller="OzelGun" asp-action="Index" class="btn btn-warning btn-lg w-100 mt-3">
+                                <i class="bi bi-arrow-right-circle"></i> Git
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-  </div>
 
-      <div class="row mt-5">
-   <div class="col-md-12">
-   <div class="card">
-      <div class="card-header bg-primary text-white">
-    <h5><i class="bi bi-info-circle"></i> Sistem Bilgileri</h5>
- </div>
-         <div class="card-body">
-       <div class="row">
-    <div class="col-md-6">
-          <h6>Etüt Sistemi:</h6>
-        <ul>
- <li>Otomatik etüt planlamasý</li>
-       <li>Yedek personel atama</li>
-  <li>Etüt deðiþtirme ve takas</li>
-       <li>Aylýk raporlama</li>
-       </ul>
-    </div>
-      <div class="col-md-6">
-    <h6>Telafi Sistemi:</h6>
-     <ul>
-     <li><strong>Telafi:</strong> Bölüm dersliklerinde yapýlan telafi</li>
-   <li><strong>Ýkame:</strong> Müsait hocanýn dersliðinde yapýlan telafi</li>
-   <li><strong>Birleþtirme:</strong> Amfide birleþtirilen dersler</li>
-   <li>Otomatik öneri sistemi</li>
-  </ul>
-      </div>
-</div>
-      </div>
-       </div>
-      </div>
-   </div>
+        <!-- Ä°kame/BirleÅŸtirme/Telafi AraÃ§larÄ± -->
+        <div class="mb-4">
+            <h2 class="text-white mb-4 text-center">
+                <i class="bi bi-calendar-plus"></i> Ä°kame/BirleÅŸtirme/Telafi AraÃ§larÄ±
+            </h2>
+            <div class="row g-4 justify-content-center">
+                <!-- Ä°kame/BirleÅŸtirme/Telafi -->
+                <div class="col-md-6">
+                    <div class="card h-100 shadow-lg hover-card">
+                        <div class="card-body text-center p-4">
+                            <div class="mb-3">
+                                <i class="bi bi-calendar-check-fill display-1 text-info"></i>
+                            </div>
+                            <h5 class="card-title fw-bold mb-3">Ä°kame/BirleÅŸtirme/Telafi</h5>
+                            <p class="card-text text-muted">Telafi, ikame ve birleÅŸtirme ders yÃ¶netimi</p>
+                            <a asp-controller="TelafiDers" asp-action="Index" class="btn btn-info btn-lg w-100 mt-3">
+                                <i class="bi bi-arrow-right-circle"></i> Git
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ders ProgramÄ± -->
+                <div class="col-md-6">
+                    <div class="card h-100 shadow-lg hover-card">
+                        <div class="card-body text-center p-4">
+                            <div class="mb-3">
+                                <i class="bi bi-calendar-week display-1 text-secondary"></i>
+                            </div>
+                            <h5 class="card-title fw-bold mb-3">Ders ProgramÄ±</h5>
+                            <p class="card-text text-muted">HaftalÄ±k ders programÄ± ve yÃ¶netimi</p>
+                            <a asp-controller="DersProgrami" asp-action="Index" class="btn btn-secondary btn-lg w-100 mt-3">
+                                <i class="bi bi-arrow-right-circle"></i> Git
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+
+<style>
+    .hover-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .hover-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.2) !important;
+    }
+
+    .card {
+        border-radius: 15px;
+        border: none;
+    }
+
+    .btn {
+        border-radius: 10px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+        transform: scale(1.05);
+    }
+</style>

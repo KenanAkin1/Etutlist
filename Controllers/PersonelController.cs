@@ -1,4 +1,4 @@
-using DocumentFormat.OpenXml.Drawing.Charts;
+ï»¿using DocumentFormat.OpenXml.Drawing.Charts;
 using Etutlist.Models;
 using Etutlist.ViewModels;
 using Microsoft.AspNetCore.Mvc;
@@ -113,7 +113,7 @@ return View(personel);
    await _context.SaveChangesAsync();
 
           await tx.CommitAsync();
-         TempData["Success"] = "Personel güncellendi.";
+         TempData["Success"] = "Personel gÃ¼ncellendi.";
       return RedirectToAction(nameof(Index));
        }
      catch (DbUpdateConcurrencyException)
@@ -148,7 +148,7 @@ return View(personel);
 
        if (etut.PersonelId != personelId)
             {
-     TempData["Error"] = "Etüt bu personele ait deðil.";
+     TempData["Error"] = "EtÃ¼t bu personele ait deÄŸil.";
            return RedirectToAction("Edit", new { id = personelId });
             }
 
@@ -169,7 +169,7 @@ return View(personel);
       await _context.SaveChangesAsync();
                 await tx.CommitAsync();
 
-                TempData["Success"] = "Etüt silindi ve sayaçlar güncellendi.";
+                TempData["Success"] = "EtÃ¼t silindi ve sayaÃ§lar gÃ¼ncellendi.";
             }
             catch (Exception ex)
       {
@@ -201,7 +201,7 @@ return View(personel);
         var personel = await _context.Personeller.FindAsync(id);
             if (personel == null)
      {
-    TempData["Error"] = "Personel bulunamadý.";
+    TempData["Error"] = "Personel bulunamadÄ±.";
    return RedirectToAction(nameof(Index));
           }
 
@@ -209,7 +209,7 @@ return View(personel);
           _context.Personeller.Update(personel);
           await _context.SaveChangesAsync();
 
-        TempData["Success"] = $"{personel.Ad} pasif hale getirildi. Eski kayýtlar korundu.";
+        TempData["Success"] = $"{personel.Ad} pasif hale getirildi. Eski kayÄ±tlar korundu.";
    return RedirectToAction(nameof(Index));
         }
 
@@ -220,7 +220,7 @@ return View(personel);
           var personel = await _context.Personeller.FindAsync(id);
             if (personel == null)
           {
-     TempData["Error"] = "Personel bulunamadý.";
+     TempData["Error"] = "Personel bulunamadÄ±.";
       return RedirectToAction(nameof(Index));
         }
 

@@ -1,4 +1,4 @@
-using System.ComponentModel.DataAnnotations;
+ï»¿using System.ComponentModel.DataAnnotations;
 
 namespace Etutlist.Models
 {
@@ -15,7 +15,7 @@ namespace Etutlist.Models
       [Required]
 public int FakulteId { get; set; }
 
-        public int? KisimNo { get; set; }  // Telafi yapýlacak kýsým (opsiyonel)
+        public int? KisimNo { get; set; }  // Telafi yapÄ±lacak kÄ±sÄ±m (opsiyonel)
 
         [Required]
         [DataType(DataType.Date)]
@@ -28,7 +28,7 @@ public int FakulteId { get; set; }
         public TimeSpan BitisSaat { get; set; }
 
     [Required]
-        public string TelafiTuru { get; set; }  // Telafi, Ýkame, Birleþtirme
+        public string TelafiTuru { get; set; }  // Telafi, Ä°kame, BirleÅŸtirme
 
         [Required]
     public string TelafiNedeni { get; set; }
@@ -37,7 +37,7 @@ public int FakulteId { get; set; }
 
         public bool Onaylandi { get; set; }
   
-        public bool CiktiAlindi { get; set; } = false;  // Excel çýktýsý alýndý mý?
+        public bool CiktiAlindi { get; set; } = false;  // Excel Ã§Ä±ktÄ±sÄ± alÄ±ndÄ± mÄ±?
 
    // Navigation properties
         public DersProgrami DersProgrami { get; set; }
@@ -50,8 +50,8 @@ public int FakulteId { get; set; }
         public static readonly List<string> TumTurler = new()
         {
    "Telafi",
-    "Ýkame",
-            "Birleþtirme"
+    "Ä°kame",
+            "BirleÅŸtirme"
         };
     }
 }

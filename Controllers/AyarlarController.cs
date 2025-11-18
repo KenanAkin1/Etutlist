@@ -1,4 +1,4 @@
-using Etutlist.Models;
+ï»¿using Etutlist.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,7 +15,7 @@ namespace Etutlist.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var model = new AyarlarViewModel
+            var model = new Etutlist.ViewModels.AyarlarViewModel
             {
                 Fakulteler = await _context.Fakulteler.ToListAsync(),
                 Hocalar = await _context.Hocalar
@@ -30,28 +30,28 @@ namespace Etutlist.Controllers
             return View(model);
         }
 
-        #region Fakülte Ýþlemleri
+        #region FakÃ¼lte Ä°ÅŸlemleri
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> FakulteEkle(string fakulteAdi)
         {
             if (string.IsNullOrWhiteSpace(fakulteAdi))
             {
-                TempData["Error"] = "Fakülte adý boþ olamaz.";
+                TempData["Error"] = "FakÃ¼lte adÄ± boÅŸ olamaz.";
                 return RedirectToAction(nameof(Index));
             }
 
             var mevcutFakulte = await _context.Fakulteler.AnyAsync(f => f.Ad == fakulteAdi);
             if (mevcutFakulte)
             {
-                TempData["Error"] = "Bu fakülte zaten mevcut.";
+                TempData["Error"] = "Bu fakÃ¼lte zaten mevcut.";
                 return RedirectToAction(nameof(Index));
             }
 
             _context.Fakulteler.Add(new Fakulte { Ad = fakulteAdi });
             await _context.SaveChangesAsync();
 
-            TempData["Success"] = "Fakülte baþarýyla eklendi.";
+            TempData["Success"] = "FakÃ¼lte baÅŸarÄ±yla eklendi.";
             return RedirectToAction(nameof(Index));
         }
 
@@ -62,7 +62,7 @@ namespace Etutlist.Controllers
             var fakulte = await _context.Fakulteler.FindAsync(id);
             if (fakulte == null)
             {
-                TempData["Error"] = "Fakülte bulunamadý.";
+                TempData["Error"] = "FakÃ¼lte bulunamadÄ±.";
                 return RedirectToAction(nameof(Index));
             }
 
@@ -70,32 +70,32 @@ namespace Etutlist.Controllers
 
             if (hocaSayisi > 0)
             {
-                TempData["Error"] = $"Bu fakülteye baðlý {hocaSayisi} hoca var. Önce hocalarý silin.";
+                TempData["Error"] = $"Bu fakÃ¼lteye baÄŸlÄ± {hocaSayisi} hoca var. Ã–nce hocalarÄ± silin.";
                 return RedirectToAction(nameof(Index));
             }
 
             _context.Fakulteler.Remove(fakulte);
             await _context.SaveChangesAsync();
 
-            TempData["Success"] = "Fakülte silindi.";
+            TempData["Success"] = "FakÃ¼lte silindi.";
             return RedirectToAction(nameof(Index));
         }
         #endregion
 
-        #region Hoca Ýþlemleri
+        #region Hoca Ä°ÅŸlemleri
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> HocaEkle(int FakulteId, int[] dersIds, string rutbe, string adSoyad)
         {
             if (FakulteId == 0 || string.IsNullOrWhiteSpace(adSoyad))
             {
-                TempData["Error"] = "Fakülte ve ad soyad zorunludur.";
+                TempData["Error"] = "FakÃ¼lte ve ad soyad zorunludur.";
                 return RedirectToAction(nameof(Index));
             }
 
             if (dersIds == null || !dersIds.Any())
             {
-                TempData["Error"] = "En az bir ders seçmelisiniz.";
+                TempData["Error"] = "En az bir ders seÃ§melisiniz.";
                 return RedirectToAction(nameof(Index));
             }
 
@@ -121,7 +121,7 @@ namespace Etutlist.Controllers
             }
             await _context.SaveChangesAsync();
 
-            TempData["Success"] = $"Hoca baþarýyla eklendi. ({dersIds.Length} ders ile iliþkilendirildi)";
+            TempData["Success"] = $"Hoca baÅŸarÄ±yla eklendi. ({dersIds.Length} ders ile iliÅŸkilendirildi)";
             return RedirectToAction(nameof(Index));
         }
 
@@ -137,7 +137,7 @@ namespace Etutlist.Controllers
 
             if (hoca == null)
             {
-                TempData["Error"] = "Hoca bulunamadý.";
+                TempData["Error"] = "Hoca bulunamadÄ±.";
                 return RedirectToAction(nameof(Index));
             }
 
@@ -151,14 +151,14 @@ namespace Etutlist.Controllers
             var hoca = await _context.Hocalar.FindAsync(id);
             if (hoca == null)
             {
-                TempData["Error"] = "Hoca bulunamadý.";
+                TempData["Error"] = "Hoca bulunamadÄ±.";
                 return RedirectToAction(nameof(Index));
             }
 
             var dersSayisi = await _context.DersProgrami.CountAsync(d => d.HocaId == id);
             if (dersSayisi > 0)
             {
-                TempData["Error"] = $"Bu hocanýn {dersSayisi} dersi var. Önce dersleri silin.";
+                TempData["Error"] = $"Bu hocanÄ±n {dersSayisi} dersi var. Ã–nce dersleri silin.";
                 return RedirectToAction(nameof(Index));
             }
 
@@ -176,14 +176,14 @@ namespace Etutlist.Controllers
             var hoca = await _context.Hocalar.FindAsync(id);
             if (hoca == null)
             {
-                TempData["Error"] = "Hoca bulunamadý.";
+                TempData["Error"] = "Hoca bulunamadÄ±.";
                 return RedirectToAction(nameof(Index));
             }
 
             hoca.AktifMi = !hoca.AktifMi;
             await _context.SaveChangesAsync();
 
-            TempData["Success"] = $"Hoca {(hoca.AktifMi ? "aktif" : "pasif")} yapýldý.";
+            TempData["Success"] = $"Hoca {(hoca.AktifMi ? "aktif" : "pasif")} yapÄ±ldÄ±.";
             return RedirectToAction(nameof(Index));
         }
 
@@ -194,26 +194,26 @@ namespace Etutlist.Controllers
             var ders = await _context.DersProgrami.FindAsync(dersId);
             if (ders == null)
             {
-                TempData["Error"] = "Ders bulunamadý.";
+                TempData["Error"] = "Ders bulunamadÄ±.";
                 return RedirectToAction(nameof(HocaEdit), new { id = hocaId });
             }
 
             _context.DersProgrami.Remove(ders);
             await _context.SaveChangesAsync();
 
-            TempData["Success"] = "Ders baþarýyla silindi.";
+            TempData["Success"] = "Ders baÅŸarÄ±yla silindi.";
             return RedirectToAction(nameof(HocaEdit), new { id = hocaId });
         }
         #endregion
 
-        #region Ders Ýþlemleri
+        #region Ders Ä°ÅŸlemleri
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DersEkle(string dersAdi)
         {
             if (string.IsNullOrWhiteSpace(dersAdi))
             {
-                TempData["Error"] = "Ders adý zorunludur.";
+                TempData["Error"] = "Ders adÄ± zorunludur.";
                 return RedirectToAction(nameof(Index));
             }
 
@@ -232,7 +232,7 @@ namespace Etutlist.Controllers
             _context.Dersler.Add(ders);
             await _context.SaveChangesAsync();
 
-            TempData["Success"] = "Ders baþarýyla eklendi.";
+            TempData["Success"] = "Ders baÅŸarÄ±yla eklendi.";
             return RedirectToAction(nameof(Index));
         }
 
@@ -243,14 +243,14 @@ namespace Etutlist.Controllers
             var ders = await _context.Dersler.FindAsync(id);
             if (ders == null)
             {
-                TempData["Error"] = "Ders bulunamadý.";
+                TempData["Error"] = "Ders bulunamadÄ±.";
                 return RedirectToAction(nameof(Index));
             }
 
             var programSayisi = await _context.DersProgrami.CountAsync(d => d.DersId == id);
             if (programSayisi > 0)
             {
-                TempData["Error"] = $"Bu ders {programSayisi} ders programýnda kullanýlýyor. Önce ders programlarýný silin.";
+                TempData["Error"] = $"Bu ders {programSayisi} ders programÄ±nda kullanÄ±lÄ±yor. Ã–nce ders programlarÄ±nÄ± silin.";
                 return RedirectToAction(nameof(Index));
             }
 
@@ -267,7 +267,7 @@ namespace Etutlist.Controllers
             var ders = await _context.Dersler.FirstOrDefaultAsync(d => d.Id == id);
             if (ders == null)
             {
-                TempData["Error"] = "Ders bulunamadý.";
+                TempData["Error"] = "Ders bulunamadÄ±.";
                 return RedirectToAction(nameof(Index));
             }
 
@@ -297,23 +297,22 @@ namespace Etutlist.Controllers
         }
         #endregion
 
-        #region Telafi Ayarlarý
+        #region Telafi AyarlarÄ±
 
         [HttpGet]
         public async Task<IActionResult> TelafiAyarlari()
         {
-            // Navigation property'leri yükle
             var ayarlar = await _context.TaburTelafiAyarlari
                 .Include(t => t.Tabur)
                     .ThenInclude(tab => tab.Fakulte)
                 .ToListAsync();
 
-            // Taburlarý yükle
             ViewBag.Taburlar = await _context.Taburlar
                 .Include(t => t.Fakulte)
                 .ToListAsync();
             
-            ViewBag.Gunler = new List<string> { "Pazartesi", "Salý", "Çarþamba", "Perþembe", "Cuma" };
+            ViewBag.Fakulteler = await _context.Fakulteler.ToListAsync();
+            ViewBag.Gunler = new List<string> { "Pazartesi", "SalÄ±", "Ã‡arÅŸamba", "PerÅŸembe", "Cuma" };
             ViewBag.Saatler = Enumerable.Range(1, 9).ToList();
 
             return View(ayarlar);
@@ -321,89 +320,107 @@ namespace Etutlist.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> TelafiAyariEkle(TaburTelafiAyarlari ayar)
+        public async Task<IActionResult> TaburEkle(int FakulteId, string TaburAdi, int MinKisimNo, int MaxKisimNo)
         {
-            if (ayar.TaburId == 0)
+            if (FakulteId == 0 || string.IsNullOrWhiteSpace(TaburAdi))
             {
-                TempData["Error"] = "Tabur seçmelisiniz.";
+                TempData["Error"] = "FakÃ¼lte ve tabur adÄ± zorunludur.";
                 return RedirectToAction(nameof(TelafiAyarlari));
             }
 
-            // Ayný tabur için ayný günde ayar var mý kontrol et
-            var mevcutAyar = await _context.TaburTelafiAyarlari
-                .AnyAsync(f => f.TaburId == ayar.TaburId && f.TelafiYapilamayacakGun == ayar.TelafiYapilamayacakGun);
-
-            if (mevcutAyar)
+            if (MinKisimNo <= 0 || MaxKisimNo <= 0)
             {
-                TempData["Error"] = "Bu tabur için bu gün için ayar zaten mevcut.";
+                TempData["Error"] = "KÄ±sÄ±m numaralarÄ± 0'dan bÃ¼yÃ¼k olmalÄ±dÄ±r.";
                 return RedirectToAction(nameof(TelafiAyarlari));
             }
 
-            // TelafiMaxBitisSaati'yi set et (default 9)
-            ayar.TelafiMaxBitisSaati = 9;
+            if (MinKisimNo > MaxKisimNo)
+            {
+                TempData["Error"] = "Min KÄ±sÄ±m No, Max KÄ±sÄ±m No'dan bÃ¼yÃ¼k olamaz.";
+                return RedirectToAction(nameof(TelafiAyarlari));
+            }
 
-            _context.TaburTelafiAyarlari.Add(ayar);
+            var tabur = new Tabur
+            {
+                FakulteId = FakulteId,
+                TaburAdi = TaburAdi,
+                MinKisimNo = MinKisimNo,
+                MaxKisimNo = MaxKisimNo
+            };
+
+            _context.Taburlar.Add(tabur);
             await _context.SaveChangesAsync();
 
-            TempData["Success"] = "Telafi ayarý baþarýyla eklendi.";
+            TempData["Success"] = $"Tabur baÅŸarÄ±yla eklendi: {TaburAdi} (KÄ±sÄ±m {MinKisimNo}-{MaxKisimNo})";
             return RedirectToAction(nameof(TelafiAyarlari));
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> TelafiAyariDuzenle(int id, TaburTelafiAyarlari ayar)
+        public async Task<IActionResult> TaburSil(int id)
         {
-            if (id != ayar.Id)
+            var tabur = await _context.Taburlar.FindAsync(id);
+            if (tabur == null)
             {
-                TempData["Error"] = "Geçersiz iþlem.";
+                TempData["Error"] = "Tabur bulunamadÄ±.";
                 return RedirectToAction(nameof(TelafiAyarlari));
             }
 
-            var mevcutAyar = await _context.TaburTelafiAyarlari.FindAsync(id);
-            if (mevcutAyar == null)
-            {
-                TempData["Error"] = "Ayar bulunamadý.";
-                return RedirectToAction(nameof(TelafiAyarlari));
-            }
-
-            mevcutAyar.TelafiYapilamayacakGun = ayar.TelafiYapilamayacakGun;
-            mevcutAyar.TelafiBaslamaSaati = ayar.TelafiBaslamaSaati;
-            mevcutAyar.TelafiYapilamayacakDersSaatleri = ayar.TelafiYapilamayacakDersSaatleri;
-
+            _context.Taburlar.Remove(tabur);
             await _context.SaveChangesAsync();
 
-            TempData["Success"] = "Telafi ayarý baþarýyla güncellendi.";
+            TempData["Success"] = "Tabur silindi.";
             return RedirectToAction(nameof(TelafiAyarlari));
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> TelafiAyariSil(int id)
+        public async Task<IActionResult> TelafiAyarlariKaydet(int TaburId, List<GunAyari> Gunler)
         {
-            var ayar = await _context.TaburTelafiAyarlari.FindAsync(id);
-            if (ayar == null)
+            try
             {
-                TempData["Error"] = "Ayar bulunamadý.";
-                return RedirectToAction(nameof(TelafiAyarlari));
+                var mevcutAyarlar = await _context.TaburTelafiAyarlari
+                    .Where(t => t.TaburId == TaburId)
+                    .ToListAsync();
+                _context.TaburTelafiAyarlari.RemoveRange(mevcutAyarlar);
+
+                foreach (var gun in Gunler)
+                {
+                    if (!gun.TelafiYapilmaz && gun.BaslamaSaati > 0)
+                    {
+                        var ayar = new TaburTelafiAyarlari
+                        {
+                            TaburId = TaburId,
+                            TelafiYapilacakGun = gun.Gun,
+                            TelafiBaslamaSaati = gun.BaslamaSaati,
+                            TelafiMaxBitisSaati = 9,
+                            TelafiYapilamayacakDersSaatleri = gun.AtlanacakSaatler
+                        };
+                        _context.TaburTelafiAyarlari.Add(ayar);
+                    }
+                }
+
+                await _context.SaveChangesAsync();
+                TempData["Success"] = "Telafi ayarlarÄ± baÅŸarÄ±yla kaydedildi.";
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Hata: " + ex.Message;
             }
 
-            _context.TaburTelafiAyarlari.Remove(ayar);
-            await _context.SaveChangesAsync();
-
-            TempData["Success"] = "Telafi ayarý silindi.";
             return RedirectToAction(nameof(TelafiAyarlari));
         }
 
         #endregion
 
-        #region Tehlikeli Ýþlemler
+        #region Tehlikeli Ä°ÅŸlemler
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> TumunuSil(string onay)
         {
             if (onay != "TUMU")
             {
-                TempData["Error"] = "Onay kodu yanlýþ! Lütfen 'TUMU' yazýn.";
+                TempData["Error"] = "Onay kodu yanlÄ±ÅŸ! LÃ¼tfen 'TUMU' yazÄ±n.";
                 return RedirectToAction(nameof(Index));
             }
 
@@ -426,7 +443,7 @@ namespace Etutlist.Controllers
 
                 await _context.SaveChangesAsync();
 
-                TempData["Success"] = $"TÜMÜ SÝLÝNDÝ! {telafiDersler.Count} telafi dersi, {dersProgramlari.Count} ders programý, {hocalar.Count} hoca ve {dersler.Count} ders silindi.";
+                TempData["Success"] = $"TÃœMÃœ SÄ°LÄ°NDÄ°! {telafiDersler.Count} telafi dersi, {dersProgramlari.Count} ders programÄ±, {hocalar.Count} hoca ve {dersler.Count} ders silindi.";
             }
             catch (Exception ex)
             {
@@ -436,12 +453,5 @@ namespace Etutlist.Controllers
             return RedirectToAction(nameof(Index));
         }
         #endregion
-    }
-
-    public class AyarlarViewModel
-    {
-        public List<Fakulte> Fakulteler { get; set; } = new();
-        public List<Hoca> Hocalar { get; set; } = new();
-        public List<Ders> Dersler { get; set; } = new();
     }
 }

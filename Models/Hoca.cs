@@ -1,4 +1,4 @@
-namespace Etutlist.Models
+ï»¿namespace Etutlist.Models
 {
     public class Hoca
     {
@@ -11,14 +11,14 @@ namespace Etutlist.Models
   public int FakulteId { get; set; }
       public Fakulte Fakulte { get; set; }
 
-  // Ders Programındaki dersler (haftalık program)
+  // Ders ProgramÄ±ndaki dersler (haftalÄ±k program)
  public ICollection<DersProgrami> Dersler { get; set; }
    public ICollection<TelafiDers> TelafiDersler { get; set; }
 
-        // Hoca-Ders ilişkisi (hocanın verebileceği dersler)
+        // Hoca-Ders iliÅŸkisi (hocanÄ±n verebileceÄŸi dersler)
         public ICollection<HocaDers> HocaDersler { get; set; }
 
-        // Hesaplanan property - Haftalık ders yükü (toplam ders saati)
+        // Hesaplanan property - HaftalÄ±k ders yÃ¼kÃ¼ (toplam ders saati)
      public int DersYuku => Dersler?.Count ?? 0;
     }
 }

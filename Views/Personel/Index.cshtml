@@ -1,4 +1,4 @@
-@model Etutlist.ViewModels.PersonelIndexViewModel
+ï»¿@model Etutlist.ViewModels.PersonelIndexViewModel
 
 @{
     ViewData["Title"] = "Personel Listesi";
@@ -44,12 +44,12 @@
            <thead class="table-light">
             <tr>
       <th>Ad Soyad</th>
-       <th>Rütbe</th>
+       <th>RÃ¼tbe</th>
     <th class="text-center">Pazar</th>
-            <th class="text-center">Özel Gün</th>
-       <th class="text-center">Hafta Ýçi</th>
+            <th class="text-center">Ã–zel GÃ¼n</th>
+       <th class="text-center">Hafta Ä°Ã§i</th>
         <th class="text-center">Yedek</th>
-               <th class="text-center">Ýþlemler</th>
+               <th class="text-center">Ä°ÅŸlemler</th>
    </tr>
             </thead>
        <tbody>
@@ -73,7 +73,7 @@
         <td class="text-center">
        <div class="btn-group btn-group-sm" role="group">
        <a asp-action="Edit" asp-route-id="@p.Id" 
-     class="btn btn-warning" title="Düzenle">
+     class="btn btn-warning" title="DÃ¼zenle">
         <i class="bi bi-pencil-fill"></i>
         </a>
         <a asp-action="Delete" asp-route-id="@p.Id" 
@@ -94,7 +94,7 @@
           else
             {
         <div class="alert alert-info mb-0">
-     <i class="bi bi-info-circle"></i> Aktif personel bulunamadý.
+     <i class="bi bi-info-circle"></i> Aktif personel bulunamadÄ±.
            </div>
         }
         </div>
@@ -115,8 +115,8 @@
        <thead class="table-light">
        <tr>
                <th>Ad Soyad</th>
-   <th>Rütbe</th>
-        <th class="text-center">Ýþlemler</th>
+   <th>RÃ¼tbe</th>
+        <th class="text-center">Ä°ÅŸlemler</th>
 </tr>
               </thead>
         <tbody>

@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+ï»¿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Etutlist.Models;
 
@@ -19,11 +19,11 @@ namespace Etutlist.Configurations
                .IsRequired()
     .HasMaxLength(20);
 
-// ? Personel silinince NULL olsun (CASCADE DELETE DEÐÝL!)
+// ? Personel silinince NULL olsun (CASCADE DELETE DEÄžÄ°L!)
             builder.HasOne(e => e.Personel)
   .WithMany(p => p.Etutler)
           .HasForeignKey(e => e.PersonelId)
-        .OnDelete(DeleteBehavior.SetNull); // ? ÖNEMLÝ!
+        .OnDelete(DeleteBehavior.SetNull); // ? Ã–NEMLÄ°!
 
  // ? Yedek alanlar (opsiyonel)
       builder.Property(e => e.PersonelAd)
