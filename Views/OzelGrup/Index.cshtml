@@ -1,0 +1,123 @@
+@model List<Etutlist.Models.OzelGrup>
+
+@{
+    ViewData["Title"] = "Özel Gruplar";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>
+                    <i class="bi bi-people-fill text-primary"></i> Özel Gruplar
+                </h2>
+                <div>
+                    <a asp-action="Create" class="btn btn-success btn-lg">
+                        <i class="bi bi-plus-circle"></i> Yeni Grup Oluþtur
+                    </a>
+                    <a asp-controller="Personel" asp-action="Index" class="btn btn-secondary btn-lg">
+                        <i class="bi bi-arrow-left"></i> Personel Listesi
+                    </a>
+                </div>
+            </div>
+
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show">
+                    <i class="bi bi-check-circle"></i> @TempData["Success"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show">
+                    <i class="bi bi-exclamation-triangle"></i> @TempData["Error"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle"></i>
+                <strong>Özel Gruplar Nedir?</strong><br/>
+                Belirli personelleri grup olarak tanýmlayabilir ve etüt planlamasýnda bu kiþilerin ayný günde görevlendirilmesini saðlayabilirsiniz.
+                Gruplar 2-4 kiþi arasýnda olabilir.
+            </div>
+
+            @if (Model.Any())
+            {
+                <div class="row">
+                    @foreach (var grup in Model)
+                    {
+                        var badgeClass = grup.AktifMi ? "bg-success" : "bg-secondary";
+                        var cardBorder = grup.AktifMi ? "border-success" : "border-secondary";
+
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="card h-100 shadow-sm @cardBorder">
+                                <div class="card-header @badgeClass text-white d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0">
+                                        <i class="bi bi-people"></i> @grup.GrupAdi
+                                    </h5>
+                                    <span class="badge bg-light text-dark">@grup.Uyeler.Count kiþi</span>
+                                </div>
+                                <div class="card-body">
+                                    @if (!string.IsNullOrEmpty(grup.Aciklama))
+                                    {
+                                        <p class="text-muted mb-3">
+                                            <i class="bi bi-card-text"></i> @grup.Aciklama
+                                        </p>
+                                    }
+
+                                    <h6 class="mb-2"><i class="bi bi-person-lines-fill"></i> Grup Üyeleri:</h6>
+                                    <ul class="list-group list-group-flush">
+                                        @foreach (var uye in grup.Uyeler.OrderBy(u => u.Personel.Ad))
+                                        {
+                                            <li class="list-group-item d-flex align-items-center">
+                                                <i class="bi bi-person-fill text-primary me-2"></i>
+                                                <span class="badge bg-secondary me-2">@uye.Personel.Rutbe</span>
+                                                <strong>@uye.Personel.Ad</strong>
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                                <div class="card-footer">
+                                    <div class="btn-group w-100" role="group">
+                                        <a asp-action="Edit" asp-route-id="@grup.Id" 
+                                           class="btn btn-sm btn-primary">
+                                            <i class="bi bi-pencil"></i> Düzenle
+                                        </a>
+                                        <form asp-action="ToggleAktif" method="post" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@grup.Id" />
+                                            <button type="submit" class="btn btn-sm btn-warning">
+                                                <i class="bi bi-toggle-@(grup.AktifMi ? "on" : "off")"></i> @(grup.AktifMi ? "Pasif" : "Aktif") Yap
+                                            </button>
+                                        </form>
+                                        <form asp-action="Delete" method="post" class="d-inline"
+                                              onsubmit="return confirm('?? @grup.GrupAdi silinecek. Emin misiniz?');">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@grup.Id" />
+                                            <button type="submit" class="btn btn-sm btn-danger">
+                                                <i class="bi bi-trash"></i> Sil
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info text-center py-5">
+                    <i class="bi bi-info-circle display-1 text-muted mb-3"></i>
+                    <h4>Henüz özel grup oluþturulmamýþ.</h4>
+                    <p class="text-muted mb-4">Birlikte etüde çýkacak personelleri gruplandýrabilirsiniz.</p>
+                    <a asp-action="Create" class="btn btn-success btn-lg">
+                        <i class="bi bi-plus-circle"></i> Ýlk Grubu Oluþtur
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>

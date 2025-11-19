@@ -1,0 +1,110 @@
+@model Etutlist.Models.OzelGrup
+
+@{
+    ViewData["Title"] = "Grup Düzenle";
+    var personeller = ViewBag.AktifPersoneller as List<Etutlist.Models.Personel>;
+    var seciliIds = Model.Uyeler.Select(u => u.PersonelId).ToList();
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">
+                        <i class="bi bi-pencil-square"></i> Grup Düzenle: @Model.GrupAdi
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Edit" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@Model.Id" />
+
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="bi bi-tag"></i> Grup Adý <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" name="grupAdi" value="@Model.GrupAdi" 
+                                   class="form-control form-control-lg" required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="bi bi-card-text"></i> Açýklama
+                            </label>
+                            <textarea name="aciklama" class="form-control" rows="2">@Model.Aciklama</textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" name="aktifMi" 
+                                       id="aktifMi" @(Model.AktifMi ? "checked" : "")>
+                                <label class="form-check-label" for="aktifMi">
+                                    <i class="bi bi-toggle-on"></i> Grup Aktif
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="bi bi-people"></i> Grup Üyeleri <span class="text-danger">*</span>
+                                <small class="text-muted">(2-4 kiþi seçin)</small>
+                            </label>
+                            
+                            <div class="form-control" style="height: auto; max-height: 300px; overflow-y: auto;">
+                                @if (personeller != null && personeller.Any())
+                                {
+                                    @foreach (var p in personeller)
+                                    {
+                                        var isChecked = seciliIds.Contains(p.Id);
+                                        <div class="form-check">
+                                            <input class="form-check-input personel-checkbox" type="checkbox" 
+                                                   name="seciliPersoneller" value="@p.Id" id="personel_@p.Id"
+                                                   @(isChecked ? "checked" : "")>
+                                            <label class="form-check-label" for="personel_@p.Id">
+                                                <span class="badge bg-secondary">@p.Rutbe</span>
+                                                <strong>@p.Ad</strong>
+                                            </label>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                            <small class="text-muted">
+                                <i class="bi bi-check-circle"></i> Seçili: <strong id="secimSayisi">0</strong> kiþi
+                            </small>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-between mt-4">
+                            <a asp-action="Index" class="btn btn-secondary btn-lg">
+                                <i class="bi bi-arrow-left"></i> Geri
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg" id="kaydetBtn">
+                                <i class="bi bi-check-circle"></i> Güncelle
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            function updateSecimSayisi() {
+                var secimSayisi = $('.personel-checkbox:checked').length;
+                $('#secimSayisi').text(secimSayisi);
+                
+                if (secimSayisi >= 2 && secimSayisi <= 4) {
+                    $('#kaydetBtn').prop('disabled', false).removeClass('btn-secondary').addClass('btn-primary');
+                } else {
+                    $('#kaydetBtn').prop('disabled', true).removeClass('btn-primary').addClass('btn-secondary');
+                }
+            }
+            
+            $('.personel-checkbox').on('change', updateSecimSayisi);
+            updateSecimSayisi();
+        });
+    </script>
+}

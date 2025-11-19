@@ -1,4 +1,4 @@
-ï»¿using Etutlist.Configurations;
+using Etutlist.Configurations;
 using Microsoft.EntityFrameworkCore;
 
 namespace Etutlist.Models
@@ -18,6 +18,9 @@ namespace Etutlist.Models
         public DbSet<AylikYedekListesi> AylikYedekListeleri { get; set; }
         public DbSet<Tabur> Taburlar { get; set; }
         public DbSet<TaburTelafiAyarlari> TaburTelafiAyarlari { get; set; }
+        // ? Özel Grup Yönetimi
+        public DbSet<OzelGrup> OzelGruplar { get; set; }
+        public DbSet<OzelGrupUyesi> OzelGrupUyeleri { get; set; }
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
@@ -45,6 +48,27 @@ namespace Etutlist.Models
 
             modelBuilder.Entity<Tabur>().HasOne(t => t.Fakulte).WithMany().HasForeignKey(t => t.FakulteId).OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<TaburTelafiAyarlari>().HasOne(t => t.Tabur).WithMany(tab => tab.TelafiAyarlari).HasForeignKey(t => t.TaburId).OnDelete(DeleteBehavior.Cascade);
+
+            // ? Özel Grup Ýliþkileri
+            modelBuilder.Entity<OzelGrupUyesi>()
+                .HasKey(u => u.Id);
+            
+            modelBuilder.Entity<OzelGrupUyesi>()
+                .HasOne(u => u.OzelGrup)
+                .WithMany(g => g.Uyeler)
+                .HasForeignKey(u => u.OzelGrupId)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            modelBuilder.Entity<OzelGrupUyesi>()
+                .HasOne(u => u.Personel)
+                .WithMany()
+                .HasForeignKey(u => u.PersonelId)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            // Bir personel bir grupta sadece bir kez olabilir
+            modelBuilder.Entity<OzelGrupUyesi>()
+                .HasIndex(u => new { u.OzelGrupId, u.PersonelId })
+                .IsUnique();
         }
     }
 }

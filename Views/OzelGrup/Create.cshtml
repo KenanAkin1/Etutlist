@@ -1,0 +1,107 @@
+@{
+    ViewData["Title"] = "Özel Grup Oluþtur";
+    var personeller = ViewBag.AktifPersoneller as List<Etutlist.Models.Personel>;
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h3 class="mb-0">
+                        <i class="bi bi-plus-circle"></i> Yeni Özel Grup Oluþtur
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i>
+                        <strong>Not:</strong> Grup 2-4 kiþi arasýnda olmalýdýr. Seçtiðiniz personeller etüt planlamasýnda ayný günde görevlendirilecektir.
+                    </div>
+
+                    <form asp-action="Create" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="bi bi-tag"></i> Grup Adý <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" name="grupAdi" class="form-control form-control-lg" 
+                                   placeholder="Örn: Özel Dörtlü, A Grubu" required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="bi bi-card-text"></i> Açýklama (Opsiyonel)
+                            </label>
+                            <textarea name="aciklama" class="form-control" rows="2" 
+                                      placeholder="Örn: Komutan grubu, Öðretim üyeleri"></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="bi bi-people"></i> Grup Üyeleri <span class="text-danger">*</span>
+                                <small class="text-muted">(2-4 kiþi seçin)</small>
+                            </label>
+                            
+                            <div class="form-control" style="height: auto; max-height: 300px; overflow-y: auto;">
+                                @if (personeller != null && personeller.Any())
+                                {
+                                    @foreach (var p in personeller)
+                                    {
+                                        <div class="form-check">
+                                            <input class="form-check-input personel-checkbox" type="checkbox" 
+                                                   name="seciliPersoneller" value="@p.Id" id="personel_@p.Id">
+                                            <label class="form-check-label" for="personel_@p.Id">
+                                                <span class="badge bg-secondary">@p.Rutbe</span>
+                                                <strong>@p.Ad</strong>
+                                            </label>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="alert alert-warning mb-0">
+                                        <i class="bi bi-exclamation-triangle"></i> Aktif personel bulunamadý!
+                                    </div>
+                                }
+                            </div>
+                            <small class="text-muted">
+                                <i class="bi bi-check-circle"></i> Seçili: <strong id="secimSayisi">0</strong> kiþi
+                            </small>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-between mt-4">
+                            <a asp-action="Index" class="btn btn-secondary btn-lg">
+                                <i class="bi bi-arrow-left"></i> Geri
+                            </a>
+                            <button type="submit" class="btn btn-success btn-lg" id="kaydetBtn">
+                                <i class="bi bi-check-circle"></i> Kaydet
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            function updateSecimSayisi() {
+                var secimSayisi = $('.personel-checkbox:checked').length;
+                $('#secimSayisi').text(secimSayisi);
+                
+                // 2-4 kiþi arasýnda olmalý
+                if (secimSayisi >= 2 && secimSayisi <= 4) {
+                    $('#kaydetBtn').prop('disabled', false).removeClass('btn-secondary').addClass('btn-success');
+                } else {
+                    $('#kaydetBtn').prop('disabled', true).removeClass('btn-success').addClass('btn-secondary');
+                }
+            }
+            
+            $('.personel-checkbox').on('change', updateSecimSayisi);
+            updateSecimSayisi();
+        });
+    </script>
+}
