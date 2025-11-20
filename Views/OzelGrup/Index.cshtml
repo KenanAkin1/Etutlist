@@ -67,6 +67,12 @@
                                         </p>
                                     }
 
+                                    <div class="mb-3">
+                                        <span class="badge @(grup.OrtalamaKullan ? "bg-info" : "bg-warning text-dark")">
+                                            <i class="bi bi-gear"></i> @(grup.OrtalamaKullan ? "Ortalamaya Göre" : "En Yüksek Tutana Göre")
+                                        </span>
+                                    </div>
+
                                     <h6 class="mb-2"><i class="bi bi-person-lines-fill"></i> Grup Üyeleri:</h6>
                                     <ul class="list-group list-group-flush">
                                         @foreach (var uye in grup.Uyeler.OrderBy(u => u.Personel.Ad))

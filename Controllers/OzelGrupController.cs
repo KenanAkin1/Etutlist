@@ -39,7 +39,7 @@ namespace Etutlist.Controllers
         // POST: OzelGrup/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(string grupAdi, string? aciklama, List<int> seciliPersoneller)
+        public async Task<IActionResult> Create(string grupAdi, string? aciklama, bool ortalamaKullan, List<int> seciliPersoneller)
         {
             try
             {
@@ -59,7 +59,8 @@ namespace Etutlist.Controllers
                 {
                     GrupAdi = grupAdi,
                     Aciklama = aciklama,
-                    AktifMi = true
+                    AktifMi = true,
+                    OrtalamaKullan = ortalamaKullan
                 };
 
                 _context.OzelGruplar.Add(grup);
@@ -111,7 +112,7 @@ namespace Etutlist.Controllers
         // POST: OzelGrup/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, string grupAdi, string? aciklama, bool aktifMi, List<int> seciliPersoneller)
+        public async Task<IActionResult> Edit(int id, string grupAdi, string? aciklama, bool aktifMi, bool ortalamaKullan, List<int> seciliPersoneller)
         {
             try
             {
@@ -140,6 +141,7 @@ namespace Etutlist.Controllers
                 grup.GrupAdi = grupAdi;
                 grup.Aciklama = aciklama;
                 grup.AktifMi = aktifMi;
+                grup.OrtalamaKullan = ortalamaKullan;
 
                 // Eski üyeleri sil
                 _context.OzelGrupUyeleri.RemoveRange(grup.Uyeler);

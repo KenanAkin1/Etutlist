@@ -362,5 +362,166 @@ namespace Etutlist.Controllers
             return RedirectToAction(nameof(MonthlyPlan), new { yil = ny, ay = nm });
         }
 
+        // Yedek listesini Excel'e aktar (mazeretsiz günlerle birlikte)
+        public async Task<IActionResult> ExportYedekListToExcel(int? yil, int? ay)
+        {
+            var now = DateTime.Now;
+            int rawY = yil ?? now.Year;
+            int rawM = ay ?? now.Month;
+            var (useYil, useAy) = NormalizeYearMonth(rawY, rawM);
+            var startDate = new DateTime(useYil, useAy, 1);
+            var endDate = startDate.AddMonths(1);
+
+            var yedekler = await _svc.PeekMonthlyYedekList(startDate, 15);
+
+            using var wb = new XLWorkbook();
+            var ws = wb.Worksheets.Add("Yedek Listesi");
+
+            // Başlık
+            string ayAdi = System.Globalization.CultureInfo.GetCultureInfo("tr-TR").DateTimeFormat.GetMonthName(useAy).ToUpper();
+            ws.Cell(1, 1).Value = $"{ayAdi} AYI YEDEK LİSTESİ";
+            ws.Range(1, 1, 1, 6).Merge();
+            ws.Cell(1, 1).Style.Font.FontSize = 14;
+            ws.Cell(1, 1).Style.Font.Bold = true;
+            ws.Cell(1, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            ws.Cell(1, 1).Style.Fill.BackgroundColor = XLColor.LightBlue;
+            ws.Row(1).Height = 30;
+
+            // Sütun başlıkları
+            ws.Cell(2, 1).Value = "SIRA";
+            ws.Cell(2, 2).Value = "RÜTBE";
+            ws.Cell(2, 3).Value = "AD SOYAD";
+            ws.Cell(2, 4).Value = "HAFTA İÇİ";
+            ws.Cell(2, 5).Value = "PAZAR";
+            ws.Cell(2, 6).Value = "ÖZEL GÜN";
+            ws.Cell(2, 7).Value = "MÜSAİT GÜNLER";
+
+            var headerRange = ws.Range(2, 1, 2, 7);
+            headerRange.Style.Font.Bold = true;
+            headerRange.Style.Fill.BackgroundColor = XLColor.LightGray;
+            headerRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            headerRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+            headerRange.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+
+            // Veri satırları
+            int row = 3;
+            int sira = 1;
+            foreach (var yedek in yedekler)
+            {
+                // Müsait günleri aralık olarak hesapla
+                var musaitGunAraliklari = new List<string>();
+                DateTime? araliklarBaslangic = null;
+                DateTime? araliklarSon = null;
+                
+                for (var d = startDate; d < endDate; d = d.AddDays(1))
+                {
+                    // Sadece etüt günlerini kontrol et
+                    bool etutGunu = new[] { DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Sunday }
+                        .Contains(d.DayOfWeek);
+                    
+                    if (etutGunu)
+                    {
+                        // Mazeret var mı kontrol et
+                        bool mazeretVar = yedek.Mazeretler?.Any(m => 
+                            m.Baslangic.Date <= d.Date && m.Bitis.Date >= d.Date) ?? false;
+                        
+                        if (!mazeretVar)
+                        {
+                            // Müsait gün
+                            if (araliklarBaslangic == null)
+                            {
+                                araliklarBaslangic = d;
+                                araliklarSon = d;
+                            }
+                            else
+                            {
+                                araliklarSon = d;
+                            }
+                        }
+                        else
+                        {
+                            // Mazeretli gün - önceki aralığı kapat
+                            if (araliklarBaslangic != null)
+                            {
+                                if (araliklarBaslangic == araliklarSon)
+                                {
+                                    musaitGunAraliklari.Add(araliklarBaslangic.Value.ToString("dd MMMM", 
+                                        new System.Globalization.CultureInfo("tr-TR")));
+                                }
+                                else
+                                {
+                                    musaitGunAraliklari.Add($"{araliklarBaslangic.Value.ToString("dd", 
+                                        new System.Globalization.CultureInfo("tr-TR"))}-{araliklarSon.Value.ToString("dd MMMM", 
+                                        new System.Globalization.CultureInfo("tr-TR"))}");
+                                }
+                                araliklarBaslangic = null;
+                                araliklarSon = null;
+                            }
+                        }
+                    }
+                }
+                
+                // Son aralığı kapat (ay sonunda)
+                if (araliklarBaslangic != null)
+                {
+                    if (araliklarBaslangic == araliklarSon)
+                    {
+                        musaitGunAraliklari.Add(araliklarBaslangic.Value.ToString("dd MMMM", 
+                            new System.Globalization.CultureInfo("tr-TR")));
+                    }
+                    else
+                    {
+                        musaitGunAraliklari.Add($"{araliklarBaslangic.Value.ToString("dd", 
+                            new System.Globalization.CultureInfo("tr-TR"))}-{araliklarSon.Value.ToString("dd MMMM", 
+                            new System.Globalization.CultureInfo("tr-TR"))}");
+                    }
+                }
+
+                string musaitGunlerStr = musaitGunAraliklari.Any() 
+                    ? string.Join(", ", musaitGunAraliklari) 
+                    : "Tüm ay mazeretli";
+
+                ws.Cell(row, 1).Value = sira;
+                ws.Cell(row, 2).Value = yedek.Rutbe;
+                ws.Cell(row, 3).Value = yedek.Ad;
+                ws.Cell(row, 4).Value = yedek.HaftaIciSayisi;
+                ws.Cell(row, 5).Value = yedek.PazarSayisi;
+                ws.Cell(row, 6).Value = yedek.OzelGunSayisi;
+                ws.Cell(row, 7).Value = musaitGunlerStr;
+
+                // Ortalama
+                for (int col = 1; col <= 6; col++)
+                {
+                    ws.Cell(row, col).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    ws.Cell(row, col).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                }
+                
+                // Müsait günler hücresi sol hizalı ve sarmalanmış
+                ws.Cell(row, 7).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+                ws.Cell(row, 7).Style.Alignment.WrapText = true;
+                ws.Cell(row, 7).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                ws.Row(row).Height = 20; // Sabit yükseklik (aralıklar daha kısa)
+
+                row++;
+                sira++;
+            }
+
+            // Kolon genişlikleri
+            ws.Column(1).Width = 8;
+            ws.Column(2).Width = 15;
+            ws.Column(3).Width = 25;
+            ws.Column(4).Width = 12;
+            ws.Column(5).Width = 10;
+            ws.Column(6).Width = 12;
+            ws.Column(7).Width = 50; // Müsait günler için geniş
+
+            // Dosyayı oluştur
+            using var ms = new MemoryStream();
+            wb.SaveAs(ms);
+            ms.Seek(0, SeekOrigin.Begin);
+            var fileName = $"Yedek_Listesi_{useYil}_{useAy:00}.xlsx";
+            return File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+        }
+
     }
 }

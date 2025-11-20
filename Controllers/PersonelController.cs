@@ -3,6 +3,8 @@ using Etutlist.Models;
 using Etutlist.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ClosedXML.Excel;
+using System.Drawing;
 
 namespace Etutlist.Controllers
 {
@@ -253,6 +255,112 @@ namespace Etutlist.Controllers
 
             TempData["Success"] = $"{personel.Ad} tekrar aktif hale getirildi.";
             return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> ExportToExcel()
+        {
+            var personeller = await _context.Personeller
+                .Where(p => p.AktifMi)
+                .OrderBy(p => p.Rutbe)
+                .ThenBy(p => p.Ad)
+                .ToListAsync();
+
+            using var workbook = new XLWorkbook();
+            var worksheet = workbook.Worksheets.Add("Personel Listesi");
+
+            // Baþlýk satýrý
+            worksheet.Cell(1, 1).Value = "S. NO";
+            worksheet.Cell(1, 2).Value = "RÜTBE";
+            worksheet.Cell(1, 3).Value = "AD SOYAD";
+            worksheet.Cell(1, 4).Value = "HAFTA ÝÇÝ";
+            worksheet.Cell(1, 5).Value = "PAZAR";
+            worksheet.Cell(1, 6).Value = "ÖZEL GÜN";
+            worksheet.Cell(1, 7).Value = "YEDEK";
+            worksheet.Cell(1, 8).Value = "TOPLAM";
+
+            // Baþlýk stili
+            var headerRange = worksheet.Range(1, 1, 1, 8);
+            headerRange.Style.Font.Bold = true;
+            headerRange.Style.Font.FontSize = 12;
+            headerRange.Style.Fill.BackgroundColor = XLColor.LightBlue;
+            headerRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            headerRange.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+            headerRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+            headerRange.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+
+            // Veri satýrlarý
+            int row = 2;
+            int siraNo = 1;
+            foreach (var personel in personeller)
+            {
+                int toplam = personel.HaftaIciSayisi + personel.PazarSayisi + personel.OzelGunSayisi;
+
+                worksheet.Cell(row, 1).Value = siraNo;
+                worksheet.Cell(row, 2).Value = personel.Rutbe;
+                worksheet.Cell(row, 3).Value = personel.Ad;
+                worksheet.Cell(row, 4).Value = personel.HaftaIciSayisi;
+                worksheet.Cell(row, 5).Value = personel.PazarSayisi;
+                worksheet.Cell(row, 6).Value = personel.OzelGunSayisi;
+                worksheet.Cell(row, 7).Value = personel.YedekSayisi;
+                worksheet.Cell(row, 8).Value = toplam;
+
+                // Sayýsal hücreleri ortala
+                for (int col = 1; col <= 8; col++)
+                {
+                    worksheet.Cell(row, col).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    worksheet.Cell(row, col).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                }
+
+                // Toplam hücresini vurgula
+                worksheet.Cell(row, 8).Style.Font.Bold = true;
+                worksheet.Cell(row, 8).Style.Fill.BackgroundColor = XLColor.LightYellow;
+
+                row++;
+                siraNo++;
+            }
+
+            // Ortalama satýrý
+            if (personeller.Any())
+            {
+                worksheet.Cell(row, 1).Value = "ORTALAMA";
+                worksheet.Cell(row, 1).Style.Font.Bold = true;
+                worksheet.Cell(row, 1).Style.Fill.BackgroundColor = XLColor.LightGreen;
+                worksheet.Range(row, 1, row, 3).Merge();
+                worksheet.Range(row, 1, row, 3).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+                worksheet.Cell(row, 4).Value = Math.Round(personeller.Average(p => (double)p.HaftaIciSayisi), 2);
+                worksheet.Cell(row, 5).Value = Math.Round(personeller.Average(p => (double)p.PazarSayisi), 2);
+                worksheet.Cell(row, 6).Value = Math.Round(personeller.Average(p => (double)p.OzelGunSayisi), 2);
+                worksheet.Cell(row, 7).Value = Math.Round(personeller.Average(p => (double)p.YedekSayisi), 2);
+                worksheet.Cell(row, 8).Value = Math.Round(personeller.Average(p => 
+                    (double)(p.HaftaIciSayisi + p.PazarSayisi + p.OzelGunSayisi)), 2);
+
+                var avgRange = worksheet.Range(row, 1, row, 8);
+                avgRange.Style.Font.Bold = true;
+                avgRange.Style.Fill.BackgroundColor = XLColor.LightGreen;
+                avgRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                avgRange.Style.Border.OutsideBorder = XLBorderStyleValues.Medium;
+            }
+
+            // Kolon geniþlikleri
+            worksheet.Column(1).Width = 8;
+            worksheet.Column(2).Width = 15;
+            worksheet.Column(3).Width = 30;
+            worksheet.Column(4).Width = 12;
+            worksheet.Column(5).Width = 10;
+            worksheet.Column(6).Width = 12;
+            worksheet.Column(7).Width = 10;
+            worksheet.Column(8).Width = 12;
+
+            // Excel dosyasýný oluþtur
+            using var stream = new MemoryStream();
+            workbook.SaveAs(stream);
+            stream.Position = 0;
+
+            var fileName = $"Personel_Listesi_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx";
+            return File(stream.ToArray(), 
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", 
+                fileName);
         }
     }
 }

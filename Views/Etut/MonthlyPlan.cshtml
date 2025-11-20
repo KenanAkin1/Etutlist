@@ -38,6 +38,10 @@ else
             <button type="submit" class="btn btn-success">Excel Olarak Dışa Aktar</button>
         </form>
 
+        <a asp-action="ExportYedekListToExcel" asp-route-yil="@Model.Yil" asp-route-ay="@Model.Ay" class="btn btn-info">
+            <i class="bi bi-file-earmark-excel-fill"></i> Yedek Listesini Dışa Aktar
+        </a>
+
         <form asp-action="GenerateYedekForMonth" method="post">
             <input type="hidden" name="yil" value="@Model.Yil" />
             <input type="hidden" name="ay" value="@Model.Ay" />

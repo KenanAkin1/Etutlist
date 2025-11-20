@@ -86,12 +86,29 @@ namespace Etutlist.Services
                 grupGunTuruOncelikleri[grupInfo.Grup.Id] = ortalamalar[0].Item1;
             }
 
-            // ? Atanmış grupları takip et
-            var atananGruplar = new HashSet<int>();
+            // ✅ Grup atama sayaçları (ayda birden fazla atama için)
+            var grupAtamaSayaci = new Dictionary<int, int>(); // GrupId -> Kaç kez atandı
+            foreach (var grup in ozelGruplar)
+            {
+                grupAtamaSayaci[grup.Id] = 0;
+            }
+            
+            // ✅ Ard arda etüt kontrolü için son etüt tarihlerini takip et
+            var sonEtutTarihleri = new Dictionary<int, DateTime>(); // PersonelId -> Son Etüt Tarihi
 
             foreach (var d in allDays)
             {
                 var adaylar = people.Where(p => !HasMazeret(p, d)).ToList();
+                
+                // ✅ ARD ARDA ETÜ KONTROLÜ: Dün etüttü tutanları çıkar
+                var dun = d.AddDays(-1);
+                var dunEtutTutanlar = sonEtutTarihleri
+                    .Where(x => x.Value.Date == dun.Date)
+                    .Select(x => x.Key)
+                    .ToHashSet();
+                
+                adaylar = adaylar.Where(p => !dunEtutTutanlar.Contains(p.Id)).ToList();
+                
                 bool gunTipiPazar = d.DayOfWeek == DayOfWeek.Sunday;
                 bool gunTipiOzel = ozelGunSet.Contains(d.Date);
 
@@ -103,38 +120,74 @@ namespace Etutlist.Services
 
                 List<Personel> secilecek = new List<Personel>();
 
-                // ✅ 1. ATANMAMIŞ GRUP VAR MI VE BU GÜN O GRUP İÇİN UYGUN MU?
+                // ✅ 1. GRUP ATAMA KONTROLÜ (Grup üyelerinin ortalamasına veya en yükseğe göre)
                 OzelGrup? atanacakGrup = null;
 
-                foreach (var grupInfo in gruplarSirali.Where(g => !atananGruplar.Contains(g.Grup.Id)))
+                // Grupları değerlendir
+                foreach (var grup in ozelGruplar)
                 {
-                    var grup = grupInfo.Grup;
-                    var uyeler = grupInfo.Uyeler;
+                    var uyeler = grup.Uyeler.Select(u => u.Personel).ToList();
                     
-                    // Bu grubun öncelikli gün türünü al
+                    // Tüm üyeler müsait mi?
+                    bool tumUyelerMusait = uyeler.All(u => adaylar.Any(a => a.Id == u.Id));
+                    if (!tumUyelerMusait || uyeler.Count < 2 || uyeler.Count > 4)
+                        continue;
+                    
+                    // Grup dışı kişilerin bu gün türündeki ortalama sayısı
+                    var grupDisiKisiler = people.Where(p => !grup.Uyeler.Any(u => u.PersonelId == p.Id)).ToList();
+                    if (!grupDisiKisiler.Any())
+                        continue;
+                        
+                    double grupDisiOrtalama = 0;
+                    if (gunTipiPazar)
+                        grupDisiOrtalama = grupDisiKisiler.Average(p => (double)p.PazarSayisi);
+                    else if (gunTipiOzel)
+                        grupDisiOrtalama = grupDisiKisiler.Average(p => (double)p.OzelGunSayisi);
+                    else
+                        grupDisiOrtalama = grupDisiKisiler.Average(p => (double)p.HaftaIciSayisi);
+                    
+                    // ✅ Grubun stratejisine göre değerlendirme
+                    double grupDegeri = 0;
+                    if (grup.OrtalamaKullan)
+                    {
+                        // Ortalamaya göre
+                        if (gunTipiPazar)
+                            grupDegeri = uyeler.Average(u => (double)u.PazarSayisi);
+                        else if (gunTipiOzel)
+                            grupDegeri = uyeler.Average(u => (double)u.OzelGunSayisi);
+                        else
+                            grupDegeri = uyeler.Average(u => (double)u.HaftaIciSayisi);
+                    }
+                    else
+                    {
+                        // En yüksek tutana göre
+                        if (gunTipiPazar)
+                            grupDegeri = uyeler.Max(u => (double)u.PazarSayisi);
+                        else if (gunTipiOzel)
+                            grupDegeri = uyeler.Max(u => (double)u.OzelGunSayisi);
+                        else
+                            grupDegeri = uyeler.Max(u => (double)u.HaftaIciSayisi);
+                    }
+                    
+                    // Grup değeri, grup dışı kişilerden fazlaysa atla
+                    // (Önce az tutanlar tutsun)
+                    if (grupDegeri > grupDisiOrtalama + 0.5)
+                        continue;
+                    
+                    // Bu grubun öncelikli gün türünü kontrol et
                     string oncelikliTur = grupGunTuruOncelikleri[grup.Id];
-                    
-                    // Bu gün o türden mi?
                     bool gunUygun = false;
                     if (oncelikliTur == "Pazar" && gunTipiPazar) gunUygun = true;
                     else if (oncelikliTur == "OzelGun" && gunTipiOzel) gunUygun = true;
                     else if (oncelikliTur == "HaftaIci" && !gunTipiPazar && !gunTipiOzel) gunUygun = true;
                     
-                    // Eğer bu gün uygun değilse ama ayın sonuna yaklaşıldıysa yine de ata
-                    int kalanGunSayisi = allDays.Count(day => day >= d);
-                    int atanmamisGrupSayisi = ozelGruplar.Count - atananGruplar.Count;
+                    // Gün uygun değilse ve grup değeri düşük değilse atla
+                    if (!gunUygun && grupDegeri >= grupDisiOrtalama)
+                        continue;
                     
-                    if (!gunUygun && kalanGunSayisi > atanmamisGrupSayisi * 2) 
-                        continue; // Hala zaman var, uygun günü bekle
-                    
-                    // Tüm üyeler müsait mi?
-                    bool tumUyelerMusait = uyeler.All(u => adaylar.Any(a => a.Id == u.Id));
-
-                    if (tumUyelerMusait && uyeler.Count >= 2 && uyeler.Count <= 4)
-                    {
-                        atanacakGrup = grup;
-                        break;
-                    }
+                    // Bu grubu seç
+                    atanacakGrup = grup;
+                    break;
                 }
 
                 // ✅ 2. GRUP ATANACAKSA
@@ -163,23 +216,29 @@ namespace Etutlist.Services
                         secilecek.AddRange(SecimKurallari(grupDisiAdaylar, d, ozelGunSet).Take(eksik));
                     }
                     
-                    atananGruplar.Add(atanacakGrup.Id);
+                    // Grup atama sayacını artır
+                    grupAtamaSayaci[atanacakGrup.Id]++;
                 }
                 // ✅ 3. GRUP YOK İSE, NORMAL MANTIKLA DEVAM ET
                 else
                 {
-                    // Henüz atanmamış grup üyelerini çıkar (onlar sadece grup halinde atanmalı)
-                    var atanmamisGrupUyeIds = ozelGruplar
-                        .Where(g => !atananGruplar.Contains(g.Id))
+                    // Tüm grupların üyelerini çıkar (onlar sadece grup halinde atanmalı)
+                    var grupUyeIds = ozelGruplar
                         .SelectMany(g => g.Uyeler.Select(u => u.PersonelId))
                         .ToHashSet();
                     
-                    var grupDisiAdaylar = adaylar.Where(a => !atanmamisGrupUyeIds.Contains(a.Id)).ToList();
+                    var grupDisiAdaylar = adaylar.Where(a => !grupUyeIds.Contains(a.Id)).ToList();
 
                     secilecek = SecimKurallari(grupDisiAdaylar, d, ozelGunSet).Take(4).ToList();
                 }
 
                 if (!secilecek.Any()) continue;
+
+                // ✅ Seçilenlerin son etüt tarihlerini güncelle
+                foreach (var personel in secilecek)
+                {
+                    sonEtutTarihleri[personel.Id] = d;
+                }
 
                 KaydetVeSayacArtir(d, secilecek, ozelGunSet);
                 await _db.SaveChangesAsync();
@@ -314,6 +373,7 @@ namespace Etutlist.Services
 
             var yedekListesi = await _db.AylikYedekListeleri
                 .Include(a => a.Personel)
+                    .ThenInclude(p => p.Mazeretler) // Mazeretleri dahil et
                 .Where(a => a.Yil == yil && a.Ay == ay)
                 .OrderBy(a => a.Sira)
                 .Select(a => a.Personel)

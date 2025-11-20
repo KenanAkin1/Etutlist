@@ -47,6 +47,25 @@
 
                         <div class="mb-3">
                             <label class="form-label">
+                                <i class="bi bi-gear"></i> Atama Stratejisi
+                            </label>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" name="ortalamaKullan" 
+                                       id="ortalamaKullan" @(Model.OrtalamaKullan ? "checked" : "")>
+                                <label class="form-check-label" for="ortalamaKullan">
+                                    <strong id="stratejiLabel">@(Model.OrtalamaKullan ? "Ortalamaya Göre Ata" : "En Yüksek Tutana Göre Ata")</strong>
+                                    <br/>
+                                    <small class="text-muted" id="stratejiAciklama">
+                                        @(Model.OrtalamaKullan 
+                                            ? "Grup üyelerinin ortalamasý, grup dýþý kiþilere göre deðerlendirilir" 
+                                            : "Gruptaki en fazla etüt tutan kiþiye göre deðerlendirilir")
+                                    </small>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">
                                 <i class="bi bi-people"></i> Grup Üyeleri <span class="text-danger">*</span>
                                 <small class="text-muted">(2-4 kiþi seçin)</small>
                             </label>
@@ -105,6 +124,17 @@
             
             $('.personel-checkbox').on('change', updateSecimSayisi);
             updateSecimSayisi();
+            
+            // Strateji switch deðiþim
+            $('#ortalamaKullan').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $('#stratejiLabel').text('Ortalamaya Göre Ata');
+                    $('#stratejiAciklama').text('Grup üyelerinin ortalamasý, grup dýþý kiþilere göre deðerlendirilir');
+                } else {
+                    $('#stratejiLabel').text('En Yüksek Tutana Göre Ata');
+                    $('#stratejiAciklama').text('Gruptaki en fazla etüt tutan kiþiye göre deðerlendirilir');
+                }
+            });
         });
     </script>
 }

@@ -7,6 +7,12 @@ namespace Etutlist.Models
         public string? Aciklama { get; set; }
         public bool AktifMi { get; set; } = true;
         
+        /// <summary>
+        /// true: Grup ortalamasýna göre ata (varsayýlan)
+        /// false: Gruptaki en fazla tutan kiþiye göre ata
+        /// </summary>
+        public bool OrtalamaKullan { get; set; } = true;
+        
         // Navigation
         public ICollection<OzelGrupUyesi> Uyeler { get; set; } = new List<OzelGrupUyesi>();
     }
