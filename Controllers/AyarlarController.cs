@@ -80,6 +80,43 @@ namespace Etutlist.Controllers
             TempData["Success"] = "Fakülte silindi.";
             return RedirectToAction(nameof(Index));
         }
+        [HttpGet]
+        public async Task<IActionResult> FakulteEdit(int id)
+        {
+            var fakulte = await _context.Fakulteler.FindAsync(id);
+            if (fakulte == null)
+            {
+                TempData["Error"] = "Fakülte bulunamadı.";
+                return RedirectToAction(nameof(Index));
+            }
+            return View(fakulte);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> FakulteEdit(int id, string ad, int[] gunlukSaatler)
+        {
+            var fakulte = await _context.Fakulteler.FindAsync(id);
+            if (fakulte == null)
+            {
+                TempData["Error"] = "Fakülte bulunamadı.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            if (string.IsNullOrWhiteSpace(ad))
+            {
+                TempData["Error"] = "Fakülte adı boş olamaz.";
+                return RedirectToAction(nameof(FakulteEdit), new { id });
+            }
+
+            // Günlük saatleri birleştirip kaydet (Örn: 7,7,6,7,4)
+            fakulte.Ad = ad;
+            fakulte.GunlukDersSaatleri = string.Join(",", gunlukSaatler);
+
+            await _context.SaveChangesAsync();
+            TempData["Success"] = "Fakülte ayarları güncellendi.";
+            return RedirectToAction(nameof(Index));
+        }
         #endregion
 
         #region Hoca İşlemleri
@@ -386,13 +423,14 @@ namespace Etutlist.Controllers
 
                 foreach (var gun in Gunler)
                 {
-                    if (!gun.TelafiYapilmaz && gun.BaslamaSaati > 0)
+                    if (gun.TelafiYapilmaz || gun.BaslamaSaati > 0)
                     {
                         var ayar = new TaburTelafiAyarlari
                         {
                             TaburId = TaburId,
                             TelafiYapilacakGun = gun.Gun,
-                            TelafiBaslamaSaati = gun.BaslamaSaati,
+                            // Eğer yapılmaz seçildiyse saati 0 yap, değilse seçilen saati al
+                            TelafiBaslamaSaati = gun.TelafiYapilmaz ? 0 : gun.BaslamaSaati,
                             TelafiMaxBitisSaati = 9,
                             TelafiYapilamayacakDersSaatleri = gun.AtlanacakSaatler
                         };

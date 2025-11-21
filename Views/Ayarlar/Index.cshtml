@@ -7,368 +7,367 @@
 <div class="container-fluid mt-4">
     <div class="row mb-3">
         <div class="col-md-9">
-  <h2><i class="bi bi-gear"></i> Sistem Ayarları</h2>
-   <p class="text-muted">Fakülte, Ders ve Hoca yönetimi</p>
+            <h2><i class="bi bi-gear"></i> Sistem Ayarları</h2>
+            <p class="text-muted">Fakülte, Ders ve Hoca yönetimi</p>
         </div>
-    <div class="col-md-3 text-end">
-   <!-- TEHLİKELİ: Tümünü Sil Butonu -->
-          <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#tumunuSilModal">
-           <i class="bi bi-trash3"></i> Tümünü Sil
-  </button>
-     </div>
+        <div class="col-md-3 text-end">
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#tumunuSilModal">
+                <i class="bi bi-trash3"></i> Tümünü Sil
+            </button>
+        </div>
     </div>
 
-  @if (TempData["Success"] != null)
+    @if (TempData["Success"] != null)
     {
-    <div class="alert alert-success alert-dismissible fade show">
-     <i class="bi bi-check-circle"></i> @TempData["Success"]
-<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <div class="alert alert-success alert-dismissible fade show">
+            <i class="bi bi-check-circle"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     }
 
     @if (TempData["Error"] != null)
     {
-   <div class="alert alert-danger alert-dismissible fade show">
+        <div class="alert alert-danger alert-dismissible fade show">
             <i class="bi bi-x-circle"></i> @TempData["Error"]
-   <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     }
 
-    <!-- Tabs -->
     <ul class="nav nav-tabs" id="ayarlarTabs" role="tablist">
-<li class="nav-item" role="presentation">
-<button class="nav-link active" id="fakulte-tab" data-bs-toggle="tab" data-bs-target="#fakulte" type="button">
-    <i class="bi bi-building"></i> Fakülteler
-        </button>
-  </li>
-  <li class="nav-item" role="presentation">
-       <button class="nav-link" id="ders-tab" data-bs-toggle="tab" data-bs-target="#ders" type="button">
-<i class="bi bi-book"></i> Dersler
-          </button>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="fakulte-tab" data-bs-toggle="tab" data-bs-target="#fakulte" type="button">
+                <i class="bi bi-building"></i> Fakülteler
+            </button>
         </li>
-   <li class="nav-item" role="presentation">
-  <button class="nav-link" id="hoca-tab" data-bs-toggle="tab" data-bs-target="#hoca" type="button">
-    <i class="bi bi-person"></i> Hocalar
-        </button>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="ders-tab" data-bs-toggle="tab" data-bs-target="#ders" type="button">
+                <i class="bi bi-book"></i> Dersler
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="hoca-tab" data-bs-toggle="tab" data-bs-target="#hoca" type="button">
+                <i class="bi bi-person"></i> Hocalar
+            </button>
         </li>
     </ul>
 
     <div class="tab-content mt-3" id="ayarlarTabContent">
-      <!-- 1. FAKÜLTELER -->
+
         <div class="tab-pane fade show active" id="fakulte" role="tabpanel">
-   <div class="card">
-          <div class="card-header bg-primary text-white">
-   <h5><i class="bi bi-building"></i> Fakülte Yönetimi</h5>
-       </div>
-    <div class="card-body">
-        <form asp-action="FakulteEkle" method="post" class="row g-3 mb-4">
-       @Html.AntiForgeryToken()
-  <div class="col-md-9">
-   <input type="text" name="fakulteAdi" class="form-control" placeholder="Fakülte Adı (ASEM, SUEM)" required />
-          </div>
-<div class="col-md-3">
-        <button type="submit" class="btn btn-success w-100">
-         <i class="bi bi-plus-circle"></i> Fakülte Ekle
-     </button>
-          </div>
-        </form>
-
-        <div class="table-responsive">
-        <table class="table table-bordered table-hover">
-                  <thead class="table-dark">
- <tr>
-     <th>Fakülte Adı</th>
-         <th style="width: 100px;">İşlemler</th>
-</tr>
-            </thead>
-    <tbody>
-           @foreach (var fakulte in Model.Fakulteler)
-           {
-            <tr>
-       <td><strong>@fakulte.Ad</strong></td>
-              <td class="text-center">
-              <form asp-action="FakulteSil" asp-route-id="@fakulte.Id" method="post" style="display:inline;">
-        @Html.AntiForgeryToken()
-     <button type="submit" class="btn btn-sm btn-danger"
-          onclick="return confirm('Bu fakülteyi silmek istediğinize emin misiniz?')">
-<i class="bi bi-trash"></i>
-        </button>
-             </form>
-           </td>
-           </tr>
-        }
-          @if (!Model.Fakulteler.Any())
-         {
-   <tr>
-       <td colspan="2" class="text-center text-muted">Henüz fakülte eklenmemiş</td>
-           </tr>
-             }
-    </tbody>
-     </table>
-   </div>
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5><i class="bi bi-building"></i> Fakülte Yönetimi</h5>
                 </div>
- </div>
-        </div>
-
-  <!-- 2. DERSLER -->
-        <div class="tab-pane fade" id="ders" role="tabpanel">
-  <div class="card">
-      <div class="card-header bg-info text-white">
-      <h5><i class="bi bi-book"></i> Ders Yönetimi</h5>
-         </div>
-     <div class="card-body">
-      <form asp-action="DersEkle" method="post" class="row g-3 mb-4">
-     @Html.AntiForgeryToken()
-    <div class="col-md-9">
-      <input type="text" name="dersAdi" class="form-control" placeholder="Ders Adı (Matematik I, Fizik II)" required />
-      </div>
-    <div class="col-md-3">
-      <button type="submit" class="btn btn-success w-100">
-<i class="bi bi-plus-circle"></i> Ders Ekle
-</button>
-           </div>
- </form>
-
-    <div class="table-responsive">
-      <table class="table table-bordered table-hover">
-          <thead class="table-dark">
-           <tr>
-            <th>Ders Adı</th>
-     <th style="width: 180px;">İşlemler</th>
-            </tr>
-      </thead>
-         <tbody>
-                @foreach (var ders in Model.Dersler.OrderBy(d => d.DersAdi))
-        {
-     <tr>
-                  <td><strong>@ders.DersAdi</strong></td>
- <td class="text-center">
-<a asp-action="DersDetails" asp-route-id="@ders.Id" class="btn btn-sm btn-info" title="Detaylar">
-     <i class="bi bi-eye"></i> Görüntüle
-     </a>
-         <form asp-action="DersSil" asp-route-id="@ders.Id" method="post" style="display:inline;">
-       @Html.AntiForgeryToken()
-    <button type="submit" class="btn btn-sm btn-danger"
-     onclick="return confirm('Bu dersi silmek istediğinize emin misiniz?')">
-<i class="bi bi-trash"></i>
-          </button>
-  </form>
-       </td>
-                </tr>
-       }
-                   @if (!Model.Dersler.Any())
-   {
-       <tr>
-            <td colspan="2" class="text-center text-muted">Henüz ders eklenmemiş</td>
-                </tr>
-           }
-  </tbody>
- </table>
-         </div>
-     </div>
-     </div>
-        </div>
-
-        <!-- 3. HOCALAR -->
-   <div class="tab-pane fade" id="hoca" role="tabpanel">
- <div class="card">
-         <div class="card-header bg-warning text-dark">
-              <h5><i class="bi bi-person"></i> Hoca Yönetimi</h5>
-  </div>
                 <div class="card-body">
-     <form asp-action="HocaEkle" method="post" class="mb-4">
-                  @Html.AntiForgeryToken()
-             <div class="row g-3">
-          <div class="col-md-3">
-      <label class="form-label">Fakülte <span class="text-danger">*</span></label>
-        <select name="fakulteId" class="form-select" required>
-            <option value="">-- Fakülte Seçiniz --</option>
-            @foreach (var f in Model.Fakulteler)
-       {
-  <option value="@f.Id">@f.Ad</option>
-             }
-                 </select>
- </div>
-   <div class="col-md-2">
-        <label class="form-label">Rütbe</label>
-<input type="text" name="rutbe" class="form-control" placeholder="Dr., Prof." />
-       </div>
-   <div class="col-md-3">
-          <label class="form-label">Ad Soyad <span class="text-danger">*</span></label>
-            <input type="text" name="adSoyad" class="form-control" placeholder="Ali Veli" required />
-                </div>
-       <div class="col-md-3">
-     <label class="form-label">Verebileceği Dersler <span class="text-danger">*</span></label>
-   <select name="dersIds" class="form-select" multiple size="3" required>
-         @foreach (var ders in Model.Dersler.OrderBy(d => d.DersAdi))
- {
-      <option value="@ders.Id">@ders.DersAdi</option>
-        }
-         </select>
-   <small class="text-muted">Ctrl+Tıkla ile çoklu seçim</small>
-      </div>
-      <div class="col-md-1">
-         <label class="form-label">&nbsp;</label>
-    <button type="submit" class="btn btn-success w-100">
- <i class="bi bi-plus-circle"></i>
-    </button>
-             </div>
-      </div>
-    </form>
+                    <form asp-action="FakulteEkle" method="post" class="row g-3 mb-4">
+                        @Html.AntiForgeryToken()
+                        <div class="col-md-9">
+                            <input type="text" name="fakulteAdi" class="form-control" placeholder="Fakülte Adı (ASEM, SUEM)" required />
+                        </div>
+                        <div class="col-md-3">
+                            <button type="submit" class="btn btn-success w-100">
+                                <i class="bi bi-plus-circle"></i> Fakülte Ekle
+                            </button>
+                        </div>
+                    </form>
 
-      <div class="alert alert-info">
-     <i class="bi bi-info-circle"></i> <strong>Ders Yükü</strong> otomatik hesaplanır.
-     </div>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Fakülte Adı</th>
+                                    <th style="width: 150px;">İşlemler</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var fakulte in Model.Fakulteler)
+                                {
+                                    <tr>
+                                        <td class="align-middle"><strong>@fakulte.Ad</strong></td>
+                                        <td class="text-center">
+                                            <a asp-action="FakulteEdit" asp-route-id="@fakulte.Id" class="btn btn-sm btn-warning me-1" title="Düzenle">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </a>
 
-<div class="table-responsive">
-      <table class="table table-bordered table-hover">
-    <thead class="table-dark">
-     <tr>
-                 <th>Fakülte</th>
-         <th>Rütbe</th>
-          <th>Ad Soyad</th>
-       <th>Verebileceği Dersler</th>
-         <th style="width: 100px;">Ders Yükü</th>
-     <th style="width: 100px;">Durum</th>
- <th style="width: 180px;">İşlemler</th>
-                   </tr>
-          </thead>
-    <tbody>
-    @foreach (var hoca in Model.Hocalar.OrderBy(h => h.Fakulte.Ad).ThenBy(h => h.AdSoyad))
-   {
-         <tr class="@(!hoca.AktifMi ? "table-secondary" : "")">
-      <td>@hoca.Fakulte.Ad</td>
-           <td>@hoca.Rutbe</td>
-   <td><strong>@hoca.AdSoyad</strong></td>
-               <td>
-  @if (hoca.HocaDersler?.Any() == true)
-               {
-      @string.Join(", ", hoca.HocaDersler.Select(hd => hd.Ders?.DersAdi))
-  }
-         else
-       {
-        <span class="text-muted">-</span>
-        }
-   </td>
-         <td class="text-center">
-              <span class="badge bg-primary">@hoca.DersYuku saat</span>
-        </td>
-              <td class="text-center">
-    <span class="badge @(hoca.AktifMi ? "bg-success" : "bg-secondary")">
-              @(hoca.AktifMi ? "Aktif" : "Pasif")
-            </span>
-   </td>
-    <td class="text-center">
-      <a asp-action="HocaEdit" asp-route-id="@hoca.Id" class="btn btn-sm btn-primary">
-     <i class="bi bi-pencil"></i>
-               </a>
-      <form asp-action="HocaDurumDegistir" asp-route-id="@hoca.Id" method="post" style="display:inline;">
-        @Html.AntiForgeryToken()
-  <button type="submit" class="btn btn-sm btn-warning">
-        <i class="bi bi-toggle-@(hoca.AktifMi ? "on" : "off")"></i>
-     </button>
-             </form>
-    <form asp-action="HocaSil" asp-route-id="@hoca.Id" method="post" style="display:inline;">
-        @Html.AntiForgeryToken()
-     <button type="submit" class="btn btn-sm btn-danger"
-  onclick="return confirm('Bu hocayı silmek istediğinize emin misiniz?')">
-        <i class="bi bi-trash"></i>
-          </button>
-               </form>
-  </td>
-   </tr>
-     }
-          @if (!Model.Hocalar.Any())
-         {
-       <tr>
-          <td colspan="7" class="text-center text-muted">Henüz hoca eklenmemiş</td>
-    </tr>
-     }
-              </tbody>
-   </table>
-           </div>
+                                            <form asp-action="FakulteSil" asp-route-id="@fakulte.Id" method="post" style="display:inline;">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-sm btn-danger" title="Sil"
+                                                        onclick="return confirm('Bu fakülteyi silmek istediğinize emin misiniz?')">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                                @if (!Model.Fakulteler.Any())
+                                {
+                                    <tr>
+                                        <td colspan="2" class="text-center text-muted">Henüz fakülte eklenmemiş</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-         </div>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="ders" role="tabpanel">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5><i class="bi bi-book"></i> Ders Yönetimi</h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="DersEkle" method="post" class="row g-3 mb-4">
+                        @Html.AntiForgeryToken()
+                        <div class="col-md-9">
+                            <input type="text" name="dersAdi" class="form-control" placeholder="Ders Adı (Matematik I, Fizik II)" required />
+                        </div>
+                        <div class="col-md-3">
+                            <button type="submit" class="btn btn-success w-100">
+                                <i class="bi bi-plus-circle"></i> Ders Ekle
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Ders Adı</th>
+                                    <th style="width: 180px;">İşlemler</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var ders in Model.Dersler.OrderBy(d => d.DersAdi))
+                                {
+                                    <tr>
+                                        <td class="align-middle"><strong>@ders.DersAdi</strong></td>
+                                        <td class="text-center">
+                                            <a asp-action="DersDetails" asp-route-id="@ders.Id" class="btn btn-sm btn-info" title="Detaylar">
+                                                <i class="bi bi-eye"></i> Görüntüle
+                                            </a>
+                                            <form asp-action="DersSil" asp-route-id="@ders.Id" method="post" style="display:inline;">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-sm btn-danger"
+                                                        onclick="return confirm('Bu dersi silmek istediğinize emin misiniz?')">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                                @if (!Model.Dersler.Any())
+                                {
+                                    <tr>
+                                        <td colspan="2" class="text-center text-muted">Henüz ders eklenmemiş</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="hoca" role="tabpanel">
+            <div class="card">
+                <div class="card-header bg-warning text-dark">
+                    <h5><i class="bi bi-person"></i> Hoca Yönetimi</h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="HocaEkle" method="post" class="mb-4">
+                        @Html.AntiForgeryToken()
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <label class="form-label">Fakülte <span class="text-danger">*</span></label>
+                                <select name="fakulteId" class="form-select" required>
+                                    <option value="">-- Fakülte Seçiniz --</option>
+                                    @foreach (var f in Model.Fakulteler)
+                                    {
+                                        <option value="@f.Id">@f.Ad</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Rütbe</label>
+                                <input type="text" name="rutbe" class="form-control" placeholder="Dr., Prof." />
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Ad Soyad <span class="text-danger">*</span></label>
+                                <input type="text" name="adSoyad" class="form-control" placeholder="Ali Veli" required />
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Verebileceği Dersler <span class="text-danger">*</span></label>
+                                <select name="dersIds" class="form-select" multiple size="3" required>
+                                    @foreach (var ders in Model.Dersler.OrderBy(d => d.DersAdi))
+                                    {
+                                        <option value="@ders.Id">@ders.DersAdi</option>
+                                    }
+                                </select>
+                                <small class="text-muted">Ctrl+Tıkla ile çoklu seçim</small>
+                            </div>
+                            <div class="col-md-1">
+                                <label class="form-label">&nbsp;</label>
+                                <button type="submit" class="btn btn-success w-100">
+                                    <i class="bi bi-plus-circle"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> <strong>Ders Yükü</strong> otomatik hesaplanır.
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Fakülte</th>
+                                    <th>Rütbe</th>
+                                    <th>Ad Soyad</th>
+                                    <th>Verebileceği Dersler</th>
+                                    <th style="width: 100px;">Ders Yükü</th>
+                                    <th style="width: 100px;">Durum</th>
+                                    <th style="width: 180px;">İşlemler</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var hoca in Model.Hocalar.OrderBy(h => h.Fakulte.Ad).ThenBy(h => h.AdSoyad))
+                                {
+                                    <tr class="@(!hoca.AktifMi ? "table-secondary" : "")">
+                                        <td>@hoca.Fakulte.Ad</td>
+                                        <td>@hoca.Rutbe</td>
+                                        <td><strong>@hoca.AdSoyad</strong></td>
+                                        <td>
+                                            @if (hoca.HocaDersler?.Any() == true)
+                                            {
+                                                @string.Join(", ", hoca.HocaDersler.Select(hd => hd.Ders?.DersAdi))
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">-</span>
+                                            }
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge bg-primary">@hoca.DersYuku saat</span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge @(hoca.AktifMi ? "bg-success" : "bg-secondary")">
+                                                @(hoca.AktifMi ? "Aktif" : "Pasif")
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <a asp-action="HocaEdit" asp-route-id="@hoca.Id" class="btn btn-sm btn-primary">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <form asp-action="HocaDurumDegistir" asp-route-id="@hoca.Id" method="post" style="display:inline;">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-sm btn-warning">
+                                                    <i class="bi bi-toggle-@(hoca.AktifMi ? "on" : "off")"></i>
+                                                </button>
+                                            </form>
+                                            <form asp-action="HocaSil" asp-route-id="@hoca.Id" method="post" style="display:inline;">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-sm btn-danger"
+                                                        onclick="return confirm('Bu hocayı silmek istediğinize emin misiniz?')">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                                @if (!Model.Hocalar.Any())
+                                {
+                                    <tr>
+                                        <td colspan="7" class="text-center text-muted">Henüz hoca eklenmemiş</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <div class="row mt-3">
         <div class="col-md-12">
-   <a asp-controller="DersProgrami" asp-action="Index" class="btn btn-secondary btn-lg">
-  <i class="bi bi-arrow-left"></i> Ders Programına Dön
-  </a>
+            <a asp-controller="DersProgrami" asp-action="Index" class="btn btn-secondary btn-lg">
+                <i class="bi bi-arrow-left"></i> Ders Programına Dön
+            </a>
         </div>
- </div>
+    </div>
 </div>
 
-<!-- TEHLİKELİ: TÜMÜNÜ SİL MODAL -->
 <div class="modal fade" id="tumunuSilModal" tabindex="-1" aria-labelledby="tumunuSilModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header bg-danger text-white">
                 <h5 class="modal-title" id="tumunuSilModalLabel">
-       <i class="bi bi-exclamation-triangle-fill"></i> TEHLİKELİ İŞLEM!
-         </h5>
-      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-         </div>
-         <div class="modal-body">
-     <div class="alert alert-danger">
-        <strong>?? UYARI!</strong><br>
-   Bu işlem GERİ ALINAMAZ! Tüm hocalar, dersler, ders programları ve telafi dersleri SİLİNECEKTİR!
-      </div>
-       <p><strong>Aşağıdaki verilerin HEPSİ silinecektir:</strong></p>
-         <ul>
-           <li>??? <strong>@Model.Hocalar.Count Hoca</strong></li>
-        <li>??? <strong>@Model.Dersler.Count Ders</strong></li>
- <li>??? Tüm Ders Programları</li>
-    <li>??? Tüm Telafi Dersleri</li>
-            </ul>
-         <hr>
-        <form asp-action="TumunuSil" method="post" id="tumunuSilForm">
-              @Html.AntiForgeryToken()
-      <div class="mb-3">
-     <label class="form-label fw-bold">Onaylamak için <span class="text-danger">"TUMU"</span> yazın:</label>
-        <input type="text" name="onay" id="onayInput" class="form-control" placeholder="TUMU" required />
-     </div>
-          <button type="submit" class="btn btn-danger w-100" id="silButton" disabled>
-           <i class="bi bi-trash3"></i> Evet, Tümünü Sil
-    </button>
- </form>
+                    <i class="bi bi-exclamation-triangle-fill"></i> TEHLİKELİ İŞLEM!
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-   <div class="modal-footer">
-     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
-       </div>
-    </div>
+            <div class="modal-body">
+                <div class="alert alert-danger">
+                    <strong>⚠ UYARI!</strong><br>
+                    Bu işlem GERİ ALINAMAZ! Tüm hocalar, dersler, ders programları ve telafi dersleri SİLİNECEKTİR!
+                </div>
+                <p><strong>Aşağıdaki verilerin HEPSİ silinecektir:</strong></p>
+                <ul>
+                    <li>🔴 <strong>@Model.Hocalar.Count Hoca</strong></li>
+                    <li>🔴 <strong>@Model.Dersler.Count Ders</strong></li>
+                    <li>🔴 Tüm Ders Programları</li>
+                    <li>🔴 Tüm Telafi Dersleri</li>
+                </ul>
+                <hr>
+                <form asp-action="TumunuSil" method="post" id="tumunuSilForm">
+                    @Html.AntiForgeryToken()
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Onaylamak için <span class="text-danger">"TUMU"</span> yazın:</label>
+                        <input type="text" name="onay" id="onayInput" class="form-control" placeholder="TUMU" required />
+                    </div>
+                    <button type="submit" class="btn btn-danger w-100" id="silButton" disabled>
+                        <i class="bi bi-trash3"></i> Evet, Tümünü Sil
+                    </button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+            </div>
+        </div>
     </div>
 </div>
 
 @section Scripts {
     <script>
-    $(document).ready(function() {
-        var activeTab = localStorage.getItem('activeAyarlarTab');
-        if (activeTab) {
-  $('#ayarlarTabs button[data-bs-target="' + activeTab + '"]').tab('show');
-        }
+        $(document).ready(function() {
+            var activeTab = localStorage.getItem('activeAyarlarTab');
+            if (activeTab) {
+                $('#ayarlarTabs button[data-bs-target="' + activeTab + '"]').tab('show');
+            }
 
-  $('#ayarlarTabs button').on('click', function(e) {
-            localStorage.setItem('activeAyarlarTab', $(this).data('bs-target'));
+            $('#ayarlarTabs button').on('click', function(e) {
+                localStorage.setItem('activeAyarlarTab', $(this).data('bs-target'));
+            });
+
+            // Tümünü Sil onay kontrolü
+            $('#onayInput').on('input', function() {
+                var deger = $(this).val().trim();
+                if (deger === 'TUMU') {
+                    $('#silButton').prop('disabled', false);
+                } else {
+                    $('#silButton').prop('disabled', true);
+                }
+            });
+
+            // Modal kapandığında formu sıfırla
+            $('#tumunuSilModal').on('hidden.bs.modal', function () {
+                $('#onayInput').val('');
+                $('#silButton').prop('disabled', true);
+            });
         });
-
-        // Tümünü Sil onay kontrolü
-        $('#onayInput').on('input', function() {
-       var deger = $(this).val().trim();
-     if (deger === 'TUMU') {
-     $('#silButton').prop('disabled', false);
-       } else {
-        $('#silButton').prop('disabled', true);
-      }
-   });
-
-        // Modal kapandığında formu sıfırla
-     $('#tumunuSilModal').on('hidden.bs.modal', function () {
-            $('#onayInput').val('');
-            $('#silButton').prop('disabled', true);
-        });
-    });
     </script>
 }

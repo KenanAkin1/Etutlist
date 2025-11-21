@@ -552,17 +552,29 @@ namespace Etutlist.Controllers
             return View();
         }
 
+        // Controllers/TelafiDersController.cs
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> TopluTelafiOlustur(
-    DateTime telafiYapilacakTarih,
-    string telafiNedeni)
+            DateTime telafiYapilacakTarih,
+            string telafiNedeni,
+            List<int> secilenSaatler) // <-- YENİ PARAMETRE
         {
             try
             {
+                // Eğer hiç saat seçilmediyse hata ver veya varsayılan olarak hepsini seç
+                if (secilenSaatler == null || !secilenSaatler.Any())
+                {
+                    TempData["Error"] = "Lütfen en az bir ders saati seçiniz.";
+                    return RedirectToAction(nameof(TopluTelafiOlustur));
+                }
+
+                // Service metoduna saatleri de gönderiyoruz
                 var sonuc = await _telafiService.TopluTelafiOlusturAsync(
                     telafiYapilacakTarih,
-                    telafiNedeni);
+                    telafiNedeni,
+                    secilenSaatler); // <-- BURAYA EKLENDİ
 
                 if (sonuc.Success)
                 {
